@@ -44,6 +44,7 @@ var config = {
 	font_width:8,
 	font_height:19,
 	font_path:'/fonts/old/',
+	init_file:'/sample/info.txt',
 	load_file_from_source:false,
 	load_font_from_source:false,
 	ls_file_prefix:'file_',
@@ -134,7 +135,6 @@ function switchCommand(char, underline, font){
 	return {
 		font: font,
 		underline: underline,
-		char: 
 	}
 }
 
@@ -299,7 +299,6 @@ function makeImageData(){
 }
 
 function loadFont(num,callback){
-	// this function is not in use
 	var req = null
 	req = new XMLHttpRequest();
 	req.responseType = "arraybuffer"
@@ -399,7 +398,7 @@ function postInit(){
 	GUIControl.updateFileList()
 }
 function init(){
-
+	// on document load
 	initMousetrap()
 	expandScreen()
 	eventsInit()
@@ -413,7 +412,7 @@ function init(){
 
 
 	if(config.load_file_from_source){
-		loadFileByURL('/sample/info.txt', postInit)
+		loadFileByURL(config.init_file, postInit)
 	}else{
 		FileControl.loadFileBySource(lex.file.source, redraw)
 	}
