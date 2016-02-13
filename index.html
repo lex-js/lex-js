@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Lex.js</title>
+	<script type="text/javascript" src="/js/cp866.js"></script>
+	<script type="text/javascript" src="/js/mousetrap.min.js"></script>
+	<script type="text/javascript" src="/js/mousetrap-global-bind.min.js"></script>
+	<script type="text/javascript" src="/js/func.js"></script>
+	<script type="text/javascript" src="/js/gui.js"></script>
+	<script type="text/javascript" src="/js/lex.js"></script>
+	<script type="text/javascript" src="/fonts/font0.js"></script>
+	<script type="text/javascript" src="/fonts/font1.js"></script>
+	<script type="text/javascript" src="/fonts/font2.js"></script>
+	<script type="text/javascript" src="/fonts/font3.js"></script>
+	<script type="text/javascript" src="/fonts/font4.js"></script>
+	<script type="text/javascript" src="/fonts/font5.js"></script>
+	<script type="text/javascript" src="/fonts/font6.js"></script>
+	<script type="text/javascript" src="/fonts/font7.js"></script>
+	<script type="text/javascript" src="/fonts/font8.js"></script>
+	<script type="text/javascript" src="/fonts/font9.js"></script>
+	<script type="text/javascript" src="/sample/info.js"></script>
+	<link rel="stylesheet" type="text/css" href="/css/style.css">
+</head>
+<body>
+	<div id="content-container">
+		<div id="block-top">
+			<div class="element-container">
+				<input type="file" id="file-select" multiple>
+				<select class="button" id="file-list">
+				</select>
+				<input class="button" type="button" id="button-load" value="Load">
+				<input class="button" type="button" id="button-delete" value="Delete">
+				<a href="https://github.com/lex-js/lex-js" target="_blank" id="source-link">Source code</a>
+			</div>
+		</div>
+		<div id="content">
+			<canvas id="canvas" width=1000 height=1000></canvas>
+			<canvas id="canvas-tmp" width=100 height=100></canvas>
+		</div>
+		<div id="block-bottom">
+			<span id="line-number">--</span> / <span id="line-count">--</span> (<span id="scroll-percentage">--</span>)
+		</div>
+	</div>
+</body>
+</html>

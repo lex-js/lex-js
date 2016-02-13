@@ -1,0 +1,60 @@
+body{
+	font-family: monospace;
+}
+
+#canvas, #canvas-tmp{
+}
+
+#canvas{
+	position: fixed;
+	left:0;
+	right:0;
+	top:50px;
+	bottom: 14px;
+}
+
+#block-top{
+	position:fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: 50px;    
+	box-shadow: 0 0 3px rgba(0,0,0,0.5);
+	background-color: white;
+	z-index: 10;
+}
+
+#block-bottom{
+	box-shadow: 0 0 3px rgba(0,0,0,0.5);
+	position:fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	height: 14px;
+	font-size: 12px;
+}
+
+.element-container{
+	padding: 13px;
+}
+.button{
+	background-color: white;
+	border: 1px solid #EEE;
+	height: 23px;
+	color; black;
+	box-shadow: 0 0 3px rgba(0,0,0,0.6);
+}
+.button:active{
+	background-color: #EEE;
+}
+
+*:focus, *:active{
+	outline: 0 !important;
+}
+#file-list{
+	max-width: 400px;
+	min-width: 100px;
+}
+#source-link{
+	float: right;
+}
