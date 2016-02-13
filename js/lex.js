@@ -43,12 +43,9 @@ var config = {
 	selection_fill_color:'rgba(0,0,255,0.4)',
 	font_width:8,
 	font_height:19,
-	font_real_width:8,
-	font_real_height:19,
 	font_path:'/fonts/old/',
-	load_file_from_source:true,
+	load_file_from_source:false,
 	load_font_from_source:false,
-	ls_filelist:'filelist',
 	ls_file_prefix:'file_',
 	save_to_ls: true,
 }
@@ -130,15 +127,14 @@ function switchCommand(char, underline, font){
 			break
 		}
 		case 255:{
-			//context.putImageData(lex.fonts[font].bitmaps[42], xc*config.font_width, yc*config.font_height)
-			// font_char(0x30 + font, x + cx, y + cy, 0xFF);
-			//xc += 2;
+			// ?
 			break
 		}
 	}
 	return {
 		font: font,
-		underline: underline
+		underline: underline,
+		char: 
 	}
 }
 
@@ -422,7 +418,6 @@ function init(){
 		FileControl.loadFileBySource(lex.file.source, redraw)
 	}
 	postInit()
-	//setTimeout(, 1000)
 }
 
 
