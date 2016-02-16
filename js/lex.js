@@ -49,6 +49,10 @@ var config = {
 	load_font_from_source:false,
 	ls_file_prefix:'file_',
 	save_to_ls: true,
+	touch_y_min: 10,
+	touch_x_min: 10,
+	touch_y_speed: 0.5,
+	touch_x_speed: 1,
 }
 
 function log(m){
@@ -406,7 +410,7 @@ function init(){
 
 	if(config.load_font_from_source){
 		for(var i = 0; i <= config.font_max; i++){
-		 	loadFont(i, pass)
+			loadFont(i, pass)
 		}
 	}
 
@@ -479,9 +483,71 @@ function wheel(event){
 	event.returnValue = false;
 }
 
+var TouchControl = {
+	ongoingTouches: [],
+	scrollBuffer: {
+		x: 0,
+		y: 0,
+	},
+	handleStart: function(event) {
+		event.preventDefault();
+		var touches = event.changedTouches;        
+		for (var i = 0; i < touches.length; i++) {
+			TouchControl.ongoingTouches.push(TouchControl.copyTouch(touches[i]));
+		}
+	},
+	handleMove: function(event){
+		event.preventDefault();
+		var touches = event.changedTouches;
+		for (var i = 0; i < touches.length; i++) {
+			var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier)
+			var deltaX = touches[i].pageX - TouchControl.ongoingTouches[idx].pageX
+			var deltaY = touches[i].pageY - TouchControl.ongoingTouches[idx].pageY
+			TouchControl.scrollBuffer.x += deltaX
+			TouchControl.scrollBuffer.y += deltaY
+			if (idx >= 0) {
+				TouchControl.ongoingTouches.splice(idx, 1, TouchControl.copyTouch(touches[i]));
+			} else {
+				log("can't figure out which touch to continue");
+			}
+			if(Math.abs(TouchControl.scrollBuffer.y) > config.touch_y_min){
+				ScreenControl.scrollY(TouchControl.scrollBuffer.y * config.touch_y_speed/config.touch_y_min)
+				TouchControl.scrollBuffer.y = 0
+			}
+		}
+	},
+	handleEnd: function(event) {
+		event.preventDefault();
+		var touches = event.changedTouches;
+		for (var i = 0; i < touches.length; i++) {
+			var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier);
+			if (idx >= 0) {
+				TouchControl.ongoingTouches.splice(idx, 1)
+			} else {
+				log("can't figure out which touch to end");
+			}
+		}
+	},
+	ongoingTouchIndexById: function(idToFind) {
+		for (var i = 0; i < TouchControl.ongoingTouches.length; i++) {
+			var id = TouchControl.ongoingTouches[i].identifier;
 
+			if (id == idToFind) {
+				return i;
+			}
+		}
+		return -1;
+	},
+	copyTouch: function(touch) {
+		return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
+	},
+
+}
 
 document.addEventListener("DOMContentLoaded", init);
 window.addEventListener("DOMMouseScroll", wheel, false);
+window.addEventListener("touchstart", TouchControl.handleStart, false);
+window.addEventListener("touchmove", TouchControl.handleMove, false);
+window.addEventListener("touchend", TouchControl.handleEnd, false);
 window.onmousewheel = document.onmousewheel = wheel;
 window.addEventListener('resize',function(){expandScreen(); redraw()})
