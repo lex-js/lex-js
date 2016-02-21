@@ -314,6 +314,28 @@ function canvasMouseMove(event){
 }
 
 function eventsInit(){
+	var wheel = function(event){
+		var delta = 0;
+		if(!event)
+			event = window.event;
+		if(event.wheelDelta){
+			delta = event.wheelDelta/120;
+		}else if (event.detail){ 
+			delta = -event.detail/3;
+		}
+		if(delta){
+			ScreenControl.scrollY(delta)
+		}
+		if (event.preventDefault)
+			event.preventDefault();
+		event.returnValue = false;
+	}
+	window.addEventListener("DOMMouseScroll", wheel, false);
+	window.addEventListener("touchstart", TouchControl.handleStart, false);
+	window.addEventListener("touchmove", TouchControl.handleMove, false);
+	window.addEventListener("touchend", TouchControl.handleEnd, false);
+	window.onmousewheel = document.onmousewheel = wheel;
+	window.addEventListener('resize',function(){expandScreen(); redraw()})
 	document.getElementById('file-select').addEventListener("change", function(evt){
 		var files = evt.target.files
 		var lastname = files[files.length - 1].name
