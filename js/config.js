@@ -22,7 +22,7 @@ var config = {
 
     // Файл, открываемый при старте, если load_file_from_source == true
     init_file:'/sample/info.txt',
-    load_file_from_source: false,
+    load_file_from_source: true,
 
     // Префекс для сохранения файлов в localStorage
     ls_file_prefix:'file_',

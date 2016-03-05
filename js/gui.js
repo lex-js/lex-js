@@ -73,80 +73,6 @@ var MessageControl = {
     }
 }
 
-var Coders = {
-    // encoders+decoders
-    Uint8ArrayToString: function(ui8arr){
-	// преобразует массив байт в стоку
-	// используя кодировку ibm866
-	var string = ''
-	for(var i = 0, b; b = ui8arr[i]; i++){
-	    string += byteToCharCP866[b]
-	}
-	return string
-    },
-    StringToUint8Array: function(string){
-	// преобразует строку в массив байт
-	// используя кодировку ibm866
-	var arr = []
-	for(var i = 0, c; c = string[i]; i++){
-	    arr.push(charToByteCP866[c])
-	}
-	return new Uint8Array(arr)
-    },
-    num2Char: function(num){
-	return String.fromCharCode(num)
-    },
-    char2Num: function(chr){
-	return chr.charCodeAt(0)
-    },
-    dec2Bin: function(dec)
-    {
-	return Number(dec).toString(2)
-    },
-    bin2Dec: function(bin){
-	return parseInt(bin,2)
-    },
-    binArray2String: function(arr){
-	var len = config.max_char_code
-	var r   = ''
-	var arrlen = arr.length
-	while(arr.length % len){
-	    arr.push(0)
-	}
-	for(var i = 0; i < arr.length; ){
-	    var b = ''
-	    while(b.length < len){
-		if(typeof arr[i] == 'undefined')
-		    break;
-		b += arr[i]
-		i++
-	    }
-	    var c = Coders.bin2Dec(b)
-	    r+= Coders.num2Char(c)
-	}	
-	return arrlen+':'+r
-    },
-    string2BinArray: function(str){
-	var len = config.max_char_code
-	var arrlen = str.substr(0,str.indexOf(':'))*1
-	var str = str.substr(str.indexOf(':')+1)	
-	var r = []
-	for(var i = 0; i < str.length; i++){
-	    var c = Coders.char2Num(str[i])
-	    var n = Coders.dec2Bin(c).split('')
-	    while(n.length < len){
-		n = ['0'].concat(n)
-		//n.push('0')
-	    }
-	    n = n.reverse()
-	    for(var j = n.length-1; j >= 0; j--){
-		r.push((n[j] == '1')*1)
-	    }
-	}
-	return r
-    },    
-}
-
 var FileControl = {
     getFileList: function(){
 	var r = []
@@ -322,7 +248,7 @@ function initMousetrap(){
 	    ScreenControl.scrollHomeY()
 	},
 	'alt+g':function(){
-	    showGotoLinePrompt()
+	    GUIControl.showGotoLinePrompt()
 	},
 	'v':function(){
 	    LineNumbersControl.toggleLineNumbers()
@@ -343,6 +269,12 @@ function initMousetrap(){
 	},
 	's':function(){
 	    SearchControl.activateSearchField();
+	},
+	'щ':function(){
+	    document.getElementById('file-select').click()
+	},
+	'o':function(){
+	    document.getElementById('file-select').click()
 	},
     }
     for(var k in t){
@@ -447,7 +379,7 @@ function eventsInit(){
 	LineNumbersControl.toggleLineNumbers()
     })
     document.getElementById('button-goto-line').addEventListener("click", function(){
-	showGotoLinePrompt()
+	GUIControl.showGotoLinePrompt()
     })
     document.getElementById('button-delete').addEventListener("click", function(){
 	var filename = document.getElementById('file-list').value

@@ -362,12 +362,20 @@ var DevControl = {
 		uneval(Coders.binArray2String(lex.fonts[fontNumber].source))+
 		');\n'
 	}
-	this.donwloadFontFile(js_output)
+	this.donwloadFile('fonts.js', js_output)
     },
-    donwloadFontFile: function(fontSrc){
+    outputFileToJSFile: function(){
+	var js_output = 'lex.file.source = new Uint8Array(['
+	for(var i = 0; i < lex.file.source.length; i++){
+	    js_output += lex.file.source[i]+','
+	}
+	js_output += '])'
+	this.donwloadFile('info.js',js_output)
+    },
+    donwloadFile: function(name, source){
 	// Создает файл, загружаемый из браузера
-	var blob = new Blob([fontSrc], {type: "text/plain;charset=utf-8"});
-	saveAs(blob, "fonts.js");
+	var blob = new Blob([source], {type: "text/plain;charset=utf-8"});
+	saveAs(blob, name);
     },
     outputFonts: function(){
 	for(var f = 48; f <= 57; f++){
@@ -389,6 +397,7 @@ LineNumbersControl = {
 	}
 	lex.numbers.set = false
 	lex.numbers.width = 0
+	SearchControl.flush()
 	IndexControl.rebuildIndex()
 	redraw()
     },
@@ -399,6 +408,7 @@ LineNumbersControl = {
 	    var t = new Uint8Array(Parser.getLineNumberBytes(i,lex.numbers.width).concat(Array.from(lex.file.lines[i])))
 	    lex.file.lines[i] = t
 	}
+	SearchControl.flush()
 	IndexControl.rebuildIndex()
 	redraw()
     },
@@ -660,8 +670,8 @@ function init(){
     ScreenControl.expandScreen()
     eventsInit()
     canvasInit()
-
-    if(config.load_font_from_source){
+    var is_local = document.location.protocol == 'file:'
+    if(config.load_font_from_source && is_local){
 	for(var i = 0; i <= config.font_max; i++){
 	    FontControl.loadFont(i, function(){
 		if(DrawControl.makeImageData()){
@@ -674,7 +684,7 @@ function init(){
     if(config.perform_test){
 	TestControl.runAll()
     }
-    if(config.load_file_from_source){
+    if(config.load_file_from_source && !is_local){
 	FileControl.loadFileByURL(config.init_file, postInit)
     }else{
 	FileControl.loadFileBySource(lex.file.source, redraw)
