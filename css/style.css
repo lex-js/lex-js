@@ -1,56 +1,103 @@
-#canvas, #canvas-tmp{
+*{
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
 }
 
 #canvas{
-	position: fixed;
-	left:0;
-	right:0;
-	top:50px;
-	bottom: 14px;
+    position: fixed;
+    left:0;
+    right:0;
+    top:50px;
+    bottom: 14px;
 }
 
 #block-top{
-	position:fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	height: 50px;    
-	box-shadow: 0 0 3px rgba(0,0,0,0.5);
-	background-color: white;
-	z-index: 10;
+    position:fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;    
+    box-shadow: 0 0 3px rgba(0,0,0,0.5);
+    background-color: white;
+    z-index: 10;
 }
 
 #block-bottom{
-	box-shadow: 0 0 3px rgba(0,0,0,0.5);
-	position:fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	height: 14px;
-	font-size: 12px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.5);
+    position:fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 14px;
+    font-size: 12px;
 }
 
 .element-container{
-	padding: 13px;
+    padding: 13px;
 }
 .button{
-	background-color: white;
-	border: 1px solid #EEE;
-	height: 23px;
-	color; black;
-	box-shadow: 0 0 3px rgba(0,0,0,0.6);
+    background-color: white;
+    height: 23px;
+    color; black;
+    font-family: FontAwesome;
+    font-size: 16px;
+    cursor: pointer;
 }
-.button:active{
-	background-color: #EEE;
+.icon{
+    font-family: FontAwesome;
+    padding: 3px;
+    cursor: pointer;
 }
 
-*:focus, *:active{
-	outline: 0 !important;
+.button:active{
+    background-color: #EEE;
+}
+
+*:focus,
+*:active{
+    outline: 0 !important;
 }
 #file-list{
-	max-width: 400px;
-	min-width: 100px;
+    max-width: 100px;
+    min-width: 100px;
 }
+
 #source-link{
-	float: right;
+    float: right;
+    color: black;
+    font-family: FontAwesome;
+    text-decoration: none;
+}
+
+/* search */
+#search-close{
+    color: #F55;
+}
+#block-search{
+    position: fixed;
+    bottom: 14px;
+    border-top: 1px solid rgba(0,0,0,0.2);
+    border-right: 1px solid rgba(0,0,0,0.2);
+    left:0;
+    z-index: 0;
+    background-color: white;
+    display: inline-block;
+}
+#search-container{
+    margin-left: 3px;
+    margin-right: 5px;
+}
+
+#search-number,
+#search-total{
+    font-size: 20px;
+    font-family: monospace;
+}
+
+/* file select */
+#file-select {
+  color: transparent;
+  width: 130px;
 }
