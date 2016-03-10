@@ -345,6 +345,9 @@ function eventsInit(){
 	SearchControl.clearSearchField()
 	SearchControl.deactivateSearchField()
     })
+    document.getElementById('file-list').addEventListener('change', function(evt){
+	evt.target.blur()
+    })
     document.getElementById('file-select').addEventListener('change', function(evt){
 	// some js routine...
 	var files = evt.target.files
