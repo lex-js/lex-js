@@ -175,7 +175,62 @@ var FileControl = {
     }
 }
 
+ExportControl = {
+    exportToPNG: function(){
+	// exports selection to PNG file
+	if(!lex.selection.set) return;
+	var s = lex.selection
+	var x1 = Math.min(s.x1, s.x2)
+	var x2 = Math.max(s.x1, s.x2)
+	var y1 = Math.min(s.y1, s.y2)
+	var y2 = Math.max(s.y1, s.y2)
 
+	// create new temprorary canvas
+	var canvas = document.createElement('canvas')
+	canvas.width  = (x2-x1)*config.font_width
+	canvas.height = (y2-y1)*config.font_height
+
+	var context = canvas.getContext('2d')
+	var imageData = context.createImageData(
+	    (x2-x1)*config.font_width,
+	    (y2-y1)*config.font_height)
+
+	// fill context with default color (otherwise it remains transparent)
+	context.fillStyle= 'rgba('+
+	    config.bg_color[0]+','+
+	    config.bg_color[1]+','+
+	    config.bg_color[2]+','+
+	    config.bg_color[3]+')'
+	context.fillRect(0, 0, x2*config.font_width, y2*config.font_height)
+
+	// loop through chars
+	for(var y = y1; y < y2 && y < lex.file.lines.length; y++){
+	    var line = lex.file.lines[y]
+	    if(typeof line == 'undefined') break;
+	    line = Parser.parseLine(line)
+	    for(var x = x1; x < line.length && x < x2; x++){
+		var char      = line[x].char
+		var underline = line[x].underline
+		var font      = line[x].font
+		if(lex.fonts[font].bitmaps[char]){
+		    context.putImageData(lex.fonts[font].bitmaps[char],
+					 (x-x1)*config.font_width,
+					 (y-y1)*config.font_height)
+		    if(underline){
+			DrawControl.underlineChar(char, font, (x-x1), (y-y1), context)
+		    }
+		}
+	    }
+	    
+	}
+
+	canvas.toBlob(function(blob) {
+	    saveAs(blob, "lexicon_screenshot.png");
+	});
+	
+	SelectionControl.clearSelection()
+    }
+}
 
 function initMousetrap(){
     // Mousetrap bindings
