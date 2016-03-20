@@ -140,7 +140,12 @@ var FileControl = {
     loadFileBySource: function(source, callback){
 	// load file to viewer
 	var source = new Uint8Array(source)
-	lex.file.source = source
+	if(config.save_file_source){
+	    lex.file.source = source
+	}else{
+	    // make it empty
+	    lex.file.source = new Uint8Array()
+	}
 	lex.file.lines = [[]] // insert one empty line
 	var lineBytes = []
 	for(var i = 0; i < source.byteLength; i++){

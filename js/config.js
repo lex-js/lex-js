@@ -24,6 +24,9 @@ var config = {
     init_file:'/sample/info.txt',
     load_file_from_source: true,
 
+    // Хранить ли source файла в памяти (см. lex.file.source)
+    // [только для отладки]
+    save_file_source: false,
     // Префекс для сохранения файлов в localStorage
     ls_file_prefix:'file_',
     // Сохранять ли все открываемые текстовые файлы в localStorage
