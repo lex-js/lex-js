@@ -27,11 +27,12 @@ var GUIControl = {
 	})
     },
     updateBottomBlock: function(){
-	try{
-	    document.getElementById('line-number').textContent = lex.screen.y
-	    document.getElementById('line-count').textContent =	lex.file.lines.length
-	    document.getElementById('scroll-percentage').textContent =	Math.ceil(lex.screen.y/(lex.file.lines.length)*100)+'%'
-	}catch(e){}
+	var y = lex.screen.y
+	var l = lex.file.lines.length - 1
+	l = l?l:1 // prevent division by zero 
+	document.getElementById('line-number').textContent = y
+	document.getElementById('line-count').textContent  = l
+	document.getElementById('scroll-percentage').textContent = Math.ceil(y/(l)*100)+'%'
     },
 }
 
