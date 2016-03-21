@@ -32,6 +32,11 @@ var config = {
     // Сохранять ли все открываемые текстовые файлы в localStorage
     save_to_ls: true,
 
+    // экспорт в PNG
+    export_png_file_name: 'lexicon_screenshot.png',
+    // очищать выделение после сохранения файла?
+    export_clear_selection: true,
+    
     // Часть области экрана, на которую можно 
     // проскроллить после достижения конца файла
     max_overscroll: 0.3,

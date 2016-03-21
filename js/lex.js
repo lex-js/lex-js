@@ -158,7 +158,6 @@ var Coders = {
 	    var n = Coders.dec2Bin(c).split('')
 	    while(n.length < len){
 		n = ['0'].concat(n)
-		//n.push('0')
 	    }
 	    n = n.reverse()
 	    for(var j = n.length-1; j >= 0; j--){
@@ -180,7 +179,7 @@ var DrawControl = {
     },
     makeImageData: function(){
 	if(config.load_font_from_source && !FontControl.fontsLoaded()) return false;
-	var t, w, h, canvas, context, data, fg, bg, u, char
+	var t, w, h, canvas, context, data, fg, bg, u, char, pos
 	w = config.font_width
 	h = config.font_height
 	fg = config.fg_color
@@ -205,10 +204,11 @@ var DrawControl = {
 			}else{
 			    u = bg
 			}
-			t_imageData.data[((w * y) + x) * 4]     = u[0]
-			t_imageData.data[((w * y) + x) * 4 + 1] = u[1]
-			t_imageData.data[((w * y) + x) * 4 + 2] = u[2]
-			t_imageData.data[((w * y) + x) * 4 + 3] = u[3]
+			pos = ((w * y) + x) * 4
+			t_imageData.data[pos]     = u[0]
+			t_imageData.data[pos + 1] = u[1]
+			t_imageData.data[pos + 2] = u[2]
+			t_imageData.data[pos + 3] = u[3]
 		    }
 		}
 		lex.fonts[fontNumber].bitmaps[charCode] = t_imageData
@@ -226,20 +226,36 @@ var DrawControl = {
 	{
 	    for(var j = 0; j < 4; j++){
 		// обход r, g, b, a
-		if(imgData1.data[i+j] == config.fg_color[j] || imgData2.data[i+j] == config.fg_color[j]){
+		if(imgData1.data[i+j] == config.fg_color[j] ||
+		   imgData2.data[i+j] == config.fg_color[j]){
 		    imgData3.data[i+j] = config.fg_color[j]
 		}else{
 		    imgData3.data[i+j] = config.bg_color[j]
 		}
 	    }
 	}
-	context.putImageData(imgData3,x*config.font_width,y*config.font_height);
+	context.putImageData
+	(imgData3, x * config.font_width, y * config.font_height);
     },
     redrawCanvas: function(context){
-	context.fillStyle= 'rgba('+config.bg_color[0]+','+config.bg_color[1]+','+config.bg_color[2]+','+config.bg_color[3]+')'
-	context.fillRect(0, 0, lex.screen.w*config.font_width, lex.screen.h*config.font_height)
-	for(var y = 0; y < lex.screen.h && y < lex.file.lines.length; y++){
-	    var line = lex.file.lines[y + lex.screen.y]
+	var w  = lex.screen.w,
+	    h  = lex.screen.h,
+	    rw = w * config.font_width,
+	    rh = h * config.font_height,
+	    sx = lex.screen.x,
+	    sy = lex.screen.y,
+	    ls = lex.file.lines,
+	    l  = ls.length
+	
+	context.fillStyle = 'rgba('+
+	    config.bg_color[0]+','+
+	    config.bg_color[1]+','+
+	    config.bg_color[2]+','+
+	    config.bg_color[3]+')'
+	context.fillRect(0, 0, rw, rh)
+
+	for(var y = 0; y < h && y < l; y++){
+	    var line = ls[y + sy]
 	    if(typeof line == 'undefined') break;
 	    line = Parser.parseLine(line)
 	    for(var x = 0; x < line.length; x++){
@@ -247,9 +263,11 @@ var DrawControl = {
 		var underline = line[x].underline
 		var font      = line[x].font
 		if(lex.fonts[font].bitmaps[char]){
-		    context.putImageData(lex.fonts[font].bitmaps[char], (x - lex.screen.x)*config.font_width, y*config.font_height)
+		    context.putImageData(lex.fonts[font].bitmaps[char],
+					 (x - sx) * config.font_width, y * config.font_height)
 		    if(underline){
-			DrawControl.underlineChar(char, font, x - lex.screen.x, y, context)
+			DrawControl.underlineChar
+			(char, font, x - sx, y, context)
 		    }
 		}
 	    }
@@ -258,11 +276,15 @@ var DrawControl = {
     redrawSelection: function(context){
 	if(lex.selection.set){
 	    var t = config.selection_fill_color
-	    context.fillStyle = 'rgba('+t[0]+','+t[1]+','+t[2]+','+(t[3]/255)+')'
-	    var xs = (lex.selection.x1 - lex.screen.x)*config.font_width 
-	    var ys = (lex.selection.y1 - lex.screen.y)*config.font_height
-	    var ws = (lex.selection.x2 - lex.selection.x1)*config.font_width
-	    var hs = (lex.selection.y2 - lex.selection.y1)*config.font_height	
+	    context.fillStyle = 'rgba('+
+		t[0]+','+
+		t[1]+','+
+		t[2]+','+
+		(t[3]/255)+')'
+	    var xs = (lex.selection.x1 - lex.screen.x) * config.font_width 
+	    var ys = (lex.selection.y1 - lex.screen.y) * config.font_height
+	    var ws = (lex.selection.x2 - lex.selection.x1) * config.font_width
+	    var hs = (lex.selection.y2 - lex.selection.y1) * config.font_height	
 	    context.fillRect(xs, ys, ws, hs)
 	}
     },
@@ -271,13 +293,20 @@ var DrawControl = {
 	    var rs = lex.search.results
 	    for(var i = 0; i < rs.length; i++){
 		var r = rs[i]
-		if(r.line >= lex.screen.y && r.line <= lex.screen.y + lex.screen.h){
-		    var t = (i==lex.search.active_entry_number)?config.search_active_fill_color:config.search_fill_color
-		    context.fillStyle = 'rgba('+t[0]+','+t[1]+','+t[2]+','+(t[3]/255)+')'
-		    var ys = (r.line - lex.screen.y) * config.font_height
-		    var xs = (r.start - lex.screen.x) * config.font_width
-		    var hs = config.font_height
-		    var ws = r.length * config.font_width
+		if(r.line >= lex.screen.y &&
+		   r.line <= lex.screen.y + lex.screen.h){
+		    var t = (i == lex.search.active_entry_number)?
+			config.search_active_fill_color:
+			config.search_fill_color
+		    context.fillStyle =
+			'rgba('+t[0]+','+
+			t[1]+','+
+			t[2]+','+
+			(t[3]/255)+')'
+		    var ys = (r.line - lex.screen.y) * config.font_height,
+			xs = (r.start - lex.screen.x) * config.font_width,
+			hs = config.font_height,
+			ws = r.length * config.font_width
 		    context.fillRect(xs, ys, ws, hs)
 		}
 	    }
@@ -393,7 +422,8 @@ var DevControl = {
 LineNumbersControl = {
     removeLineNumbers: function(){
 	for(var i = 0; i < lex.file.lines.length; i++){
-	    lex.file.lines[i] = new Uint8Array(Array.from(lex.file.lines[i]).splice(lex.numbers.width+2))
+	    lex.file.lines[i] = new Uint8Array
+	    (Array.from(lex.file.lines[i]).splice(lex.numbers.width+2))
 	}
 	lex.numbers.set = false
 	lex.numbers.width = 0
@@ -405,7 +435,10 @@ LineNumbersControl = {
 	lex.numbers.width = (lex.file.lines.length+'').length+1
 	lex.numbers.set = true
 	for(var i = 0; i < lex.file.lines.length; i++){
-	    var t = new Uint8Array(Parser.getLineNumberBytes(i,lex.numbers.width).concat(Array.from(lex.file.lines[i])))
+	    var t = new Uint8Array
+	    (Parser.getLineNumberBytes
+	     (i,lex.numbers.width).concat
+	     (Array.from(lex.file.lines[i])))
 	    lex.file.lines[i] = t
 	}
 	SearchControl.flush()
@@ -435,13 +468,24 @@ SelectionControl = {
     },
     getSelectionText: function(){
 	if(!lex.selection.set) return '';
-	var s = lex.selection
+	var s = lex.selection,
+	    x1 = Math.min(s.x1, s.x2),
+	    x2 = Math.max(s.x1, s.x2),
+	    y1 = Math.min(s.y1, s.y2),
+	    y2 = Math.max(s.y1, s.y2),
+	    ls = lex.file.lines,
+	    l  = ls.length
 	var r = ''
-	for(var y = Math.min(s.y1, s.y2) - lex.screen.y; y < Math.max(s.y1, s.y2) - lex.screen.y && y  - lex.screen.y < lex.file.lines.length; y++){
-	    if(!!lex.file.lines[y]){
-		if(!!lex.file.lines[y+ lex.screen.y]){
-		    var line = Parser.parseLine(lex.file.lines[y+ lex.screen.y])
-		    for(var x = Math.min(s.x1, s.x2); x < Math.max(s.x1, s.x2) && x < line.length; x++){
+	for(var y = y1 - lex.screen.y;
+	    y < y2 - lex.screen.y &&
+	    l > y  - lex.screen.y; y++){
+	    if(!!ls[y]){
+		if(!!ls[y+ lex.screen.y]){
+		    var line = Parser.parseLine
+		    (ls[y+ lex.screen.y])
+		    for(var x = x1;
+			x < x2 &&
+			x < line.length; x++){
 			if(!!line[x]){
 			    r += byteToCharCP866[line[x].char]
 			}else{
@@ -454,6 +498,7 @@ SelectionControl = {
 	    }
 	    r += '\n'
 	}
+	// remove last '\n'
 	r = r.substr(0,r.length-1)
 	return r
     },
@@ -471,11 +516,12 @@ ScreenControl = {
     },
     expandScreen: function(){
 	// увеличить размер canvas при изменении размера окна
-	var viewport = ScreenControl.getViewportSize()
-	lex.screen.h = Math.ceil((viewport.h-64)/config.font_height);
-	lex.screen.w = Math.ceil((viewport.w)/config.font_width);
-	document.getElementById('canvas').height = Math.ceil(ScreenControl.getViewportSize().h-64)
-	document.getElementById('canvas').width = Math.ceil(ScreenControl.getViewportSize().w)
+	var viewport = ScreenControl.getViewportSize(),
+	    canvas = document.getElementById('canvas')
+	lex.screen.h = Math.ceil((viewport.h - 64) / config.font_height);
+	lex.screen.w = Math.ceil((viewport.w) / config.font_width);
+	canvas.height = Math.ceil(viewport.h - 64)
+	canvas.width = Math.ceil(viewport.w)
     },
     // Контроль за положением прокрутки
     setDefaults: function(){
@@ -548,7 +594,7 @@ var TouchControl = {
     },
     handleMove: function(event){
 	event.preventDefault();
-	var touches = event.changedTouches;
+	var touches = event.changedTouches
 	for (var i = 0; i < touches.length; i++) {
 	    var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier)
 	    var deltaX = touches[i].pageX - TouchControl.ongoingTouches[idx].pageX
@@ -561,11 +607,13 @@ var TouchControl = {
 		log("can't figure out which touch to continue");
 	    }
 	    if(Math.abs(TouchControl.scrollBuffer.y) > config.touch_y_min){
-		ScreenControl.scrollY(TouchControl.scrollBuffer.y * config.touch_y_speed/config.touch_y_min)
+		ScreenControl.scrollY
+		(TouchControl.scrollBuffer.y * config.touch_y_speed / config.touch_y_min)
 		TouchControl.scrollBuffer.y = 0
 	    }
 	    if(Math.abs(TouchControl.scrollBuffer.x) > config.touch_x_min){
-		ScreenControl.scrollX(TouchControl.scrollBuffer.x * config.touch_x_speed/config.touch_x_min)
+		ScreenControl.scrollX
+		(TouchControl.scrollBuffer.x * config.touch_x_speed / config.touch_x_min)
 		TouchControl.scrollBuffer.x = 0
 	    }
 	}
@@ -574,7 +622,8 @@ var TouchControl = {
 	event.preventDefault();
 	var touches = event.changedTouches;
 	for (var i = 0; i < touches.length; i++) {
-	    var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier);
+	    var idx = TouchControl.ongoingTouchIndexById
+	    (touches[i].identifier);
 	    if (idx >= 0) {
 		TouchControl.ongoingTouches.splice(idx, 1)
 	    } else {
@@ -647,6 +696,15 @@ var TestControl = {
 		return
 	    }
 	}
+    },
+    testPNGExporting: function(){
+	lex.selection.x1 = 0
+	lex.selection.x2 = 4
+	lex.selection.y1 = 0
+	lex.selection.y2 = 4
+	lex.selection.set = true
+	redraw()
+	ExportControl.exportToPNG()
     },
     logTestResult: function(result){
 	console.log(result)

@@ -2,9 +2,6 @@
 // todo
 function _(m){return m}
 
-
-
-
 var GUIControl = {
     showGotoLinePrompt: function(){
 	var userInput = prompt(_('Enter line number'), lex.screen.y)
@@ -180,29 +177,33 @@ ExportControl = {
     exportToPNG: function(){
 	// exports selection to PNG file
 	if(!lex.selection.set) return;
-	var s = lex.selection
-	var x1 = Math.min(s.x1, s.x2)
-	var x2 = Math.max(s.x1, s.x2)
-	var y1 = Math.min(s.y1, s.y2)
-	var y2 = Math.max(s.y1, s.y2)
+
+	var s = lex.selection,
+	    x1 = Math.min(s.x1, s.x2),
+	    x2 = Math.max(s.x1, s.x2),
+	    y1 = Math.min(s.y1, s.y2),
+	    y2 = Math.max(s.y1, s.y2),
+	    w  = x2-x1,
+	    h  = y2-y1,
+	    rw = w * config.font_width,
+	    rh = h * config.font_height	
 
 	// create new temprorary canvas
 	var canvas = document.createElement('canvas')
-	canvas.width  = (x2-x1)*config.font_width
-	canvas.height = (y2-y1)*config.font_height
+	canvas.width  = rw
+	canvas.height = rh
 
 	var context = canvas.getContext('2d')
-	var imageData = context.createImageData(
-	    (x2-x1)*config.font_width,
-	    (y2-y1)*config.font_height)
+	var imageData = context.createImageData(rw, rh)
 
-	// fill context with default color (otherwise it remains transparent)
+	// fill context with default color
+	// (otherwise it remains transparent)
 	context.fillStyle= 'rgba('+
 	    config.bg_color[0]+','+
 	    config.bg_color[1]+','+
 	    config.bg_color[2]+','+
 	    config.bg_color[3]+')'
-	context.fillRect(0, 0, x2*config.font_width, y2*config.font_height)
+	context.fillRect(0, 0, rw, rh)
 
 	// loop through chars
 	for(var y = y1; y < y2 && y < lex.file.lines.length; y++){
@@ -210,26 +211,28 @@ ExportControl = {
 	    if(typeof line == 'undefined') break;
 	    line = Parser.parseLine(line)
 	    for(var x = x1; x < line.length && x < x2; x++){
-		var char      = line[x].char
-		var underline = line[x].underline
-		var font      = line[x].font
+		var char      = line[x].char,
+		    underline = line[x].underline,
+		    font      = line[x].font
 		if(lex.fonts[font].bitmaps[char]){
-		    context.putImageData(lex.fonts[font].bitmaps[char],
-					 (x-x1)*config.font_width,
-					 (y-y1)*config.font_height)
+		    context.putImageData
+		    (lex.fonts[font].bitmaps[char],
+		     (x-x1) * config.font_width,
+		     (y-y1) * config.font_height)
 		    if(underline){
-			DrawControl.underlineChar(char, font, (x-x1), (y-y1), context)
+			DrawControl.underlineChar
+			(char, font, (x-x1), (y-y1), context)
 		    }
 		}
-	    }
-	    
+	    }	    
 	}
 
 	canvas.toBlob(function(blob) {
-	    saveAs(blob, "lexicon_screenshot.png");
+	    saveAs(blob, config.export_png_file_name);
 	});
-	
-	SelectionControl.clearSelection()
+
+	if(config.export_clear_selection)
+	    SelectionControl.clearSelection()
     }
 }
 
@@ -337,6 +340,16 @@ function initMousetrap(){
 	'o':function(){
 	    document.getElementById('file-select').click()
 	},
+	'd':function(){
+	    if(lex.selection.set){
+		ExportControl.exportToPNG()
+	    }
+	},
+	'в':function(){
+	    if(lex.selection.set){
+		ExportControl.exportToPNG()
+	    }
+	},
     }
     for(var k in t){
 	if(t.hasOwnProperty(k)){
@@ -344,7 +357,6 @@ function initMousetrap(){
 	    Mousetrap(document.getElementById('file-select')).bind(k,t[k])
 	}
     }
-    // escape from search field with <esc>
     Mousetrap(document.getElementById('search-field')).bind('esc', SearchControl.deactivateSearchField)
     Mousetrap(document.getElementById('search-field')).bind('enter', SearchControl.searchNext)
     Mousetrap(document.getElementById('search-field')).bind('shift+enter', SearchControl.searchPrevious)
