@@ -193,7 +193,7 @@ var DrawControl = {
 	for(var fontNumber = 0; fontNumber <= config.font_max; fontNumber++){
 	    var buff = lex.fonts[fontNumber].source
 	    for(var charCode = 0; charCode < 256; charCode ++){
-		var shift = w*h*charCode
+		var shift = w * h * charCode
 		var char  = String.fromCharCode(charCode)
 		var t_imageData = context.createImageData(imageData)
 		for(var y = 0; y < h; y++){
@@ -642,7 +642,11 @@ var TouchControl = {
 	return -1;
     },
     copyTouch: function(touch) {
-	return { identifier: touch.identifier, pageX: touch.pageX, pageY: touch.pageY };
+	return {
+	    identifier: touch.identifier,
+	    pageX: touch.pageX,
+	    pageY: touch.pageY
+	};
     },
 }
 
@@ -650,7 +654,6 @@ var TouchControl = {
 
 var TestControl = {
     testArrayDecoders: function(){
-	
 	function checkEquality(a,b){
 	    if(a.length != b.length){
 		TestControl.logTestResult(a)

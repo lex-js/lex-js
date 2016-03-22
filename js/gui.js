@@ -369,10 +369,12 @@ function initMousetrap(){
 
 function canvasMouseMove(event){
     if(lex.selection.start){
-	var selStartRealX = (event.pageX - document.getElementById('canvas').getBoundingClientRect().left)
-	var selStartRealY = (event.pageY - document.getElementById('canvas').getBoundingClientRect().top)
-	lex.selection.x2 = lex.screen.x + Math.round(selStartRealX/config.font_width)
-	lex.selection.y2 = lex.screen.y + Math.round(selStartRealY/config.font_height)
+	var canvas = document.getElementById('canvas'),
+	    rect   = canvas.getBoundingClientRect()
+	    selStartRealX = (event.pageX - rect.left),
+	    selStartRealY = (event.pageY - rect.top)
+	lex.selection.x2 = lex.screen.x + Math.round(selStartRealX / config.font_width)
+	lex.selection.y2 = lex.screen.y + Math.round(selStartRealY / config.font_height)
 	if(lex.selection.x2 != lex.selection.x1 &&
 	   lex.selection.y1 != lex.selection.y2){
 	    lex.selection.set = true
@@ -437,7 +439,9 @@ function eventsInit(){
 	    reader.onload = (function(theFile) {
 		return function(event){
 		    if(config.save_to_ls)
-			FileControl.saveFile(theFile.name, Coders.Uint8ArrayToString(new Uint8Array(event.target.result)))
+			FileControl.saveFile(theFile.name,
+					     Coders.Uint8ArrayToString
+					     (new Uint8Array(event.target.result)))
 		    if(theFile.name == lastname){
 			FileControl.loadFileBySource(new Uint8Array(event.target.result))
 			document.activeElement.blur()
@@ -464,9 +468,11 @@ function eventsInit(){
 }
 
 function canvasInit(){
-    document.getElementById('canvas').addEventListener('mousedown',function(event){
-	var selStartRealX = (event.pageX - document.getElementById('canvas').getBoundingClientRect().left)
-	var selStartRealY = (event.pageY - document.getElementById('canvas').getBoundingClientRect().top)
+    var canvas = document.getElementById('canvas')
+    canvas.addEventListener('mousedown',function(event){
+	var rect = canvas.getBoundingClientRect(),
+	    selStartRealX = (event.pageX - rect.left),
+	    selStartRealY = (event.pageY - rect.top)
 	lex.selection.x1 = lex.screen.x + Math.round(selStartRealX/config.font_width)
 	lex.selection.y1 = lex.screen.y + Math.round(selStartRealY/config.font_height)
 	lex.selection.start = true
@@ -474,11 +480,11 @@ function canvasInit(){
 	redraw()
 	event.preventDefault();
     })
-    document.getElementById('canvas').addEventListener('mousemove',canvasMouseMove)
-    document.getElementById('canvas').addEventListener('mouseup',function(event){
+    canvas.addEventListener('mousemove',canvasMouseMove)
+    canvas.addEventListener('mouseup',function(event){
 	canvasMouseMove(event);
 	try{
-	    // catching "Discontiguous selection is not supported" error in chromium
+	    // catching "Discontinuous selection is not supported" error in chromium
 	    var mime = "text/plain"
 	    var range = document.createRange();
 	    window.getSelection().addRange(range);
@@ -513,7 +519,9 @@ var SearchControl = {
 	var el = document.getElementById('search-field')
 	var el2 = document.getElementById('block-search')
 	el2.style['z-index'] = 11;
-	setTimeout(function(){document.getElementById('search-field').focus()},10)
+	setTimeout(function(){
+	    el.focus()
+	},10)
 	redraw()
     },
     deactivateSearchField:function(){
@@ -521,7 +529,7 @@ var SearchControl = {
 	var el = document.getElementById('search-field')
 	var el2 = document.getElementById('block-search')
 	el2.style['z-index'] = 0;
-	document.getElementById('search-field').blur()
+	el.blur()
 	redraw()
     },
     clearSearchField:function(){
