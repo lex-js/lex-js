@@ -328,20 +328,16 @@ var IndexControl = {
     // Индекс. Используется для поиска.
     rebuildIndex: function(){
 	// clear old value
-	lex.index.lines = []
+	lex.index.text = ''
 	lex.index.maxlen = 0
 	for(var i = 0; i < lex.file.lines.length; i++){
-	    var parsed = Parser.parseLine(lex.file.lines[i])
-	    if(parsed.length > lex.index.maxlen){
-		lex.index.maxlen = parsed.length
-	    }
-	    lex.index.lines.push(function(arr){
-		var r = []
-		r = r.concat(arr)
-		return r.join('')
-	    }(parsed.map(function(o){
-		return Coders.Uint8ArrayToString(new Uint8Array([o.char]))
-	    })))
+	    var parsed = Parser.parseLine(lex.file.lines[i]),
+		line = Coders.Uint8ArrayToString(parsed.map(
+		function(c){
+		    return c.char
+		}
+	    ))
+	    lex.index.text += line+'\n'
 	}
     },
 }
@@ -719,38 +715,3 @@ var TestControl = {
     },
 }
 
-function postInit(){
-    ScreenControl.expandScreen()
-    GUIControl.updateFileList()
-    DrawControl.makeImageData()
-}
-
-function init(){
-    // on document load
-    initMousetrap()
-    ScreenControl.expandScreen()
-    eventsInit()
-    canvasInit()
-    var is_local = document.location.protocol == 'file:'
-    if(config.load_font_from_source && is_local){
-	for(var i = 0; i <= config.font_max; i++){
-	    FontControl.loadFont(i, function(){
-		if(DrawControl.makeImageData()){
-		    redraw()
-		}
-	    })
-	}
-    }
-
-    if(config.perform_test){
-	TestControl.runAll()
-    }
-    if(config.load_file_from_source && !is_local){
-	FileControl.loadFileByURL(config.init_file, postInit)
-    }else{
-	FileControl.loadFileBySource(lex.file.source, redraw)
-    }
-    postInit()
-}
-
-document.addEventListener("DOMContentLoaded", init);

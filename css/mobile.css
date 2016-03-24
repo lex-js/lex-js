@@ -1,0 +1,12 @@
+#mobile-menu-open{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    width: 43px;
+    height: 43px;
+    font-size: 42px;
+    z-index: 10;
+}
+#block-top > div {
+    display: none;
+}

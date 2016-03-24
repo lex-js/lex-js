@@ -162,10 +162,10 @@ var FileControl = {
 	return lex.file
     },
     postLoad: function(){
+	IndexControl.rebuildIndex()
 	if(lex.numbers.set){
 	    LineNumbersControl.addLineNumbers()
 	}
-	IndexControl.rebuildIndex()
 	SearchControl.flush()
 	ScreenControl.setDefaults()
 	SelectionControl.clearSelection()
@@ -236,273 +236,313 @@ ExportControl = {
     }
 }
 
-function initMousetrap(){
-    // Mousetrap bindings
-    var t = {
-	'up':function(){
-	    ScreenControl.scrollY(1)
-	},
-	'down':function(){
-	    ScreenControl.scrollY(-1)
-	},
-	'left':function(){
-	    ScreenControl.scrollX(1)
-	},
-	'right':function(){
-	    ScreenControl.scrollX(-1)
-	},
-	'ctrl+up':function(){
-	    ScreenControl.scrollY(1*config.ctrl_scroll_k)
-	},
-	'ctrl+down':function(){
-	    ScreenControl.scrollY(-1*config.ctrl_scroll_k)
-	},
-	'ctrl+left':function(){
-	    ScreenControl.scrollX(1*config.ctrl_scroll_k)
-	},
-	'ctrl+right':function(){
-	    ScreenControl.scrollX(-1*config.ctrl_scroll_k)
-	},
-	'k':function(){
-	    ScreenControl.scrollY(1)
-	},
-	'л':function(){
-	    ScreenControl.scrollY(1)
-	},
-	'j':function(){
-	    ScreenControl.scrollY(-1)
-	},
-	'о':function(){
-	    ScreenControl.scrollY(-1)
-	},
-	'l':function(){
-	    ScreenControl.scrollX(-1)
-	},
-	'д':function(){
-	    ScreenControl.scrollX(-1)
-	},
-	'h':function(){
-	    ScreenControl.scrollX(1)
-	},
-	'р':function(){
-	    ScreenControl.scrollX(1)
-	},
-	'pagedown':function(){
-	    ScreenControl.scrollY(-lex.screen.h+1)
-	},
-	'f':function(){
-	    ScreenControl.scrollY(-lex.screen.h+1)
-	},
-	'а':function(){
-	    ScreenControl.scrollY(-lex.screen.h+1)
-	},
-	'pageup':function(){
-	    ScreenControl.scrollY(lex.screen.h-1)
-	},
-	'b':function(){
-	    ScreenControl.scrollY(lex.screen.h-1)
-	},
-	'и':function(){
-	    ScreenControl.scrollY(lex.screen.h-1)
-	},
-	'end':function(){
-	    ScreenControl.scrollEndY()
-	},
-	'home':function(){
-	    ScreenControl.scrollHomeY()
-	},
-	'alt+g':function(){
-	    GUIControl.showGotoLinePrompt()
-	},
-	'v':function(){
-	    LineNumbersControl.toggleLineNumbers()
-	},
-	'м':function(){
-	    LineNumbersControl.toggleLineNumbers()
-	},
-	'esc':function(){
-	    lex.screen.x = 0
-	    SelectionControl.clearSelection()
-	    redraw()
-	},
-	'alt+f3':function(){
-	    SearchControl.activateSearchField();
-	},
-	'ы':function(){
-	    SearchControl.activateSearchField();
-	},
-	's':function(){
-	    SearchControl.activateSearchField();
-	},
-	'щ':function(){
-	    document.getElementById('file-select').click()
-	},
-	'o':function(){
-	    document.getElementById('file-select').click()
-	},
-	'd':function(){
-	    if(lex.selection.set){
-		ExportControl.exportToPNG()
-	    }
-	},
-	'в':function(){
-	    if(lex.selection.set){
-		ExportControl.exportToPNG()
-	    }
-	},
-    }
-    for(var k in t){
-	if(t.hasOwnProperty(k)){
-	    Mousetrap.bind(k,t[k])
-	    Mousetrap(document.getElementById('file-select')).bind(k,t[k])
-	}
-    }
-    Mousetrap(document.getElementById('search-field')).bind('esc', SearchControl.deactivateSearchField)
-    Mousetrap(document.getElementById('search-field')).bind('enter', SearchControl.searchNext)
-    Mousetrap(document.getElementById('search-field')).bind('shift+enter', SearchControl.searchPrevious)
-    Mousetrap(document.getElementById('search-field')).bind('backspace', function(){
-	if(document.getElementById('search-field').value==''){
-	    SearchControl.deactivateSearchField()
-	}
-    })
-}
 
-function canvasMouseMove(event){
-    if(lex.selection.start){
-	var canvas = document.getElementById('canvas'),
-	    rect   = canvas.getBoundingClientRect()
-	    selStartRealX = (event.pageX - rect.left),
-	    selStartRealY = (event.pageY - rect.top)
-	lex.selection.x2 = lex.screen.x + Math.round(selStartRealX / config.font_width)
-	lex.selection.y2 = lex.screen.y + Math.round(selStartRealY / config.font_height)
-	if(lex.selection.x2 != lex.selection.x1 &&
-	   lex.selection.y1 != lex.selection.y2){
-	    lex.selection.set = true
-	}else{
-	    lex.selection.set = false
-	}
-	redraw()
-    }
-}
-
-function eventsInit(){
-    var wheel = function(event){
-	var delta = 0;
-	if(!event)
-	    event = window.event;
-	if(event.wheelDelta){
-	    delta = event.wheelDelta/120;
-	}else if (event.detail){ 
-	    delta = -event.detail/3;
-	}
-	if(delta){
-	    ScreenControl.scrollY(delta)
-	}
-	if (event.preventDefault)
-	    event.preventDefault();
-	event.returnValue = false;
-    }
-    window.addEventListener('DOMMouseScroll', wheel, false);
-    window.addEventListener('touchstart', TouchControl.handleStart, false);
-    window.addEventListener('touchmove', TouchControl.handleMove, false);
-    window.addEventListener('touchend', TouchControl.handleEnd, false);
-    window.onmousewheel = document.onmousewheel = wheel;
-    window.addEventListener('resize',function(){ScreenControl.expandScreen(); redraw()})
-    document.getElementById('search-field').addEventListener('keyup', SearchControl.performSearch)
-    document.getElementById('button-search').addEventListener('click', function(){
-	if(lex.search.active){
-	    SearchControl.deactivateSearchField()
-	}else{
-	    SearchControl.activateSearchField()
-	}
-    })
-    document.getElementById('search-close').addEventListener('click', function(){
-	SearchControl.clearSearchField()
-	SearchControl.deactivateSearchField()
-    })
-    document.getElementById('file-list').addEventListener('change', function(evt){
-	evt.target.blur()
-    })
-    document.getElementById('file-select').addEventListener('change', function(evt){
-	// some js routine...
-	var files = evt.target.files
-	console.log(files)
-	var lastname = files[files.length - 1].name
-	if(!config.save_to_ls){
-	    files = [files[files.length-1]]
-	}
-	for (var i = 0, f; f = files[i]; i++) {
-	    if (!f.type.match('text.*')) {
-		continue
-	    }
-	    var reader = new FileReader()
-	    reader.onload = (function(theFile) {
-		return function(event){
-		    if(config.save_to_ls)
-			FileControl.saveFile(theFile.name,
-					     Coders.Uint8ArrayToString
-					     (new Uint8Array(event.target.result)))
-		    if(theFile.name == lastname){
-			FileControl.loadFileBySource(new Uint8Array(event.target.result))
-			document.activeElement.blur()
+var InitControl = {
+    init: function(){
+	// on document load
+	InitControl.initMousetrap()
+	ScreenControl.expandScreen()
+	InitControl.eventsInit()
+	InitControl.canvasInit()
+	var is_local = document.location.protocol == 'file:'
+	if(config.load_font_from_source && is_local){
+	    for(var i = 0; i <= config.font_max; i++){
+		FontControl.loadFont(i, function(){
+		    if(DrawControl.makeImageData()){
+			redraw()
 		    }
-		}
-	    })(f)
-	    reader.readAsArrayBuffer(f)
+		})
+	    }
 	}
-    })
-    document.getElementById('button-load').addEventListener("click", function(){
-	var filename = document.getElementById('file-list').value
-	FileControl.loadFileByFileName(filename)
-    })
-    document.getElementById('button-line-numbers').addEventListener("click", function(){
-	LineNumbersControl.toggleLineNumbers()
-    })
-    document.getElementById('button-goto-line').addEventListener("click", function(){
-	GUIControl.showGotoLinePrompt()
-    })
-    document.getElementById('button-delete').addEventListener("click", function(){
-	var filename = document.getElementById('file-list').value
-	FileControl.deleteFile(filename)
-    })
+	
+	if(config.perform_test){
+	    TestControl.runAll()
+	}
+	if(isMobile()){
+	    alert('mobile')
+	    document.getElementById('mobile-stylesheet').disabled = false
+	}
+	if(config.load_file_from_source && !is_local){
+	    FileControl.loadFileByURL(config.init_file, InitControl.postInit)
+	}else{
+	    FileControl.loadFileBySource(lex.file.source, redraw)
+	}
+	InitControl.postInit()
+    },
+    postInit: function(){
+	ScreenControl.expandScreen()
+	GUIControl.updateFileList()
+	DrawControl.makeImageData()
+    },
+    eventsInit: function(){
+	var wheel = function(event){
+	    var delta = 0;
+	    if(!event)
+		event = window.event;
+	    if(event.wheelDelta){
+		delta = event.wheelDelta/120;
+	    }else if (event.detail){ 
+		delta = -event.detail/3;
+	    }
+	    if(delta){
+		ScreenControl.scrollY(delta)
+	    }
+	    if (event.preventDefault)
+		event.preventDefault();
+	    event.returnValue = false;
+	}
+	window.addEventListener('DOMMouseScroll', wheel, false);
+	window.addEventListener('touchstart', TouchControl.handleStart, false);
+	window.addEventListener('touchmove', TouchControl.handleMove, false);
+	window.addEventListener('touchend', TouchControl.handleEnd, false);
+	window.onmousewheel = document.onmousewheel = wheel;
+	window.addEventListener('resize',function(){ScreenControl.expandScreen(); redraw()})
+	document.getElementById('search-field').addEventListener('keyup', SearchControl.performSearch)
+	document.getElementById('button-search').addEventListener('click', function(){
+	    if(lex.search.active){
+		SearchControl.deactivateSearchField()
+	    }else{
+		SearchControl.activateSearchField()
+	    }
+	})
+	document.getElementById('search-close').addEventListener('click', function(){
+	    SearchControl.clearSearchField()
+	    SearchControl.deactivateSearchField()
+	})
+	document.getElementById('file-list').addEventListener('change', function(evt){
+	    evt.target.blur()
+	})
+	document.getElementById('file-select').addEventListener('change', function(evt){
+	    // some js routine...
+	    var files = evt.target.files
+	    console.log(files)
+	    var lastname = files[files.length - 1].name
+	    if(!config.save_to_ls){
+		files = [files[files.length-1]]
+	    }
+	    for (var i = 0, f; f = files[i]; i++) {
+		if (!f.type.match('text.*')) {
+		    continue
+		}
+		var reader = new FileReader()
+		reader.onload = (function(theFile) {
+		    return function(event){
+			if(config.save_to_ls)
+			    FileControl.saveFile(theFile.name,
+						 Coders.Uint8ArrayToString
+						 (new Uint8Array(event.target.result)))
+			if(theFile.name == lastname){
+			    FileControl.loadFileBySource(new Uint8Array(event.target.result))
+			    document.activeElement.blur()
+			}
+		    }
+		})(f)
+		reader.readAsArrayBuffer(f)
+	    }
+	})
+	document.getElementById('button-load').addEventListener("click", function(){
+	    var filename = document.getElementById('file-list').value
+	    FileControl.loadFileByFileName(filename)
+	})
+	document.getElementById('button-line-numbers').addEventListener("click", function(){
+	    LineNumbersControl.toggleLineNumbers()
+	})
+	document.getElementById('button-goto-line').addEventListener("click", function(){
+	    GUIControl.showGotoLinePrompt()
+	})
+	document.getElementById('button-delete').addEventListener("click", function(){
+	    var filename = document.getElementById('file-list').value
+	    FileControl.deleteFile(filename)
+	})
+    },
+    initMousetrap: function(){
+	// Mousetrap bindings
+	var t = {
+	    'up':function(){
+		ScreenControl.scrollY(1)
+	    },
+	    'down':function(){
+		ScreenControl.scrollY(-1)
+	    },
+	    'left':function(){
+		ScreenControl.scrollX(1)
+	    },
+	    'right':function(){
+		ScreenControl.scrollX(-1)
+	    },
+	    'ctrl+up':function(){
+		ScreenControl.scrollY(1*config.ctrl_scroll_k)
+	    },
+	    'ctrl+down':function(){
+		ScreenControl.scrollY(-1*config.ctrl_scroll_k)
+	    },
+	    'ctrl+left':function(){
+		ScreenControl.scrollX(1*config.ctrl_scroll_k)
+	    },
+	    'ctrl+right':function(){
+		ScreenControl.scrollX(-1*config.ctrl_scroll_k)
+	    },
+	    'k':function(){
+		ScreenControl.scrollY(1)
+	    },
+	    'л':function(){
+		ScreenControl.scrollY(1)
+	    },
+	    'j':function(){
+		ScreenControl.scrollY(-1)
+	    },
+	    'о':function(){
+		ScreenControl.scrollY(-1)
+	    },
+	    'l':function(){
+		ScreenControl.scrollX(-1)
+	    },
+	    'д':function(){
+		ScreenControl.scrollX(-1)
+	    },
+	    'h':function(){
+		ScreenControl.scrollX(1)
+	    },
+	    'р':function(){
+		ScreenControl.scrollX(1)
+	    },
+	    'pagedown':function(){
+		ScreenControl.scrollY(-lex.screen.h+1)
+	    },
+	    'f':function(){
+		ScreenControl.scrollY(-lex.screen.h+1)
+	    },
+	    'а':function(){
+		ScreenControl.scrollY(-lex.screen.h+1)
+	    },
+	    'pageup':function(){
+		ScreenControl.scrollY(lex.screen.h-1)
+	    },
+	    'b':function(){
+		ScreenControl.scrollY(lex.screen.h-1)
+	    },
+	    'и':function(){
+		ScreenControl.scrollY(lex.screen.h-1)
+	    },
+	    'end':function(){
+		ScreenControl.scrollEndY()
+	    },
+	    'home':function(){
+		ScreenControl.scrollHomeY()
+	    },
+	    'alt+g':function(){
+		GUIControl.showGotoLinePrompt()
+	    },
+	    'v':function(){
+		LineNumbersControl.toggleLineNumbers()
+	    },
+	    'м':function(){
+		LineNumbersControl.toggleLineNumbers()
+	    },
+	    'esc':function(){
+		lex.screen.x = 0
+		SelectionControl.clearSelection()
+		redraw()
+	    },
+	    'alt+f3':function(){
+		SearchControl.activateSearchField();
+	    },
+	    'ы':function(){
+		SearchControl.activateSearchField();
+	    },
+	    's':function(){
+		SearchControl.activateSearchField();
+	    },
+	    'щ':function(){
+		document.getElementById('file-select').click()
+	    },
+	    'o':function(){
+		document.getElementById('file-select').click()
+	    },
+	    'd':function(){
+		if(lex.selection.set){
+		    ExportControl.exportToPNG()
+		}
+	    },
+	    'в':function(){
+		if(lex.selection.set){
+		    ExportControl.exportToPNG()
+		}
+	    },
+	}
+	for(var k in t){
+	    if(t.hasOwnProperty(k)){
+		Mousetrap.bind(k,t[k])
+		Mousetrap(document.getElementById('file-select')).bind(k,t[k])
+	    }
+	}
+	Mousetrap(document.getElementById('search-field')).bind('esc', SearchControl.deactivateSearchField)
+	Mousetrap(document.getElementById('search-field')).bind('enter', SearchControl.searchNext)
+	Mousetrap(document.getElementById('search-field')).bind('shift+enter', SearchControl.searchPrevious)
+	Mousetrap(document.getElementById('search-field')).bind('backspace', function(){
+	    if(document.getElementById('search-field').value==''){
+		SearchControl.deactivateSearchField()
+	    }
+	})
+    },
+    canvasInit: function(){
+	var canvas = document.getElementById('canvas')
+	canvas.addEventListener('mousedown',function(event){
+	    var rect = canvas.getBoundingClientRect(),
+		selStartRealX = (event.pageX - rect.left),
+		selStartRealY = (event.pageY - rect.top)
+	    lex.selection.x1 = lex.screen.x + Math.round(selStartRealX/config.font_width)
+	    lex.selection.y1 = lex.screen.y + Math.round(selStartRealY/config.font_height)
+	    lex.selection.start = true
+	    lex.selection.set = false
+	    redraw()
+	    event.preventDefault();
+	})
+	
+	function canvasMouseMove(event){
+	    if(lex.selection.start){
+		var canvas = document.getElementById('canvas'),
+		    rect   = canvas.getBoundingClientRect()
+		selStartRealX = (event.pageX - rect.left),
+		selStartRealY = (event.pageY - rect.top)
+		lex.selection.x2 = lex.screen.x + Math.round(selStartRealX / config.font_width)
+		lex.selection.y2 = lex.screen.y + Math.round(selStartRealY / config.font_height)
+		if(lex.selection.x2 != lex.selection.x1 &&
+		   lex.selection.y1 != lex.selection.y2){
+		    lex.selection.set = true
+		}else{
+		    lex.selection.set = false
+		}
+		redraw()
+	    }
+	}
+	
+	canvas.addEventListener('mousemove',canvasMouseMove)
+	canvas.addEventListener('mouseup',function(event){
+	    canvasMouseMove(event);
+	    try{
+		// catching "Discontinuous selection is not supported" error in chromium
+		var mime = "text/plain"
+		var range = document.createRange();
+		window.getSelection().addRange(range);
+		lex.selection.start = false
+	    }catch(e){
+		console.log(e)
+	    }
+	})
+	document.addEventListener('copy', function(e){
+	    var selectionText = SelectionControl.getSelectionText()
+	    if(selectionText != ''){
+		e.clipboardData.setData('text/plain',selectionText);
+		e.preventDefault();
+		window.getSelection().removeAllRanges();
+		SelectionControl.clearSelection()
+	    }
+	})
+    },
+
 }
 
-function canvasInit(){
-    var canvas = document.getElementById('canvas')
-    canvas.addEventListener('mousedown',function(event){
-	var rect = canvas.getBoundingClientRect(),
-	    selStartRealX = (event.pageX - rect.left),
-	    selStartRealY = (event.pageY - rect.top)
-	lex.selection.x1 = lex.screen.x + Math.round(selStartRealX/config.font_width)
-	lex.selection.y1 = lex.screen.y + Math.round(selStartRealY/config.font_height)
-	lex.selection.start = true
-	lex.selection.set = false
-	redraw()
-	event.preventDefault();
-    })
-    canvas.addEventListener('mousemove',canvasMouseMove)
-    canvas.addEventListener('mouseup',function(event){
-	canvasMouseMove(event);
-	try{
-	    // catching "Discontinuous selection is not supported" error in chromium
-	    var mime = "text/plain"
-	    var range = document.createRange();
-	    window.getSelection().addRange(range);
-	    lex.selection.start = false
-	}catch(e){
-	    console.log(e)
-	}
-    })
-    document.addEventListener('copy', function(e){
-	var selectionText = SelectionControl.getSelectionText()
-	if(selectionText != ''){
-	    e.clipboardData.setData('text/plain',selectionText);
-	    e.preventDefault();
-	    window.getSelection().removeAllRanges();
-	    SelectionControl.clearSelection()
-	}
-    })
-}
 
 var TipsControl = {
     clearNow: function(){
@@ -514,6 +554,37 @@ var TipsControl = {
 }
 
 var SearchControl = {
+    searchFunctions: [
+	function(){
+	    // function that takes nothing and returns
+	    // list of results, each of them containing list of
+	    // blocks (real positions of text that need to be
+	    // highlighted
+	    return {
+		entries:  [
+		    {
+			blocks:[
+			    {
+				begin:0,
+				end: 0,
+			    },
+			]
+		    },
+		]
+	    }
+	},
+	function(){},
+	function(){},
+	function(){},
+	function(searchStr, text){
+	    var r = [],
+		i = 0
+	    while(i < text.length){
+		var c = text[i]
+	    }
+	},
+    ],
+    // DOM functions
     activateSearchField:function(){
 	lex.search.active = true
 	var el = document.getElementById('search-field')
@@ -537,69 +608,11 @@ var SearchControl = {
 	el.value = ''
 	redraw()
     },
-    findAll: function(searchStr, str, caseSensitive) {
-	var startIndex = 0, searchStrLen = searchStr.length;
-	var index, indices = [];
-	if (!caseSensitive) {
-	    str = str.toLowerCase();
-	    searchStr = searchStr.toLowerCase();
-	}
-	while ((index = str.indexOf(searchStr, startIndex)) > -1) {
-	    indices.push(index);
-	    startIndex = index + searchStrLen;
-	}
-	return indices;
-    },
-    performSearchByString: function(){
-	lex.search.results = this.performSearchByFunction(
-	    function(line){
-		// array to return
-		var r = []
-		// search string
-		var val = document.getElementById('search-field').value
-		if(!val)
-		    return []
-		var indexes = SearchControl.findAll(val, line, true)
-		for(var i = 0; i < indexes.length; i++){
-		    r.push({
-			status: true,
-			start : indexes[i],
-			length: val.length,
-			end   : indexes[i] + val.length,
-		    })
-		}
-		return r
-	    }
-	)
-    },
     updateSearchBlock: function(){
 	var number = (lex.search.results.length==0)?0:(lex.search.active_entry_number+1)
 	var total  = number?lex.search.results.length:0
 	document.getElementById('search-number').textContent = number
 	document.getElementById('search-total').textContent = total
-    },
-    performSearch: function(){
-	if(lex.search.regexp == false){
-	    SearchControl.performSearchByString()
-	}else{
-	    this.performSearchByRegExp()
-	}
-	SearchControl.updateSearchBlock()
-	redraw()
-    },
-    performSearchByRegExp: function(){
-    },
-    performSearchByFunction: function(f){
-	// Возможно создание других режимов поиска
-	var ls = lex.index.lines
-	var ln = ls.length
-	var r = []
-	for(var i = 0; i < ln; i++){
-	    r = r.concat(f(ls[i]).map(function(o){
-		o.line = i; return o;
-	    }))
-	}
-	return r
     },
     jumpToIndex: function(index){
 	if(index < lex.search.results.length - 1){
@@ -617,7 +630,7 @@ var SearchControl = {
 	    ScreenControl.setScrollY(lex.search.results[index].line)
 	    redraw()
 	}
-	    
+	
     },
     searchNext:function(){
 	if(lex.search.active_entry_number < lex.search.results.length - 1){
@@ -644,6 +657,17 @@ var SearchControl = {
 	SearchControl.updateSearchBlock()
 	SearchControl.clearSearchField()
 	SearchControl.deactivateSearchField()
-    }
+    },
+    // main functions
+    performSearch: function(){
+	SearchControl.updateSearchBlock()
+	redraw()
+    },
+    performSearchByFunction: function(searchStr){
+	var text = lex.index.text,
+	    func = SearchControl.searchFunctions[config.search_function]
+	return func(searchStr, text)
+    },
 }
 
+document.addEventListener("DOMContentLoaded", InitControl.init);

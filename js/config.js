@@ -64,6 +64,15 @@ var config = {
 
     // just don't modify it
     max_char_code: 8,
+
+    // search function
+    // 0 = example function, returns nothing
+    // 1 = simple case-sensitive search
+    // 2 = simple not case-sensitive search
+    // 3 = smart case-sensitive search search
+    // 4 = smart not case-sensitive search
+    // default = 4
+    search_function: 4,
     
     // Настройки парсера. Управляющие коды, по которым происходит переключение шрифтов и режимов
     parser:{
