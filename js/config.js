@@ -17,6 +17,8 @@ var config = {
     // false: используется fonts.js
     load_font_from_source: false,
 
+    mobile_style_url: 'css/mobile.css',
+
     // Запускать тесты
     perform_test: true,
 

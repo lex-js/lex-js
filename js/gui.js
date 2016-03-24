@@ -259,8 +259,12 @@ var InitControl = {
 	    TestControl.runAll()
 	}
 	if(isMobile()){
-	    alert('mobile')
-	    document.getElementById('mobile-stylesheet').disabled = false
+	    log('Running in mobile device!')
+	    var s = document.createElement('link')
+	    s.rel = 'stylesheet'
+	    s.type = 'text/css'
+	    s.href = config.mobile_style_url
+	    document.head.appendChild(s)
 	}
 	if(config.load_file_from_source && !is_local){
 	    FileControl.loadFileByURL(config.init_file, InitControl.postInit)
