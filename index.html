@@ -2,7 +2,7 @@
 <html>
     <head>
 	<meta charset="utf-8">
-	<meta name="viewport" content="width=800, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+	<meta name="viewport" content="width=width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
 	<title>Lex.js</title>
 	<!-- libs -->
 	<script type="text/javascript" src="js/fileSaver.min.js"></script>
@@ -10,6 +10,7 @@
 	<script type="text/javascript" src="js/mousetrap.min.js"></script>
 	<script type="text/javascript" src="js/mousetrap-global-bind.min.js"></script>
 	<script type="text/javascript" src="js/func.js"></script>
+	<script type="text/javascript" src="js/fastclick.min.js"></script>
 	<script type="text/javascript" src="js/mobile.js"></script>
 	<script type="text/javascript" src="js/config.js"></script>
 	<script type="text/javascript" src="js/lex.js"></script>
@@ -56,9 +57,9 @@
 	</div>
 	<div id="mobile-menu-open">&#xf0c9;</div>
 	<div id="mobile-menu">
-	    <div class="mobile-menu-item">Select file</div>
-	    <div class="mobile-menu-item">Go to line</div>
-	    <div class="mobile-menu-group">		
+	    <div class="mobile-menu-item"  id="mobile-open-file"><span class="icon large">&#xf07c;</span>Open file</div>
+	    <div class="mobile-menu-item"  id="mobile-goto-line"><span class="icon large">&#xf061;</span>Go to line</div>
+	    <div class="mobile-menu-group" id="mobile-file-list">
 	    </div>
 	</div>
     </body>

@@ -18,16 +18,18 @@ var config = {
     load_font_from_source: false,
 
     mobile_style_url: 'css/mobile.css',
-
+    // use it only for testing
+    mobile_click_event: 'click',
+    
     // Запускать тесты
     perform_test: true,
 
     // Файл, открываемый при старте, если load_file_from_source == true
     init_file:'/sample/info.txt',
-    load_file_from_source: true,
+    load_file_from_source: false,
 
     // Хранить ли source файла в памяти (см. lex.file.source)
-    // [только для отладки]
+    // [true только для отладки]
     save_file_source: false,
     // Префекс для сохранения файлов в localStorage
     ls_file_prefix:'file_',

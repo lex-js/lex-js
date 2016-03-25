@@ -646,7 +646,33 @@ var TouchControl = {
     },
 }
 
-
+var MobileUIControl = {
+    openMenu: function(){
+	MobileUIControl.setFileList()
+	document.getElementById('mobile-menu').style['display'] = 'block'
+    },
+    setFileList: function(){
+	var list = FileControl.getFileList(),
+	    elem = document.getElementById('mobile-file-list')
+	// remove old entries
+	elem.innerHTML = ''
+	// cycle through file names and create appropriative elements
+	for(var i = 0; i < list.length; i++){
+	    var c = document.createElement('div')
+	    c.className = 'mobile-file-item mobile-menu-item'
+	    c.textContent = list[i]
+	    c.addEventListener(config.mobile_click_event, function(){
+		FileControl.loadFileByFileName(this.textContent)
+		MobileUIControl.closeMenu()
+	    })
+	    elem.appendChild(c)
+	}
+	    
+    },
+    closeMenu: function(){
+	document.getElementById('mobile-menu').style['display'] = 'none'
+    },
+}
 
 var TestControl = {
     testArrayDecoders: function(){

@@ -236,7 +236,6 @@ ExportControl = {
     }
 }
 
-
 var InitControl = {
     init: function(){
 	// on document load
@@ -245,7 +244,7 @@ var InitControl = {
 	InitControl.eventsInit()
 	InitControl.canvasInit()
 	var is_local = document.location.protocol == 'file:'
-	if(config.load_font_from_source && is_local){
+	if(config.load_font_from_source && !is_local){
 	    for(var i = 0; i <= config.font_max; i++){
 		FontControl.loadFont(i, function(){
 		    if(DrawControl.makeImageData()){
@@ -259,12 +258,8 @@ var InitControl = {
 	    TestControl.runAll()
 	}
 	if(isMobile()){
-	    log('Running in mobile device!')
-	    var s = document.createElement('link')
-	    s.rel = 'stylesheet'
-	    s.type = 'text/css'
-	    s.href = config.mobile_style_url
-	    document.head.appendChild(s)
+	    InitControl.mobileInit()
+	    InitControl.mobileEventsInit()
 	}
 	if(config.load_file_from_source && !is_local){
 	    FileControl.loadFileByURL(config.init_file, InitControl.postInit)
@@ -295,10 +290,11 @@ var InitControl = {
 		event.preventDefault();
 	    event.returnValue = false;
 	}
+	var canvas = document.getElementById('canvas')
 	window.addEventListener('DOMMouseScroll', wheel, false);
-	window.addEventListener('touchstart', TouchControl.handleStart, false);
-	window.addEventListener('touchmove', TouchControl.handleMove, false);
-	window.addEventListener('touchend', TouchControl.handleEnd, false);
+	canvas.addEventListener('touchstart', TouchControl.handleStart, false);
+	canvas.addEventListener('touchmove', TouchControl.handleMove, false);
+	canvas.addEventListener('touchend', TouchControl.handleEnd, false);
 	window.onmousewheel = document.onmousewheel = wheel;
 	window.addEventListener('resize',function(){ScreenControl.expandScreen(); redraw()})
 	document.getElementById('search-field').addEventListener('keyup', SearchControl.performSearch)
@@ -358,6 +354,44 @@ var InitControl = {
 	    var filename = document.getElementById('file-list').value
 	    FileControl.deleteFile(filename)
 	})
+    },
+    mobileInit: function(){
+	log('Running in mobile device!')
+
+	// remove 300ms delay for 'click' events in mobile browsers
+	document.addEventListener('DOMContentLoaded', function() {
+	    FastClick.attach(document.body);
+	}, false);
+
+	// add mobile css
+	var s = document.createElement('link')
+	s.rel = 'stylesheet'
+	s.type = 'text/css'
+	s.href = config.mobile_style_url
+	document.head.appendChild(s)
+
+    },
+    mobileEventsInit: function(){
+	var e = config.mobile_click_event
+	var closeMenu = function(){
+	    // отложить закрытие меню для достижения
+	    // лучшего визуального эффекта
+	    setTimeout(MobileUIControl.closeMenu, 1000)
+	}
+	var arr = {
+	    'mobile-menu-open': MobileUIControl.openMenu,
+	    'mobile-open-file': function(){
+		document.getElementById('file-select').click()
+		closeMenu()
+	    },
+	    'mobile-goto-line': function(){
+		GUIControl.showGotoLinePrompt()
+		closeMenu()
+	    },
+	}
+	for(var elId in arr){
+	    document.getElementById(elId).addEventListener(e, arr[elId])
+	}
     },
     initMousetrap: function(){
 	// Mousetrap bindings
