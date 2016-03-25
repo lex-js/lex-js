@@ -17,6 +17,8 @@ var config = {
     // false: используется fonts.js
     load_font_from_source: false,
 
+    show_line_numbers: false,
+    
     mobile_style_url: 'css/mobile.css',
     // use it only for testing
     mobile_click_event: 'click',
@@ -26,7 +28,7 @@ var config = {
 
     // Файл, открываемый при старте, если load_file_from_source == true
     init_file:'/sample/info.txt',
-    load_file_from_source: false,
+    load_file_from_source: true,
 
     // Хранить ли source файла в памяти (см. lex.file.source)
     // [true только для отладки]
@@ -128,7 +130,7 @@ var lex = {
 	h:10,
     },
     numbers:{
-	set: true,
+	set: config.show_line_numbers,
 	width: 0,
     },
 }
