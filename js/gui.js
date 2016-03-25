@@ -649,41 +649,50 @@ var SearchControl = {
                     begin: begin,
                     end: end,
                     line: y,
-                    start: x-n,
-                    length: n+1,
+                    start: x,
+                    length: n,
                 })
             }
+            var tn = 0
             for(var y = 0; y < lines.length; y++){
                 line = lines[y]
                 for(var x = 0; x < line.length; x++){
                     c = line[x]
-                    last = x == line.length - 1 // is last char in line?
-                    if(c == str[n]){
-                        if(!n){
-                            nb = i
-                        }
-                        if(n < str.length-1){
-
-                            n++
-                        }else{
-                            push(nb, i, y, x, n)
-                            
-                            r.push(tr)
-                            tr = []
-                            n = 0
-                        }
-                    }else{
-                        n = 0
-                        nb = 0
+                    if(c != str[n]){
+                        
+                        tr = []                     // иначе нужно отбросить все символы, совпавшие до этого
+                        n = 0                       // (т.к. новый символ не совпал с искомой строкой)
+                        tn = 0
                     }
-                    i++
+                    if(c == str[n]){                // очередная буква совпала
+                        if(n < str.length){       // полное совпадение короче строки, которую ищем
+                            n++                     // добавляем один символ
+                            tn++
+                        }
+                        if(n == str.length){                      // иначе слово найдено. Добавляем блок
+                            tr.push({
+                                line: y,
+                                start: x-tn+1,
+                                length: tn
+                            })
+                            r.push(tr)              // добавляем все блоки в результат
+                            tr = []                 // обнуляем список блоков
+                            n = 0                   // обнуляем счетчик совпадающих симоволов
+                            tn = 0
+                        }
+                    }
                 }
                 if(n){
-                    push(nb, i, y, x-1, n)
-                    nb = i
+                    // если достигнут конец строки, добавить блок
+                    tr.push({
+                        line: y,
+                        start: x-tn,
+                        length: tn
+                    })
+                    tn = 0
                 }
-                i++
             }
+            console.log(r)
             return r
         }
     ],
