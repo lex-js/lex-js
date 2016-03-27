@@ -449,7 +449,6 @@ LineNumbersControl = {
         lex.numbers.set = false
         lex.numbers.width = 0
         SearchControl.flush()
-        IndexControl.rebuildIndex()
         redraw()
     },
     addLineNumbers: function(){
@@ -463,7 +462,6 @@ LineNumbersControl = {
             lex.file.lines[i] = t
         }
         SearchControl.flush()
-        IndexControl.rebuildIndex()
         redraw()
     },
     toggleLineNumbers: function(){

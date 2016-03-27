@@ -1,8 +1,6 @@
 var config = {
     // Выводить лог
     logging: true,
-    // Максимальная длина сообщения в логе [todo]
-    log_max_length: 50,
     // Максимальный номер шрифта
     font_max:10,
     // Размеры шрифта
@@ -16,9 +14,7 @@ var config = {
     // true : используются шрифты из new/
     // false: используется fonts.js
     load_font_from_source: false,
-
-    show_line_numbers: false,
-    
+    show_line_numbers: false,    
     mobile_style_url: 'css/mobile.css',
     // use it only for testing
     mobile_click_event: 'click',
@@ -28,7 +24,7 @@ var config = {
 
     // Файл, открываемый при старте, если load_file_from_source == true
     init_file:'/sample/info.txt',
-    load_file_from_source: true,
+    load_file_from_source: false,
 
     // Хранить ли source файла в памяти (см. lex.file.source)
     // [true только для отладки]
@@ -50,6 +46,7 @@ var config = {
     max_x_scroll: 4,
     // Скорость прокрутки при нажатом ctrl
     ctrl_scroll_k: 8,
+
     // Цвет текста, rgba
     fg_color:[0,0,0,255],
     // Цвет фона, rgba
@@ -74,13 +71,15 @@ var config = {
     // search function
     // 0 = example function, returns nothing
     // 1 = simple case-sensitive search
-    // 2 = simple not case-sensitive search
+    // 2 = simple case-insensitive search
     // 3 = smart case-sensitive search search
-    // 4 = smart not case-sensitive search
+    // 4 = smart case-insensitive search
     // default = 4
     search_function: 4,
     
-    // Настройки парсера. Управляющие коды, по которым происходит переключение шрифтов и режимов
+    // Настройки парсера.
+    // Управляющие коды, по которым происходит
+    // переключение шрифтов и режимов
     parser:{
 	fonts:{
 	    48: 0,

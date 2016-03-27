@@ -622,54 +622,39 @@ var SearchControl = {
         function(){},
         function(text, str){
             var c, n = 0,
-                nb = 0,
-                ne = 0,
-                i = 0,
                 line,
-                last, skip,
-                skipFlag = false,
                 r = [],
                 tr = [],
                 lines = text.split('\n'),
-                lineBeginnings = [],
-                li = 0
-
+                tn = 0
+            // зачистка ' ' и '-' на концах
             for(var y = 0; y < lines.length; y++){
-                lineBeginnings[y] = li
-                li += lines[y].length
                 while(lines[y].length &&
                           (lines[y].endsWith('-') ||
                            lines[y].endsWith(' '))){
                         lines[y] = lines[y].substr(0, lines[y].length-1)
                 }
             }
-                
-            function push(begin, end, y, x, n){
-                tr.push({
-                    begin: begin,
-                    end: end,
-                    line: y,
-                    start: x,
-                    length: n,
-                })
-            }
-            var tn = 0
+
             for(var y = 0; y < lines.length; y++){
                 line = lines[y]
-                for(var x = 0; x < line.length; x++){
+                var ix = lex.numbers.width
+                while(ix < line.length && ' -'.indexOf(line[ix]) != -1){
+                    ix++
+                }
+                for(var x = ix; x < line.length; x++){
                     c = line[x]
                     if(c != str[n]){
-                        
                         tr = []                     // иначе нужно отбросить все символы, совпавшие до этого
                         n = 0                       // (т.к. новый символ не совпал с искомой строкой)
                         tn = 0
                     }
                     if(c == str[n]){                // очередная буква совпала
-                        if(n < str.length){       // полное совпадение короче строки, которую ищем
+                        if(n < str.length){         // полное совпадение короче строки, которую ищем
                             n++                     // добавляем один символ
                             tn++
                         }
-                        if(n == str.length){                      // иначе слово найдено. Добавляем блок
+                        if(n == str.length){        // иначе слово найдено. Добавляем блок
                             tr.push({
                                 line: y,
                                 start: x-tn+1,
@@ -692,7 +677,6 @@ var SearchControl = {
                     tn = 0
                 }
             }
-            console.log(r)
             return r
         }
     ],
