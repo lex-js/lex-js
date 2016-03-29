@@ -401,6 +401,7 @@ var InitControl = {
             setTimeout(MobileUIControl.closeMenu, 1000)
         }
         var arr = {
+            'mobile-menu-close': MobileUIControl.closeMenu,
             'mobile-menu-open': MobileUIControl.openMenu,
             'mobile-open-file': function(){
                 document.getElementById('file-select').click()
