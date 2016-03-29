@@ -639,7 +639,6 @@ var SearchControl = {
         },
         function(){},
         function(){},
-        function(){},
         function(text, str){
             var c, n = 0,
                 line,
@@ -705,7 +704,13 @@ var SearchControl = {
                 }
             }
             return r
-        }
+        },
+        function(text, str){
+            // make case-insensitive
+            text = text.toLowerCase()
+            str  = str.toLowerCase()
+            return SearchControl.searchFunctions[3](text, str)
+        },
     ],
     // DOM functions
     activateSearchField:function(){
