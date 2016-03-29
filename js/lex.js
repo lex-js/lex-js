@@ -557,8 +557,8 @@ ScreenControl = {
         redraw()
     },
     checkScrollPosition: function(){
-        if(lex.screen.x > lex.index.maxlen - config.max_x_scroll){
-            lex.screen.x = lex.index.maxlen - config.max_x_scroll
+        if(lex.screen.x > lex.index.maxlen - lex.screen.w + config.max_x_scroll){
+            lex.screen.x = lex.index.maxlen - lex.screen.w + config.max_x_scroll
         }
         if(lex.screen.h > lex.file.lines.length){
             // файл не влезает в экран
