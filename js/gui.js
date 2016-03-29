@@ -12,13 +12,20 @@ var GUIControl = {
     },
     updateFileList: function(){
         var el = document.getElementById('file-list')
-        el.innerHTML = ''
-        FileControl.getFileList().map(function(filename){
-            var o = document.createElement('option')
-            o.textContent = filename
-            el.appendChild(o)
-        })
-    },
+        FileControl.getFileList(
+            function(arr){
+                el.innerHTML = ''
+                // case-insensitive sorting
+                arr = arr.sort(function (a, b) {
+                    return a.toLowerCase().localeCompare(b.toLowerCase());
+                })
+                arr.map(function(filename){
+                    var o = document.createElement('option')
+                    o.textContent = filename
+                    el.appendChild(o)
+                })
+            })
+        },
     updateBottomBlock: function(){
         var y = lex.screen.y
         var l = lex.file.lines.length - 1
@@ -47,24 +54,31 @@ var MessageControl = {
 }
 
 var FileControl = {
-    getFileList: function(){
-        var r = []
-        for(var sth in localStorage){
-            if(localStorage.hasOwnProperty(sth) && sth.startsWith(config.ls_file_prefix)){
-                r.push(sth.substr(config.ls_file_prefix.length))
+    getFileList: function(callback){
+        localforage.keys(function(error,value){
+            var filtered = []
+            for(var i in value){
+                var item = value[i]
+                if(item.startsWith(config.ls_file_prefix)){
+                    filtered.push(item.substr(config.ls_file_prefix.length))
+                }
             }
-        }
-        return r.sort()
+            callback(filtered)
+        })
     },
     saveFile: function(filename, source){
-        LS.setItem(config.ls_file_prefix+filename, source,
-                   function(){},
-                   MessageControl.messageCallback(_('Error: can\'t save file')))
-        GUIControl.updateFileList()
+        localforage.setItem(config.ls_file_prefix+filename, source,
+                   function(err, value) {
+                       if(err){
+                           alert(_('Can\'t save file'))
+                       }else{
+                           GUIControl.updateFileList()
+                       }
+                   })
+
     },
     deleteFile: function(filename){
-        localStorage.removeItem(config.ls_file_prefix+filename)
-        GUIControl.updateFileList()
+        localforage.removeItem(config.ls_file_prefix+filename, GUIControl.updateFileList)
     },
     pushSelectedToLS: function(file){
         var reader =  new FileReader()
@@ -84,12 +98,11 @@ var FileControl = {
         })(file);
         reader.readAsArrayBuffer(file);
     },
-    getFileSource: function(filename){
-        var r = LS.getItem(config.ls_file_prefix+filename)
-        return Coders.StringToUint8Array(r)
-    },
     loadFileByFileName: function(filename, callback){
-        FileControl.loadFileBySource(FileControl.getFileSource(filename), callback)
+        localforage.getItem(config.ls_file_prefix+filename, function(err, value){
+            FileControl.loadFileBySource(
+                Coders.StringToUint8Array(value), callback)
+        })
     },
     loadFileByURL: function(url, callback){
         var req = null
@@ -154,21 +167,23 @@ var MobileUIControl = {
         document.getElementById('mobile-menu').style['display'] = 'block'
     },
     setFileList: function(){
-        var list = FileControl.getFileList(),
-            elem = document.getElementById('mobile-file-list')
-        // remove old entries
-        elem.innerHTML = ''
-        // cycle through file names and create appropriative elements
-        for(var i = 0; i < list.length; i++){
-            var c = document.createElement('div')
-            c.className = 'mobile-file-item mobile-menu-item'
-            c.textContent = list[i]
-            c.addEventListener(config.mobile_click_event, function(){
-                FileControl.loadFileByFileName(this.textContent)
-                MobileUIControl.closeMenu()
+        var elem = document.getElementById('mobile-file-list')
+        FileControl.getFileList(
+            function(list){
+                // remove old entries
+                elem.innerHTML = ''
+                // cycle through file names and create appropriative elements
+                for(var i = 0; i < list.length; i++){
+                    var c = document.createElement('div')
+                    c.className = 'mobile-file-item mobile-menu-item'
+                    c.textContent = list[i]
+                    c.addEventListener(config.mobile_click_event, function(){
+                        FileControl.loadFileByFileName(this.textContent)
+                        MobileUIControl.closeMenu()
+                    })
+                    elem.appendChild(c)
+                }
             })
-            elem.appendChild(c)
-        }         
     },
     closeMenu: function(){
         document.getElementById('mobile-menu').style['display'] = 'none'
@@ -630,7 +645,9 @@ var SearchControl = {
                 r = [],
                 tr = [],
                 lines = text.split('\n'),
-                tn = 0
+                tn = 0,
+                sx = (lex.numbers.width)?(lex.numbers.width+config.line_numbers_padding):0
+            
             // зачистка ' ' и '-' на концах
             for(var y = 0; y < lines.length; y++){
                 while(lines[y].length &&
@@ -664,7 +681,7 @@ var SearchControl = {
                         if(n == str.length){        // слово найдено. Добавляем блок
                             tr.push({
                                 line  : y,
-                                start : x - tn + 1,
+                                start : x - tn + 1 + sx,
                                 length: tn
                             })
                             r.push(tr)              // добавляем все блоки в результат
@@ -680,7 +697,7 @@ var SearchControl = {
                     // не 0, добавить блок
                     tr.push({
                         line: y,
-                        start: x-tn,
+                        start: x - tn + sx,
                         length: tn
                     })
                     tn = 0

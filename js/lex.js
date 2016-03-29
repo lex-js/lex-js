@@ -12,27 +12,6 @@ function log(m){
     }
 }
 
-
-var LS = {
-    // обертка над localStorage
-    setItem:function(name, val, success_callback, error_callback){
-        try{
-            localStorage.setItem(name,val)
-            if(typeof success_callback == 'function')
-                success_callback()
-        }catch(e){
-            if(typeof error_callback == 'function')
-                error_callback()
-        }
-    },
-    getItem:function(name){
-        try{
-            return localStorage.getItem(name)
-        }catch(e){        
-        }
-    }
-}
-
 var Parser = {
     parseLine: function(line){
         // Преобразует массив байт 
