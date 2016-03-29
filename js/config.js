@@ -14,7 +14,9 @@ var config = {
     // true : используются шрифты из new/
     // false: используется fonts.js
     load_font_from_source: false,
-    show_line_numbers: false,    
+
+    // включать ли показ номеров строк при открытии нового файла
+    show_line_numbers: true,    
     mobile_style_url: 'css/mobile.css',
     // use it only for testing
     mobile_click_event: 'click',
@@ -22,9 +24,9 @@ var config = {
     // Запускать тесты
     perform_test: true,
 
+    load_file_from_source: false,
     // Файл, открываемый при старте, если load_file_from_source == true
     init_file:'/sample/info.txt',
-    load_file_from_source: false,
 
     // Хранить ли source файла в памяти (см. lex.file.source)
     // [true только для отладки]
@@ -32,7 +34,7 @@ var config = {
     // Префекс для сохранения файлов в localStorage
     ls_file_prefix:'file_',
     // Сохранять ли все открываемые текстовые файлы в localStorage
-    save_to_ls: true,
+    save_to_ls: !!localStorage,
 
     // экспорт в PNG
     export_png_file_name: 'lexicon_screenshot.png',
@@ -43,7 +45,8 @@ var config = {
     // проскроллить после достижения конца файла
     max_overscroll: 0.3,
     // Минимальный отступ по х (количество столбцов на экране)
-    max_x_scroll: 4,
+    max_x_scroll: 2,
+    line_numbers_padding: 2,
     // Скорость прокрутки при нажатом ctrl
     ctrl_scroll_k: 8,
 

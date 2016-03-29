@@ -371,7 +371,6 @@ var IndexControl = {
     },
 }
 
-
 var FontControl = {
     fontsLoaded: function(){
         for(var fontNumber = 0; fontNumber <= config.font_max; fontNumber++){
@@ -444,27 +443,31 @@ var DevControl = {
     }
 }
 
-LineNumbersControl = {
+var LineNumbersControl = {
     removeLineNumbers: function(){
         for(var i = 0; i < lex.file.lines.length; i++){
             lex.file.lines[i] = new Uint8Array
             (Array.from(lex.file.lines[i]).splice(lex.numbers.width+2))
         }
+        lex.index.maxlen -= lex.numbers.width + config.line_numbers_padding
         lex.numbers.set = false
         lex.numbers.width = 0
         SearchControl.flush()
+        ScreenControl.checkScrollPosition()
         redraw()
     },
     addLineNumbers: function(){
         lex.numbers.width = (lex.file.lines.length+'').length+1
         lex.numbers.set = true
         for(var i = 0; i < lex.file.lines.length; i++){
-            var t = new Uint8Array
-            (Parser.getLineNumberBytes
-             (i,lex.numbers.width).concat
-             (Array.from(lex.file.lines[i])))
+            var t = new Uint8Array(
+                Parser.getLineNumberBytes(
+                    i, lex.numbers.width).concat(
+                    Array.from(lex.file.lines[i])))
             lex.file.lines[i] = t
         }
+        lex.index.maxlen += lex.numbers.width + config.line_numbers_padding
+        ScreenControl.checkScrollPosition()
         SearchControl.flush()
         redraw()
     },
@@ -477,7 +480,7 @@ LineNumbersControl = {
     }
 }
 
-SelectionControl = {
+var SelectionControl = {
     clearSelection: function(){
         lex.selection = {
             set: false,
@@ -527,7 +530,7 @@ SelectionControl = {
     },
 }
 
-ScreenControl = {
+var ScreenControl = {
     getViewportSize: function(){
         var w = window,
             d = document,
@@ -600,7 +603,6 @@ ScreenControl = {
     },
 }
 
-
 var TouchControl = {
     // Мобильные устройства
     ongoingTouches: [],
@@ -657,7 +659,6 @@ var TouchControl = {
     ongoingTouchIndexById: function(idToFind) {
         for (var i = 0; i < TouchControl.ongoingTouches.length; i++) {
             var id = TouchControl.ongoingTouches[i].identifier;
-
             if (id == idToFind) {
                 return i;
             }
@@ -673,7 +674,6 @@ var TouchControl = {
     },
 }
 
-
 var TestControl = {
     testArrayDecoders: function(){
         function checkEquality(a,b){
@@ -682,7 +682,6 @@ var TestControl = {
                 TestControl.logTestResult(b)
                 return false
             }
-
             for(var i = 0; i < a.length; i++){
                 if(a[i] != b[i]){
                     TestControl.logTestResult(a)
@@ -692,7 +691,6 @@ var TestControl = {
             }
             return true
         }
-
         var result = [
             [0],
             [1],
@@ -736,8 +734,7 @@ var TestControl = {
     },
     runAll: function(){
         TestControl.testNumCharDecoders()
-        TestControl.testArrayDecoders()
-        
+        TestControl.testArrayDecoders()        
     },
 }
 
