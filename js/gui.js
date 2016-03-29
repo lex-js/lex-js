@@ -1,7 +1,3 @@
-// gettext
-// todo
-function _(m){return m}
-
 var GUIControl = {
     showGotoLinePrompt: function(){
         var userInput = prompt(_('Enter line number'), lex.screen.y)
@@ -327,7 +323,14 @@ var InitControl = {
             }
             for (var i = 0, f; f = files[i]; i++) {
                 if (!f.type.match('text.*')) {
-                    continue
+                    // Эта проверка нужна, т.к. не все браузеры передают
+                    // правильный тип
+                    // Т.е. файл любого типа с расширением txt|lex
+                    // будет проходить
+                    var ext = f.name.toLowerCase().split('.')
+                    ext = ext[ext.length - 1]
+                    if(['lex','txt'].indexOf(ext) == -1)
+                        continue
                 }
                 var reader = new FileReader()
                 reader.onload = (function(theFile) {
@@ -522,13 +525,14 @@ var InitControl = {
                 Mousetrap(document.getElementById('file-select')).bind(k,t[k])
             }
         }
-        Mousetrap(document.getElementById('search-field')).bind('esc', function(){
+        var search_field = document.getElementById('search-field')
+        Mousetrap(search_field).bind('esc', function(){
             SearchControl.clearSearchField()
             SearchControl.deactivateSearchField()
         })
-        Mousetrap(document.getElementById('search-field')).bind('enter', SearchControl.searchNext)
-        Mousetrap(document.getElementById('search-field')).bind('shift+enter', SearchControl.searchPrevious)
-        Mousetrap(document.getElementById('search-field')).bind('backspace', function(){
+        Mousetrap(search_field).bind('enter', SearchControl.searchNext)
+        Mousetrap(search_field).bind('shift+enter', SearchControl.searchPrevious)
+        Mousetrap(search_field).bind('backspace', function(){
             if(document.getElementById('search-field').value==''){
                 SearchControl.deactivateSearchField()
             }
@@ -632,43 +636,48 @@ var SearchControl = {
                 while(lines[y].length &&
                           (lines[y].endsWith('-') ||
                            lines[y].endsWith(' '))){
-                        lines[y] = lines[y].substr(0, lines[y].length-1)
+                    lines[y] = lines[y].slice(0, -1)
                 }
             }
 
             for(var y = 0; y < lines.length; y++){
                 line = lines[y]
-                var ix = lex.numbers.width
+                var ix = 0
+                // затираем ' ' и '-' в начале строки
                 while(ix < line.length && ' -'.indexOf(line[ix]) != -1){
                     ix++
                 }
                 for(var x = ix; x < line.length; x++){
                     c = line[x]
                     if(c != str[n]){
-                        tr = []                     // иначе нужно отбросить все символы, совпавшие до этого
-                        n = 0                       // (т.к. новый символ не совпал с искомой строкой)
+                        tr = []                     // если очередной символ не совпал нужно сбросить
+                        n  = 0                      // счетчик символов и все предыдущие блоки 
                         tn = 0
-                    }
+                    }                               // Здесь не стоит else потому, что после обнуления n
+                                                    // может сразу начаться новое слово, удовлетворяющее поиску
+                    
                     if(c == str[n]){                // очередная буква совпала
                         if(n < str.length){         // полное совпадение короче строки, которую ищем
                             n++                     // добавляем один символ
                             tn++
                         }
-                        if(n == str.length){        // иначе слово найдено. Добавляем блок
+                        if(n == str.length){        // слово найдено. Добавляем блок
                             tr.push({
-                                line: y,
-                                start: x-tn+1,
+                                line  : y,
+                                start : x - tn + 1,
                                 length: tn
                             })
                             r.push(tr)              // добавляем все блоки в результат
                             tr = []                 // обнуляем список блоков
-                            n = 0                   // обнуляем счетчик совпадающих симоволов
-                            tn = 0
+                            n = 0                   // обнуляем счетчик совпадающих символов
+                            tn = 0                  // обнуляем счетчик совпадающих символов в текущем блоке
                         }
                     }
                 }
                 if(n){
-                    // если достигнут конец строки, добавить блок
+                    // если достигнут конец строки,
+                    // и число совпадающих подряд символов
+                    // не 0, добавить блок
                     tr.push({
                         line: y,
                         start: x-tn,

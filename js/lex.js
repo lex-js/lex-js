@@ -256,8 +256,9 @@ var DrawControl = {
                 }
             }
         }
-        context.putImageData
-        (imgData3, x * config.font_width, y * config.font_height);
+        context.putImageData(imgData3,
+                             x * config.font_width,
+                             y * config.font_height);
     },
     redrawCanvas: function(context){
         var w  = lex.screen.w,
@@ -363,6 +364,9 @@ var IndexControl = {
                     }
                 ))
             lex.index.text += line+'\n'
+            if(lex.index.maxlen < line.length){
+                lex.index.maxlen = line.length
+            }
         }
     },
 }
