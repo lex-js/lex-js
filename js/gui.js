@@ -54,13 +54,19 @@ var MessageControl = {
 }
 
 var FileControl = {
+    isLSFileName: function(filename){
+        return filename.startsWith(config.ls_file_prefix)
+    },
+    LSFileNameToFileName: function(filename){
+        return filename.substr(config.ls_file_prefix.length)
+    },
     getFileList: function(callback){
         localforage.keys(function(error,value){
             var filtered = []
             for(var i in value){
                 var item = value[i]
-                if(item.startsWith(config.ls_file_prefix)){
-                    filtered.push(item.substr(config.ls_file_prefix.length))
+                if(FileControl.isLSFileName(item)){
+                    filtered.push(FileControl.LSFileNameToFileName(item))
                 }
             }
             callback(filtered)
@@ -176,12 +182,26 @@ var MobileUIControl = {
                 for(var i = 0; i < list.length; i++){
                     var c = document.createElement('div')
                     c.className = 'mobile-file-item mobile-menu-item'
-                    c.textContent = list[i]
-                    c.addEventListener(config.mobile_click_event, function(){
+
+                    var n = document.createElement('span')
+                    n.textContent = list[i]
+                    n.addEventListener(config.mobile_click_event, function(){
                         FileControl.loadFileByFileName(this.textContent)
                         MobileUIControl.closeMenu()
                     })
+                    
+                    var d = document.createElement('div')
+                    d.className = 'icon large mobile-delete-file'
+                    d.innerHTML = '&#xf00d;'
+                    d.title = list[i]
+                    d.addEventListener(config.mobile_click_event, function(){
+                        var filename = this.title
+                        FileControl.deleteFile(filename)
+                        this.parentNode.remove()
+                    })
                     elem.appendChild(c)
+                    c.appendChild(n)
+                    c.appendChild(d)
                 }
             })
     },
@@ -285,8 +305,32 @@ var InitControl = {
         }
         InitControl.postInit()
     },
+    checkLSAPIVersion: function(){
+        localforage.getItem(config.ls_api_item_name, function(err, value){
+            if(!value || value < config.ls_api_version){
+                if(localStorage.length){
+                    var lsfls = []
+                    for(var key in localStorage){
+                        if(FileControl.isLSFileName(key)){
+                            lsfls.push(key)
+                        }
+                    }
+                    lsfls.map(function(lsfl){
+                        localforage.setItem(lsfl, localStorage.getItem(lsfl), GUIControl.updateFileList)
+                    })
+                    if(lsfls.length)
+                        console.log('Some files were moved from localStorage to localforage, count: '+lsfls.length)
+                    if(!!localStorage)
+                        localStorage.clear()
+                    localforage.setItem(config.ls_api_item_name, config.ls_api_version)
+                    localStorage.setItem(config.ls_api_item_name, config.ls_api_version)
+                }
+            }
+        })
+    },
     postInit: function(){
         ScreenControl.expandScreen()
+        InitControl.checkLSAPIVersion()
         GUIControl.updateFileList()
         DrawControl.makeImageData()
     },
@@ -639,7 +683,6 @@ var SearchControl = {
         },
         function(){},
         function(){},
-        function(){},
         function(text, str){
             var c, n = 0,
                 line,
@@ -705,7 +748,13 @@ var SearchControl = {
                 }
             }
             return r
-        }
+        },
+        function(text, str){
+            // make case-insensitive
+            text = text.toLowerCase()
+            str  = str.toLowerCase()
+            return SearchControl.searchFunctions[3](text, str)
+        },
     ],
     // DOM functions
     activateSearchField:function(){

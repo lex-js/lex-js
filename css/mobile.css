@@ -22,10 +22,13 @@
 .mobile-menu-item{
     font-size: 40px;
     padding: 10px;
+    height: 40px;
 }
-.mobile-file-item{
+.mobile-file-item > span{
     color: #999;
     padding-left: 30px;
+    position: absolute;
+    left: 0;
 }
 .large{
     width: 43px;
@@ -33,4 +36,10 @@
 }
 #mobile-file-list{
     border-top: 1px solid #999;
+}
+.mobile-delete-file{
+    position: absolute;
+    right: 0;
+    font-size: 44px;
+    color: #f55;
 }
