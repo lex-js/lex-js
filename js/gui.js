@@ -388,7 +388,7 @@ var InitControl = {
                     // будет проходить
                     var ext = f.name.toLowerCase().split('.')
                     ext = ext[ext.length - 1]
-                    if(['lex','txt'].indexOf(ext) == -1)
+                    if(['lhs','txt','hs','pas'].indexOf(ext) == -1)
                         continue
                 }
                 var reader = new FileReader()
