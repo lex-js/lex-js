@@ -114,7 +114,7 @@
 #content-tree-container{
     display: none;
     position: fixed;
-    top: 0;
+    top: 50px;
     left: 0;
     right: 0;
     bottom: 0;
@@ -132,6 +132,12 @@
     background-color: #FFF;
     border: none;
 }
+.content-directory-name:active,
+.content-directory-name:focus,
+.content-file-name:focus{
+    outline: 1px dotted #009;
+    text-decoration: underline;
+}
 .content-directory-name{
     color: #009;
 }
@@ -139,6 +145,22 @@
 .content-directory-name:hover{
     background-color: #EEF;
 }
+.content-file,
+.content-directory{
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+}
+.content-file:last-child,
+.content-directory:last-child{
+    border-bottom: none;
+}
 .content-directory-list{
     margin-left: 20px;
+}
+.content-directory-modified,
+.content-file-modified{
+    float: right;
+    color: #999;
+}
+.content-directory-list{
+    display: none;
 }

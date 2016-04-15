@@ -55,6 +55,7 @@ var ContentTreeControl = {
             ContentTreeControl.show()
     },    
     update: function(callback, err_callback){
+        document.getElementById('content-tree').innerHTML = ''
         var req = new XMLHttpRequest()
         var url = config.content_tree_url
         req.open('GET', url, true)
@@ -75,44 +76,40 @@ var ContentTreeControl = {
         lex.content_tree.tree = contentTree
         function recAdd(el, list){
             for(var i in list){
-                var sth = list[i]
+                var sth = list[i],
+                    t = document.createElement('div'),
+                    n = document.createElement('button'),
+                    m = document.createElement('span')
+                t.className = 'content-element content-'+sth.type
+                n.className = 'content-element content-'+sth.type+'-name'
+                m.className = 'content-info content-'+sth.type+'-modified'
+                n.textContent = sth.name+((sth.type == 'directory')?'/':'')
+                m.textContent = new Date(sth.modified*1000).toISOString().slice(0, 19).replace(/T/,' ');
+                el.appendChild(t)
+                t.appendChild(n)
+                t.appendChild(m)
                 if(sth.type == 'directory'){
-                    var t = document.createElement('div')
-                    var n = document.createElement('button')
                     var l = document.createElement('div')
-                    
-                    t.className = 'content-element content-directory'
-                    n.className = 'content-element content-directory-name'
                     l.className = 'content-element content-directory-list'
-
-                    n.textContent = sth.name+'/'
-
-                    el.appendChild(t)
-                    t.appendChild(n)
                     t.appendChild(l)
                     recAdd(l, sth.files)
+                    n.onclick = function(){
+                        ContentTreeControl.expandDir(this)
+                    }
                 }else{
-                    var t = document.createElement('div')
-                    var n = document.createElement('button')
-
-                    t.className = 'content-element content-file'
-                    n.className = 'content-element content-file-name'
-                    
-                    el.appendChild(t)
-                    t.appendChild(n)
-
                     n.onclick = function(){
                         ContentTreeControl.selectFile(this)
                     }
-
-                    n.textContent = sth.name
-                    el.appendChild(t)
                 }
             }
         }
         var ct = document.getElementById('content-tree')
-        ct.innerHTML = ''
         recAdd(ct, contentTree)
+    },
+    expandDir: function(el){
+        var list  = el.parentNode.getElementsByClassName('content-directory-list')[0],
+            state = list.style.display == 'block'
+        list.style.display = state?'none':'block'
     },
     selectFile: function(el){
         var path = config.content_real_path+ContentTreeControl.getFilePath(el)
