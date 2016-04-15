@@ -551,6 +551,10 @@ var InitControl = {
                 LineNumbersControl.toggleLineNumbers()
                 MobileUIControl.closeMenu()
             },
+            'mobile-list-content':function(){
+                MobileUIControl.closeMenu()
+                ContentTreeControl.show()
+            },
             'mobile-goto-line': function(){
                 GUIControl.showGotoLinePrompt()
                 MobileUIControl.closeMenu()
