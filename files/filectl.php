@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include 'config-default.php';
 include 'config-user.php';
 function directoryTree($dir){
     $results = array();

@@ -1,5 +1,5 @@
 <?php
-$config = new Array(
+$config = array(
     'directory' => ''
 );
 
