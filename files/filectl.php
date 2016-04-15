@@ -37,15 +37,6 @@ switch($action){
         http_response_code(200);
         echo json_encode($files);
         break;
-    case 'load':
-        $filename = $_REQUEST['file'];
-        $file     = $config['directory'] . DIRECTORY_SEPARATOR .  basename($filename);
-        if(!is_dir($config['directory']) ||
-           !is_file($file)){
-            http_response_code(500);
-            die();
-        }
-        break;
 }
 
 ?>
