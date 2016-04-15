@@ -560,21 +560,25 @@ var ScreenControl = {
         }
     },
     scrollHomeY:function(){
+        if(lex.content_tree.active) return;
         lex.screen.y = 0
         redraw()
     },
     scrollEndY:function(){
+        if(lex.content_tree.active) return;
         lex.screen.y = lex.file.lines.length - lex.screen.h
         ScreenControl.checkScrollPosition()
         redraw()
     },
     scrollX:function(x){
+        if(lex.content_tree.active) return;
         x = Math.round(x)
         lex.screen.x -= x
         ScreenControl.checkScrollPosition()
         redraw()
     },
     scrollY:function(y){
+        if(lex.content_tree.active) return;
         y = Math.round(y)
         lex.screen.y -= y
         ScreenControl.checkScrollPosition()

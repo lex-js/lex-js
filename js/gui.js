@@ -36,6 +36,104 @@ var GUIControl = {
     },
 }
 
+var ContentTreeControl = {
+    show: function(){
+        lex.content_tree.active = true
+        this.update(this.load, function(err_code){
+            alert('Can\'t get directory hierarchy from server: error '+err_code)
+        })
+        document.getElementById('content-tree-container').style.display = 'block'
+    },
+    hide: function(){
+        lex.content_tree.active = false
+        document.getElementById('content-tree-container').style.display = 'none'
+    },
+    toggle: function(){
+        if(lex.content_tree.active)
+            ContentTreeControl.hide()
+        else
+            ContentTreeControl.show()
+    },    
+    update: function(callback, err_callback){
+        var req = new XMLHttpRequest()
+        var url = config.content_tree_url
+        req.open('GET', url, true)
+        req.onreadystatechange = function() { 
+            if(req.readyState == 4){
+                if(req.status == 200){
+                    if(typeof callback == 'function')
+                        callback(JSON.parse(req.responseText))
+                }else{
+                    if(typeof err_callback == 'function')
+                        err_callback(req.status)
+                }
+            }
+        }
+        req.send()
+    },
+    load: function(contentTree){
+        lex.content_tree.tree = contentTree
+        function recAdd(el, list){
+            for(var i in list){
+                var sth = list[i]
+                if(sth.type == 'directory'){
+                    var t = document.createElement('div')
+                    var n = document.createElement('button')
+                    var l = document.createElement('div')
+                    
+                    t.className = 'content-element content-directory'
+                    n.className = 'content-element content-directory-name'
+                    l.className = 'content-element content-directory-list'
+
+                    n.textContent = sth.name+'/'
+
+                    el.appendChild(t)
+                    t.appendChild(n)
+                    t.appendChild(l)
+                    recAdd(l, sth.files)
+                }else{
+                    var t = document.createElement('div')
+                    var n = document.createElement('button')
+
+                    t.className = 'content-element content-file'
+                    n.className = 'content-element content-file-name'
+                    
+                    el.appendChild(t)
+                    t.appendChild(n)
+
+                    n.onclick = function(){
+                        ContentTreeControl.selectFile(this)
+                    }
+
+                    n.textContent = sth.name
+                    el.appendChild(t)
+                }
+            }
+        }
+        var ct = document.getElementById('content-tree')
+        ct.innerHTML = ''
+        recAdd(ct, contentTree)
+    },
+    selectFile: function(el){
+        var path = config.content_real_path+ContentTreeControl.getFilePath(el)
+        FileControl.loadFileByURL(path, function(){
+            ContentTreeControl.hide()
+        })
+    },
+    getFilePath: function(el){
+        var r = el.textContent,
+            p = el.parentNode
+        if(!p || !p.className || p.parentNode.id == 'content-tree')
+            return r
+        else{
+            r = ContentTreeControl.getFilePath(
+                p.parentNode.parentNode.getElementsByClassName('content-directory-name')[0]) + r
+             
+        }
+        return r
+    }
+}
+
 var MessageControl = {
     show:function(text) {
         alert(text)    
@@ -347,25 +445,18 @@ var InitControl = {
             if(delta){
                 ScreenControl.scrollY(delta)
             }
-            if (event.preventDefault)
-                event.preventDefault();
-            event.returnValue = false;
+            // if (event.preventDefault)
+            //     event.preventDefault()
+            // event.returnValue = false
         }
         var canvas = document.getElementById('canvas')
-        window.addEventListener('DOMMouseScroll', wheel, false);
+        canvas.addEventListener('DOMMouseScroll', wheel, false);
         canvas.addEventListener('touchstart', TouchControl.handleStart, false);
         canvas.addEventListener('touchmove', TouchControl.handleMove, false);
         canvas.addEventListener('touchend', TouchControl.handleEnd, false);
         window.onmousewheel = document.onmousewheel = wheel;
         window.addEventListener('resize',function(){ScreenControl.expandScreen(); redraw()})
         document.getElementById('search-field').addEventListener('keyup', SearchControl.performSearch)
-        document.getElementById('button-search').addEventListener('click', function(){
-            if(lex.search.active){
-                SearchControl.deactivateSearchField()
-            }else{
-                SearchControl.activateSearchField()
-            }
-        })
         document.getElementById('search-close').addEventListener('click', function(){
             SearchControl.clearSearchField()
             SearchControl.deactivateSearchField()
@@ -411,16 +502,24 @@ var InitControl = {
             var filename = document.getElementById('file-list').value
             FileControl.loadFileByFileName(filename)
         })
+        document.getElementById('button-delete').addEventListener("click", function(){
+            var filename = document.getElementById('file-list').value
+            FileControl.deleteFile(filename)
+        })
         document.getElementById('button-line-numbers').addEventListener("click", function(){
             LineNumbersControl.toggleLineNumbers()
         })
         document.getElementById('button-goto-line').addEventListener("click", function(){
             GUIControl.showGotoLinePrompt()
         })
-        document.getElementById('button-delete').addEventListener("click", function(){
-            var filename = document.getElementById('file-list').value
-            FileControl.deleteFile(filename)
+        document.getElementById('button-search').addEventListener('click', function(){
+            if(lex.search.active){
+                SearchControl.deactivateSearchField()
+            }else{
+                SearchControl.activateSearchField()
+            }
         })
+        document.getElementById('button-content').addEventListener('click', ContentTreeControl.toggle)
     },
     mobileInit: function(){
         log('Running in mobile device!')
@@ -467,30 +566,6 @@ var InitControl = {
     initMousetrap: function(){
         // Mousetrap bindings
         var t = {
-            'up':function(){
-                ScreenControl.scrollY(1)
-            },
-            'down':function(){
-                ScreenControl.scrollY(-1)
-            },
-            'left':function(){
-                ScreenControl.scrollX(1)
-            },
-            'right':function(){
-                ScreenControl.scrollX(-1)
-            },
-            'ctrl+up':function(){
-                ScreenControl.scrollY(1*config.ctrl_scroll_k)
-            },
-            'ctrl+down':function(){
-                ScreenControl.scrollY(-1*config.ctrl_scroll_k)
-            },
-            'ctrl+left':function(){
-                ScreenControl.scrollX(1*config.ctrl_scroll_k)
-            },
-            'ctrl+right':function(){
-                ScreenControl.scrollX(-1*config.ctrl_scroll_k)
-            },
             'k':function(){
                 ScreenControl.scrollY(1)
             },
@@ -515,29 +590,17 @@ var InitControl = {
             'р':function(){
                 ScreenControl.scrollX(1)
             },
-            'pagedown':function(){
-                ScreenControl.scrollY(-lex.screen.h+1)
-            },
             'f':function(){
                 ScreenControl.scrollY(-lex.screen.h+1)
             },
             'а':function(){
                 ScreenControl.scrollY(-lex.screen.h+1)
             },
-            'pageup':function(){
-                ScreenControl.scrollY(lex.screen.h-1)
-            },
             'b':function(){
                 ScreenControl.scrollY(lex.screen.h-1)
             },
             'и':function(){
                 ScreenControl.scrollY(lex.screen.h-1)
-            },
-            'end':function(){
-                ScreenControl.scrollEndY()
-            },
-            'home':function(){
-                ScreenControl.scrollHomeY()
             },
             'alt+g':function(){
                 GUIControl.showGotoLinePrompt()
@@ -551,6 +614,7 @@ var InitControl = {
             'esc':function(){
                 lex.screen.x = 0
                 SelectionControl.clearSelection()
+                ContentTreeControl.hide()
                 redraw()
             },
             'alt+f3':function(){
@@ -577,6 +641,44 @@ var InitControl = {
                 if(lex.selection.set){
                     ExportControl.exportToPNG()
                 }
+            },
+            'с': ContentTreeControl.toggle,
+            'c': ContentTreeControl.toggle,
+            'up':function(){
+                ScreenControl.scrollY(1)
+            },
+            'down':function(){
+                ScreenControl.scrollY(-1)
+            },
+            'left':function(){
+                ScreenControl.scrollX(1)
+            },
+            'right':function(){
+                ScreenControl.scrollX(-1)
+            },
+            'ctrl+up':function(){
+                ScreenControl.scrollY(1*config.ctrl_scroll_k)
+            },
+            'ctrl+down':function(){
+                ScreenControl.scrollY(-1*config.ctrl_scroll_k)
+            },
+            'ctrl+left':function(){
+                ScreenControl.scrollX(1*config.ctrl_scroll_k)
+            },
+            'ctrl+right':function(){
+                ScreenControl.scrollX(-1*config.ctrl_scroll_k)
+            },
+            'end':function(){
+                ScreenControl.scrollEndY()
+            },
+            'home':function(){
+                ScreenControl.scrollHomeY()
+            },
+            'pagedown':function(){
+                ScreenControl.scrollY(-lex.screen.h+1)
+            },
+            'pageup':function(){
+                ScreenControl.scrollY(lex.screen.h-1)
             },
         }
         for(var k in t){
@@ -671,8 +773,7 @@ var SearchControl = {
             // list of results, each of them containing list of
             // blocks (real positions of text that need to be
             // highlighted)
-            return 
-            [
+            return [
                 [
                     {
                         begin:0,

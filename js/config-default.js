@@ -34,6 +34,12 @@ var config = {
     // Файл, открываемый при старте, если load_file_from_source == true
     init_file:'/sample/info.txt',
 
+    // Файлы, хранящиеся на сервере
+    content_tree_enabled: true,
+    get_content_tree_on_load: true,
+    content_tree_url: 'files/filectl.php?action=tree',
+    content_real_path: 'files/content/',
+    
     // Хранить ли source файла в памяти (см. lex.file.source)
     // [true только для отладки]
     save_file_source: false,
@@ -141,6 +147,10 @@ var lex = {
 	set: config.show_line_numbers,
 	width: 0,
     },
+    content_tree:{
+        tree: null,
+        active: false        
+    }
 }
 
 for(var i = 0; i <= config.font_max; i++){

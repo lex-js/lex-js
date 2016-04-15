@@ -1,2 +1,4 @@
 files/config-user.php
-
+./files/config-user.php
+files/content/*
+config.js

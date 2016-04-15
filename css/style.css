@@ -1,9 +1,11 @@
 *{
     font-family: FontAwesome;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -khtml-user-select: none;
-    -ms-user-select: none;
+    /******************************/
+    /* -webkit-user-select: none; */
+    /* -moz-user-select: none;    */
+    /* -khtml-user-select: none;  */
+    /* -ms-user-select: none;     */
+    /******************************/
 }
 
 #canvas{
@@ -106,4 +108,37 @@
 #mobile-menu{
     display: none;
     overflow:scroll;
+}
+
+/* content tree */
+#content-tree-container{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: white;
+    z-index: 11;
+    overflow:scroll;
+}
+.content-element{
+    font-family: monospace;
+    font-size: 16px;
+    cursor: pointer;
+}
+.content-directory-name,
+.content-file-name{
+    background-color: #FFF;
+    border: none;
+}
+.content-directory-name{
+    color: #009;
+}
+.content-file-name:hover,
+.content-directory-name:hover{
+    background-color: #EEF;
+}
+.content-directory-list{
+    margin-left: 20px;
 }
