@@ -84,7 +84,7 @@ var ContentTreeControl = {
                 n.className = 'content-element content-'+sth.type+'-name'
                 m.className = 'content-info content-'+sth.type+'-modified'
                 n.textContent = sth.name+((sth.type == 'directory')?'/':'')
-                m.textContent = new Date(sth.modified*1000).toISOString().slice(0, 19).replace(/T/,' ');
+                m.textContent = new Date(sth.modified*1000).toISOString().slice(0, 16).replace(/T/,' ');
                 el.appendChild(t)
                 t.appendChild(n)
                 t.appendChild(m)
