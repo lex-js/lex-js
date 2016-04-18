@@ -120,6 +120,7 @@ var ContentTreeControl = {
             }
         }
         var ct = document.getElementById('content-tree')
+        ct.innerHTML = ''
         recAdd(ct, contentTree)
     },
     expandDir: function(el){
