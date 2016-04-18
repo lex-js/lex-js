@@ -88,6 +88,14 @@ var ContentTreeControl = {
                 el.appendChild(t)
                 t.appendChild(n)
                 t.appendChild(m)
+                // direct link
+                var durl = config.content_real_path+ContentTreeControl.getFilePath(n)
+                dl = document.createElement('a')
+                dl.href = durl
+                dl.innerHTML = '&#xf0c1;'
+                dl.target = '_blank'
+                dl.className = 'content-direct-link'
+                t.appendChild(dl)
                 if(sth.type == 'directory'){
                     var l = document.createElement('div')
                     l.className = 'content-element content-directory-list'
@@ -97,6 +105,14 @@ var ContentTreeControl = {
                         ContentTreeControl.expandDir(this)
                     }
                 }else{
+
+                    // download link
+                    dd = document.createElement('a')
+                    dd.href = durl
+                    dd.download = sth.name
+                    dd.innerHTML = '&#xf019;'
+                    dd.className = 'content-download-link'
+                    t.appendChild(dd)
                     n.onclick = function(){
                         ContentTreeControl.selectFile(this)
                     }

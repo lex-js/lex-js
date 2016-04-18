@@ -162,6 +162,14 @@
 .content-file-modified{
     float: right;
     color: #999;
+    margin-right: 5px;
+}
+.content-direct-link,
+.content-download-link{
+    text-decoration: none;
+    color: #555;
+    float: right;
+    margin-right: 10px;
 }
 .content-directory-list{
     display: none;
