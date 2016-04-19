@@ -81,7 +81,7 @@ var ContentTreeControl = {
                     n = document.createElement('button'),
                     m = document.createElement('span')
                 t.className = 'content-element content-'+sth.type
-                n.className = 'content-element content-'+sth.type+'-name'
+                n.className = 'content-element content-'+sth.type+'-name focusable'
                 m.className = 'content-info content-'+sth.type+'-modified'
                 n.textContent = sth.name+((sth.type == 'directory')?'/':'')
                 m.textContent = new Date(sth.modified*1000).toISOString().slice(0, 16).replace(/T/,' ');
@@ -95,7 +95,14 @@ var ContentTreeControl = {
                 dl.innerHTML = '&#xf0c1;'
                 dl.target = '_blank'
                 dl.className = 'content-direct-link'
+                dl.tabIndex = -1
                 t.appendChild(dl)
+                Mousetrap(n).bind('down', function(){
+                    ContentTreeControl.focus(this, 1)
+                });
+                Mousetrap(n).bind('up', function(){
+                    ContentTreeControl.focus(this, -1)
+                });
                 if(sth.type == 'directory'){
                     var l = document.createElement('div')
                     l.className = 'content-element content-directory-list'
@@ -105,13 +112,13 @@ var ContentTreeControl = {
                         ContentTreeControl.expandDir(this)
                     }
                 }else{
-
                     // download link
                     dd = document.createElement('a')
                     dd.href = durl
                     dd.download = sth.name
                     dd.innerHTML = '&#xf019;'
                     dd.className = 'content-download-link'
+                    dd.tabIndex = -1
                     t.appendChild(dd)
                     n.onclick = function(){
                         ContentTreeControl.selectFile(this)
@@ -122,6 +129,11 @@ var ContentTreeControl = {
         var ct = document.getElementById('content-tree')
         ct.innerHTML = ''
         recAdd(ct, contentTree)
+        // first button to focus
+        var fb = ct.getElementsByClassName('focusable')[0]
+        if(!!fb){
+            fb.focus()
+        }
     },
     expandDir: function(el){
         var list  = el.parentNode.getElementsByClassName('content-directory-list')[0],
@@ -142,9 +154,31 @@ var ContentTreeControl = {
         else{
             r = ContentTreeControl.getFilePath(
                 p.parentNode.parentNode.getElementsByClassName('content-directory-name')[0]) + r
-             
         }
         return r
+    },
+    buttonList:function(){
+        var aels = document.getElementsByClassName('focusable'),
+            els = []
+        for(var i = 0; i < aels.length; i++){
+            if(window.getComputedStyle(aels[i]).display != 'none'){
+                els.push(aels[i])
+            }
+        }
+        return els
+    },        
+    focus: function(el, shift){
+        var el  = document.activeElement,
+            aels = this.buttonList(),
+            els  = [],
+            r = el
+        for(var i = 0; i < els.length; i++){
+            if(el.isEqualNode(els[i])){
+                r = els[i + shift]
+                break
+            }
+        }
+        r.focus()
     }
 }
 
@@ -153,7 +187,6 @@ var MessageControl = {
         alert(text)    
     },
     hide:function(){
-
     },
     messageCallback(text, callback){
         return function(){
@@ -193,7 +226,6 @@ var FileControl = {
                            GUIControl.updateFileList()
                        }
                    })
-
     },
     deleteFile: function(filename){
         localforage.removeItem(config.ls_file_prefix+filename, GUIControl.updateFileList)
@@ -294,14 +326,12 @@ var MobileUIControl = {
                 for(var i = 0; i < list.length; i++){
                     var c = document.createElement('div')
                     c.className = 'mobile-file-item mobile-menu-item'
-
                     var n = document.createElement('span')
                     n.textContent = list[i]
                     n.addEventListener(config.mobile_click_event, function(){
                         FileControl.loadFileByFileName(this.textContent)
                         MobileUIControl.closeMenu()
                     })
-                    
                     var d = document.createElement('div')
                     d.className = 'icon large mobile-delete-file'
                     d.innerHTML = '&#xf00d;'
@@ -326,7 +356,6 @@ var ExportControl = {
     exportToPNG: function(){
         // exports selection to PNG file
         if(!lex.selection.set) return;
-
         var s = lex.selection,
             x1 = Math.min(s.x1, s.x2),
             x2 = Math.max(s.x1, s.x2),
@@ -336,15 +365,12 @@ var ExportControl = {
             h  = y2-y1,
             rw = w * config.font_width,
             rh = h * config.font_height       
-
         // create new temprorary canvas
         var canvas = document.createElement('canvas')
         canvas.width  = rw
         canvas.height = rh
-
         var context = canvas.getContext('2d')
         var imageData = context.createImageData(rw, rh)
-
         // fill context with default color
         // (otherwise it remains transparent)
         context.fillStyle= 'rgba('+
@@ -353,7 +379,6 @@ var ExportControl = {
             config.bg_color[2]+','+
             config.bg_color[3]+')'
         context.fillRect(0, 0, rw, rh)
-
         // loop through chars
         for(var y = y1; y < y2 && y < lex.file.lines.length; y++){
             var line = lex.file.lines[y]
@@ -375,11 +400,9 @@ var ExportControl = {
                 }
             }         
         }
-
         canvas.toBlob(function(blob) {
             saveAs(blob, config.export_png_file_name);
         });
-
         if(config.export_clear_selection)
             SelectionControl.clearSelection()
     }
@@ -402,7 +425,6 @@ var InitControl = {
                 })
             }
         }
-        
         if(config.perform_test){
             TestControl.runAll()
         }
@@ -537,12 +559,10 @@ var InitControl = {
     },
     mobileInit: function(){
         log('Running in mobile device!')
-
         // remove 300ms delay for 'click' events in mobile browsers
         document.addEventListener('DOMContentLoaded', function() {
             FastClick.attach(document.body);
         }, false);
-
         // add mobile css
         var s = document.createElement('link')
         s.rel = 'stylesheet'
@@ -771,7 +791,6 @@ var InitControl = {
             }
         })
     },
-
 }
 
 
@@ -810,7 +829,6 @@ var SearchControl = {
                 lines = text.split('\n'),
                 tn = 0,
                 sx = (lex.numbers.width)?(lex.numbers.width+config.line_numbers_padding):0
-            
             // зачистка ' ' и '-' на концах
             for(var y = 0; y < lines.length; y++){
                 while(lines[y].length &&
@@ -819,7 +837,6 @@ var SearchControl = {
                     lines[y] = lines[y].slice(0, -1)
                 }
             }
-
             for(var y = 0; y < lines.length; y++){
                 line = lines[y]
                 var ix = 0
@@ -835,7 +852,6 @@ var SearchControl = {
                         tn = 0
                     }                               // Здесь не стоит else потому, что после обнуления n
                                                     // может сразу начаться новое слово, удовлетворяющее поиску
-                    
                     if(c == str[n]){                // очередная буква совпала
                         if(n < str.length){         // полное совпадение короче строки, которую ищем
                             n++                     // добавляем один символ
