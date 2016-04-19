@@ -1,6 +1,7 @@
 <?php
 $config = array(
-    'directory' => ''
+    'directory'    => '',
+    'allowed_exts' => []
 );
 
 ?>

@@ -2,18 +2,23 @@
 include 'config-default.php';
 include 'config-user.php';
 function directoryTree($dir){
+    global $config;
     $results = array();
     $files = scandir($dir);
 
     foreach($files as $key => $value){
         $path = ($dir . DIRECTORY_SEPARATOR . $value);
+        $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         if(!is_dir($path)) {
-            $results[] = Array(
-                'name' => $value,
-                'type' => 'file',
-                'modified' => filemtime($path),
-                'size' => filesize($path)
-            );
+            if(empty($config['allowed_exts']) ||
+               in_array($ext, $config['allowed_exts'])){
+                $results[] = Array(
+                    'name'     => $value,
+                    'type'     => 'file',
+                    'modified' => filemtime($path),
+                    'size'     => filesize($path)
+                );
+            }
         } else if($value != "." && $value != "..") {
             $results[] = Array(
                 'name' => basename($path),
