@@ -944,7 +944,7 @@ var SearchControl = {
         // TODO: correct minimum line number detection
         var line = arr[arr.length - 1].line - 1
         if(line < lex.screen.y ||
-           line > lex.screen.y + lex.screen.h){
+           line > lex.screen.y + lex.screen.h/2){
             ScreenControl.setScrollY(line)
             redraw()
         }
