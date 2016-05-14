@@ -1,4 +1,7 @@
 var GUIControl = {
+    setWindowTitle: function(fileName){
+        document.title = fileName + ' - ' + config.app_full_name
+    },
     showGotoLinePrompt: function(){
         var userInput = prompt(_('Enter line number'), lex.screen.y)
         if(userInput == null) return;
@@ -29,7 +32,7 @@ var GUIControl = {
     updateBottomBlock: function(){
         var y = lex.screen.y
         var l = lex.file.lines.length - 1
-        l = l?l:1 // prevent division by zero 
+        l = l?l:1 // prevent division by zero
         document.getElementById('line-number').textContent = y
         document.getElementById('line-count').textContent  = l
         document.getElementById('scroll-percentage').textContent = Math.ceil(y/(l)*100)+'%'
@@ -53,13 +56,13 @@ var ContentTreeControl = {
             ContentTreeControl.hide()
         else
             ContentTreeControl.show()
-    },    
+    },
     update: function(callback, err_callback){
         document.getElementById('content-tree').innerHTML = ''
         var req = new XMLHttpRequest()
         var url = config.content_tree_url
         req.open('GET', url, true)
-        req.onreadystatechange = function() { 
+        req.onreadystatechange = function() {
             if(req.readyState == 4){
                 if(req.status == 200){
                     if(typeof callback == 'function')
@@ -144,6 +147,7 @@ var ContentTreeControl = {
         var path = config.content_real_path+ContentTreeControl.getFilePath(el)
         FileControl.loadFileByURL(path, function(){
             ContentTreeControl.hide()
+            GUIControl.setWindowTitle(el.textContent)
         })
     },
     getFilePath: function(el){
@@ -166,7 +170,7 @@ var ContentTreeControl = {
             }
         }
         return els
-    },        
+    },
     focus: function(el, shift){
         var el  = document.activeElement,
             aels = this.buttonList(),
@@ -184,7 +188,7 @@ var ContentTreeControl = {
 
 var MessageControl = {
     show:function(text) {
-        alert(text)    
+        alert(text)
     },
     hide:function(){
     },
@@ -252,6 +256,7 @@ var FileControl = {
         localforage.getItem(config.ls_file_prefix+filename, function(err, value){
             FileControl.loadFileBySource(
                 Coders.StringToUint8Array(value), callback)
+            GUIControl.setWindowTitle(filename)
         })
     },
     loadFileByURL: function(url, callback){
@@ -259,7 +264,7 @@ var FileControl = {
         req = new XMLHttpRequest()
         req.responseType = "arraybuffer"
         req.open('GET', url, true)
-        req.onreadystatechange = function() { 
+        req.onreadystatechange = function() {
             if(req.readyState == 4){
                 if(req.status == 200){
                     FileControl.loadFileBySource(req.response)
@@ -364,7 +369,7 @@ var ExportControl = {
             w  = x2-x1,
             h  = y2-y1,
             rw = w * config.font_width,
-            rh = h * config.font_height       
+            rh = h * config.font_height
         // create new temprorary canvas
         var canvas = document.createElement('canvas')
         canvas.width  = rw
@@ -398,7 +403,7 @@ var ExportControl = {
                         (char, font, (x-x1), (y-y1), context)
                     }
                 }
-            }         
+            }
         }
         canvas.toBlob(function(blob) {
             saveAs(blob, config.export_png_file_name);
@@ -475,7 +480,7 @@ var InitControl = {
                 event = window.event;
             if(event.wheelDelta){
                 delta = event.wheelDelta/120;
-            }else if (event.detail){ 
+            }else if (event.detail){
                 delta = -event.detail/3;
             }
             if(delta){
@@ -527,6 +532,7 @@ var InitControl = {
                                                  (new Uint8Array(event.target.result)))
                         if(theFile.name == lastname){
                             FileControl.loadFileBySource(new Uint8Array(event.target.result))
+                            GUIControl.setWindowTitle(theFile.name)
                             document.activeElement.blur()
                         }
                     }
@@ -848,7 +854,7 @@ var SearchControl = {
                     c = line[x]
                     if(c != str[n]){
                         tr = []                     // если очередной символ не совпал нужно сбросить
-                        n  = 0                      // счетчик символов и все предыдущие блоки 
+                        n  = 0                      // счетчик символов и все предыдущие блоки
                         tn = 0
                     }                               // Здесь не стоит else потому, что после обнуления n
                                                     // может сразу начаться новое слово, удовлетворяющее поиску
@@ -937,7 +943,7 @@ var SearchControl = {
         if(!arr) return;
         // TODO: correct minimum line number detection
         var line = arr[arr.length - 1].line - 1
-        if(line < lex.screen.y || 
+        if(line < lex.screen.y ||
            line > lex.screen.y + lex.screen.h){
             ScreenControl.setScrollY(line)
             redraw()

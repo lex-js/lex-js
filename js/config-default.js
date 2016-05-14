@@ -24,13 +24,13 @@ var config = {
     // true : используются шрифты из new/
     // false: используется fonts.js
     load_font_from_source: false,
+    app_full_name: 'Lex.js',
 
     // включать ли показ номеров строк при открытии нового файла
-    show_line_numbers: true,    
+    show_line_numbers: true,
     mobile_style_url: 'css/mobile.css',
     // use it only for testing
     mobile_click_event: 'click',
-    
     // Запускать тесты
     perform_test: false,
 
@@ -43,7 +43,7 @@ var config = {
     get_content_tree_on_load: true,
     content_tree_url: 'files/filectl.php?action=tree',
     content_real_path: 'files/content/',
-    
+
     // Хранить ли source файла в памяти (см. lex.file.source)
     // [true только для отладки]
     save_file_source: false,
@@ -56,8 +56,8 @@ var config = {
     export_png_file_name: 'lexicon_screenshot.png',
     // очищать выделение после сохранения файла?
     export_clear_selection: true,
-    
-    // Часть области экрана, на которую можно 
+
+    // Часть области экрана, на которую можно
     // проскроллить после достижения конца файла
     max_overscroll: 0.3,
     // Минимальный отступ по х (количество столбцов на экране)
@@ -80,7 +80,7 @@ var config = {
     // Минимальный сдвиг при прокрутке пальцем в мобильных устройствах
     touch_x_min: 10,
     touch_y_min: 10,
-    // Коэффицент скорости прокрутки в мобильных устройствах 
+    // Коэффицент скорости прокрутки в мобильных устройствах
     touch_x_speed: 1,
     touch_y_speed: 0.5,
 
@@ -95,7 +95,7 @@ var config = {
     // 4 = smart case-insensitive search
     // default = 4
     search_function: 4,
-    
+
     // Настройки парсера.
     // Управляющие коды, по которым происходит
     // переключение шрифтов и режимов
@@ -153,7 +153,7 @@ var lex = {
     },
     content_tree:{
         tree: null,
-        active: false        
+        active: false
     }
 }
 
