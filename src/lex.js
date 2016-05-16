@@ -180,7 +180,7 @@ var DrawControl = {
     },
     makeImageData: function(){
         if(config.load_font_from_source && !FontControl.fontsLoaded()) return false;
-        var t, w, h, canvas, context, data, fg, bg, u, char, pos
+        var t, w, h, canvas, context, data, fg, bg, u, char, pos, imageData
         w = config.font_width
         h = config.font_height
         fg = config.fg_color
@@ -296,7 +296,7 @@ var DrawControl = {
             for(var i = 0; i < rs.length; i++){
                 var tr = rs[i]
                 for(var j = 0; j < tr.length; j++){
-                    r = tr[j]
+                    var r = tr[j]
                     if(r.line >= lex.screen.y &&
                        r.line <= lex.screen.y + lex.screen.h){
                         var t = (i == lex.search.active_entry_number)?
@@ -515,8 +515,8 @@ var ScreenControl = {
             d = document,
             e = d.documentElement,
             g = d.getElementsByTagName('body')[0],
-            x = w.innerWidth || e.clientWidth || g.clientWidth
-        y = w.innerHeight|| e.clientHeight|| g.clientHeight
+            x = w.innerWidth || e.clientWidth || g.clientWidth,
+            y = w.innerHeight|| e.clientHeight|| g.clientHeight
         return {w:x,h:y}
     },
     expandScreen: function(){

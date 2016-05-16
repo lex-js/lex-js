@@ -82,7 +82,8 @@ var ContentTreeControl = {
                 var sth = list[i],
                     t = document.createElement('div'),
                     n = document.createElement('button'),
-                    m = document.createElement('span')
+                    m = document.createElement('span'),
+                    dl, durl, dd
                 t.className = 'content-element content-'+sth.type
                 n.className = 'content-element content-'+sth.type+'-name focusable'
                 m.className = 'content-info content-'+sth.type+'-modified'
@@ -92,7 +93,7 @@ var ContentTreeControl = {
                 t.appendChild(n)
                 t.appendChild(m)
                 // direct link
-                var durl = config.content_real_path+ContentTreeControl.getFilePath(n)
+                durl = config.content_real_path+ContentTreeControl.getFilePath(n),
                 dl = document.createElement('a')
                 dl.href = durl
                 dl.innerHTML = '&#xf0c1;'
@@ -760,9 +761,9 @@ var InitControl = {
         function canvasMouseMove(event){
             if(lex.selection.start){
                 var canvas = document.getElementById('canvas'),
-                    rect   = canvas.getBoundingClientRect()
-                selStartRealX = (event.pageX - rect.left),
-                selStartRealY = (event.pageY - rect.top)
+                    rect   = canvas.getBoundingClientRect(),
+                    selStartRealX = (event.pageX - rect.left),
+                    selStartRealY = (event.pageY - rect.top)
                 lex.selection.x2 = lex.screen.x + Math.round(selStartRealX / config.font_width)
                 lex.selection.y2 = lex.screen.y + Math.round(selStartRealY / config.font_height)
                 if(lex.selection.x2 != lex.selection.x1 &&
