@@ -317,7 +317,7 @@ var DrawControl = {
             }
         }
     },
-    redrawAll(){
+    redrawAll: function(){
         var canvas = document.getElementById('canvas')
         var context = canvas.getContext('2d')
         GUIControl.updateBottomBlock()

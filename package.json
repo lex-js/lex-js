@@ -1,0 +1,19 @@
+{
+  "name": "lex.js",
+  "version": "1.0.0",
+  "description": "LEXICON viewer JS port",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lex-js/lex-js.git"
+  },
+  "author": "Klntsky",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lex-js/lex-js/issues"
+  },
+  "homepage": "https://github.com/lex-js/lex-js#readme"
+}
