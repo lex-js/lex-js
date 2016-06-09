@@ -8,5 +8,5 @@ $header = '<title>' . htmlspecialchars($config['page_title']) . '</title>
 <meta name="author" content="' . htmlspecialchars($config['meta_author']) . '">';
 
 $content = file_get_contents($config['static_page_file']);
-$content = str_replace('<title>Lex.js</title>', $header, $content);
+$content = str_replace($config['static_page_file_replacement'], $header, $content);
 echo $content;
