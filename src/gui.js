@@ -273,7 +273,7 @@ var FileControl = {
                     if(!!callback)
                         callback(lex.file)
                 }else{
-                    log('Error while loading file ('+req.status+'): '+url)
+                    alert('Error while loading file ('+req.status+'): '+url)
                 }
             }
         }
