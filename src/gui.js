@@ -11,7 +11,7 @@ var GUIControl = {
             return
         }
         ScreenControl.setScrollY(userInput)
-        redraw()
+        DrawControl.redrawAll()
     },
     updateFileList: function(){
         var el = document.getElementById('file-list')
@@ -248,7 +248,7 @@ var FileControl = {
         var reader = new FileReader()
         reader.onload = (function(){
             return function(event){
-                FileControl.loadFileBySource(event.target.result, redraw)
+                FileControl.loadFileBySource(event.target.result, DrawControl.redrawAll)
             };
         })(file);
         reader.readAsArrayBuffer(file);
@@ -313,7 +313,7 @@ var FileControl = {
         SearchControl.flush()
         ScreenControl.setDefaults()
         SelectionControl.clearSelection()
-        setTimeout(redraw, 10)
+        setTimeout(DrawControl.redrawAll, 10)
     }
 }
 
@@ -426,7 +426,7 @@ var InitControl = {
             for(var i = 0; i <= config.font_max; i++){
                 FontControl.loadFont(i, function(){
                     if(DrawControl.makeImageData()){
-                        redraw()
+                        DrawControl.redrawAll()
                     }
                 })
             }
@@ -441,7 +441,7 @@ var InitControl = {
         if(config.load_file_from_source && !is_local){
             FileControl.loadFileByURL(config.init_file, InitControl.postInit)
         }else{
-            FileControl.loadFileBySource(lex.file.source, redraw)
+            FileControl.loadFileBySource(lex.file.source, DrawControl.redrawAll)
         }
         InitControl.postInit()
     },
@@ -487,9 +487,6 @@ var InitControl = {
             if(delta){
                 ScreenControl.scrollY(delta)
             }
-            // if (event.preventDefault)
-            //     event.preventDefault()
-            // event.returnValue = false
         }
         var canvas = document.getElementById('canvas')
         canvas.addEventListener('DOMMouseScroll', wheel, false);
@@ -497,7 +494,7 @@ var InitControl = {
         canvas.addEventListener('touchmove', TouchControl.handleMove, false);
         canvas.addEventListener('touchend', TouchControl.handleEnd, false);
         window.onmousewheel = document.onmousewheel = wheel;
-        window.addEventListener('resize',function(){ScreenControl.expandScreen(); redraw()})
+        window.addEventListener('resize',function(){ScreenControl.expandScreen(); DrawControl.redrawAll()})
         document.getElementById('search-field').addEventListener('keyup', SearchControl.performSearch)
         document.getElementById('search-close').addEventListener('click', function(){
             SearchControl.clearSearchField()
@@ -549,12 +546,8 @@ var InitControl = {
             var filename = document.getElementById('file-list').value
             FileControl.deleteFile(filename)
         })
-        document.getElementById('button-line-numbers').addEventListener("click", function(){
-            LineNumbersControl.toggleLineNumbers()
-        })
-        document.getElementById('button-goto-line').addEventListener("click", function(){
-            GUIControl.showGotoLinePrompt()
-        })
+        document.getElementById('button-line-numbers').addEventListener("click", LineNumbersControl.toggleLineNumbers)
+        document.getElementById('button-goto-line').addEventListener("click", GUIControl.showGotoLinePrompt)
         document.getElementById('button-search').addEventListener('click', function(){
             if(lex.search.active){
                 SearchControl.deactivateSearchField()
@@ -578,7 +571,6 @@ var InitControl = {
         document.head.appendChild(s)
     },
     mobileEventsInit: function(){
-        var e = config.mobile_click_event
         var closeMenu = function(){
             // отложить закрытие меню для достижения
             // лучшего визуального эффекта
@@ -605,7 +597,7 @@ var InitControl = {
             },
         }
         for(var elId in arr){
-            document.getElementById(elId).addEventListener(e, arr[elId])
+            document.getElementById(elId).addEventListener(config.mobile_click_event, arr[elId])
         }
     },
     initMousetrap: function(){
@@ -660,7 +652,7 @@ var InitControl = {
                 lex.screen.x = 0
                 SelectionControl.clearSelection()
                 ContentTreeControl.hide()
-                redraw()
+                DrawControl.redrawAll()
             },
             'alt+f3':function(){
                 SearchControl.activateSearchField();
@@ -713,12 +705,8 @@ var InitControl = {
             'ctrl+right':function(){
                 ScreenControl.scrollX(-1*config.ctrl_scroll_k)
             },
-            'end':function(){
-                ScreenControl.scrollEndY()
-            },
-            'home':function(){
-                ScreenControl.scrollHomeY()
-            },
+            'end': ScreenControl.scrollEndY,
+            'home': ScreenControl.scrollHomeY,
             'pagedown':function(){
                 ScreenControl.scrollY(-lex.screen.h+1)
             },
@@ -751,11 +739,11 @@ var InitControl = {
             var rect = canvas.getBoundingClientRect(),
                 selStartRealX = (event.pageX - rect.left),
                 selStartRealY = (event.pageY - rect.top)
-            lex.selection.x1 = lex.screen.x + Math.round(selStartRealX/config.font_width)
-            lex.selection.y1 = lex.screen.y + Math.round(selStartRealY/config.font_height)
+            lex.selection.x1 = lex.screen.x + Math.round(selStartRealX / config.font_width)
+            lex.selection.y1 = lex.screen.y + Math.round(selStartRealY / config.font_height)
             lex.selection.start = true
             lex.selection.set = false
-            redraw()
+            DrawControl.redrawAll()
             event.preventDefault();
         })
         function canvasMouseMove(event){
@@ -772,7 +760,7 @@ var InitControl = {
                 }else{
                     lex.selection.set = false
                 }
-                redraw()
+                DrawControl.redrawAll()
             }
         }
         canvas.addEventListener('mousemove',canvasMouseMove)
@@ -791,7 +779,7 @@ var InitControl = {
         document.addEventListener('copy', function(e){
             var selectionText = SelectionControl.getSelectionText()
             if(selectionText != ''){
-                e.clipboardData.setData('text/plain',selectionText);
+                e.clipboardData.setData('text/plain', selectionText);
                 e.preventDefault();
                 window.getSelection().removeAllRanges();
                 SelectionControl.clearSelection()
@@ -800,15 +788,6 @@ var InitControl = {
     },
 }
 
-
-var TipsControl = {
-    clearNow: function(){
-    },
-    showTip: function(text){
-    },
-    showRandomTip: function(){
-    },
-}
 
 var SearchControl = {
     searchFunctions: [
@@ -907,7 +886,7 @@ var SearchControl = {
         setTimeout(function(){
             el.focus()
         },10)
-        redraw()
+        DrawControl.redrawAll()
     },
     deactivateSearchField:function(){
         lex.search.active = false
@@ -915,12 +894,12 @@ var SearchControl = {
         var el2 = document.getElementById('block-search')
         el2.style['z-index'] = 0;
         el.blur()
-        redraw()
+        DrawControl.redrawAll()
     },
     clearSearchField:function(){
         var el = document.getElementById('search-field')
         el.value = ''
-        redraw()
+        DrawControl.redrawAll()
     },
     updateSearchBlock: function(){
         var number = (lex.search.results.length==0)?0:(lex.search.active_entry_number+1)
@@ -947,7 +926,7 @@ var SearchControl = {
         if(line < lex.screen.y ||
            line > lex.screen.y + lex.screen.h/2){
             ScreenControl.setScrollY(line)
-            redraw()
+            DrawControl.redrawAll()
         }
     },
     searchNext:function(){
@@ -980,7 +959,7 @@ var SearchControl = {
     performSearch: function(){
         SearchControl.performSearchByFunction()
         SearchControl.updateSearchBlock()
-        redraw()
+        DrawControl.redrawAll()
     },
     performSearchByFunction: function(){
         var text = lex.index.text,

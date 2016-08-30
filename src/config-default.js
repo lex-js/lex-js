@@ -40,7 +40,7 @@ var config = {
 
     // Файлы, хранящиеся на сервере
     content_tree_enabled: true,
-    get_content_tree_on_load: true,
+    get_content_tree_on_load: false, // not implemented
     content_tree_url: 'files/filectl.php?action=tree',
     content_real_path: 'files/content/',
 
@@ -64,7 +64,7 @@ var config = {
     max_x_scroll: 2,
     line_numbers_padding: 2,
     // Скорость прокрутки при нажатом ctrl
-    ctrl_scroll_k: 8,
+    ctrl_scroll_k: 8, // not implemented
 
     // Цвет текста, rgba
     fg_color:[0,0,0,255],
@@ -88,10 +88,10 @@ var config = {
     max_char_code: 8,
 
     // search function
-    // 0 = example function, returns nothing
-    // 1 = simple case-sensitive search
-    // 2 = simple case-insensitive search
-    // 3 = smart case-sensitive search search
+    // 0 = example function, returns nothing (not implemented)
+    // 1 = simple case-sensitive search (not implemented)
+    // 2 = simple case-insensitive search (not implemented)
+    // 3 = smart case-sensitive search search (not implemented)
     // 4 = smart case-insensitive search
     // default = 4
     search_function: 4,
@@ -100,22 +100,22 @@ var config = {
     // Управляющие коды, по которым происходит
     // переключение шрифтов и режимов
     parser:{
-	fonts:{
-	    48: 0,
-	    49: 1,
-	    50: 2,
-	    51: 3,
-	    52: 4,
-	    53: 5,
-	    54: 6,
-	    55: 7,
-	    56: 8,
-	    57: 9,
-	    205: 10,
-	},
-	underline_true:95,
-	underline_false:46,
-	command: 255,
+        fonts:{
+            48: 0,
+            49: 1,
+            50: 2,
+            51: 3,
+            52: 4,
+            53: 5,
+            54: 6,
+            55: 7,
+            56: 8,
+            57: 9,
+            205: 10,
+        },
+        underline_true:95,
+        underline_false:46,
+        command: 255,
     }
 }
 
@@ -124,32 +124,32 @@ var lex = {
     file     :{},
     filelist :{},
     index:{
-	lines:[],
+        lines:[],
     },
     search:{
-	active: false,
-	regexp: false,
-	string: "",
-	results:[],
+    active: false,
+    regexp: false,
+    string: "",
+    results:[],
         active_entry_number:0,
     },
     selection:{
-	set: false,
-	start: false,
-	x1: 0,
-	y1: 0,
-	x2: 0,
-	y2: 0,
+        set: false,
+        start: false,
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0,
     },
     screen:{
-	x:0,
-	y:0,
-	w:140,
-	h:10,
+        x:0,
+        y:0,
+        w:140,
+        h:10,
     },
     numbers:{
-	set: config.show_line_numbers,
-	width: 0,
+        set: config.show_line_numbers,
+        width: 0,
     },
     content_tree:{
         tree: null,

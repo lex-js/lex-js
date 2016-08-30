@@ -172,11 +172,11 @@ var Coders = {
 var DrawControl = {
     setFontBGColor: function(bg_color){
         config.bg_color = bg_color
-        redraw()
+        DrawControl.redrawAll()
     },
     setFontFGColor: function(fg_color){
         config.fg_color = fg_color
-        redraw()
+        DrawControl.redrawAll()
     },
     makeImageData: function(){
         if(config.load_font_from_source && !FontControl.fontsLoaded()) return false;
@@ -327,8 +327,6 @@ var DrawControl = {
     }
 }
 
-var redraw = DrawControl.redrawAll
-
 var IndexControl = {
     // Индекс. Используется для поиска.
     rebuildIndex: function(){
@@ -418,7 +416,7 @@ var DevControl = {
             lex.file.lines[f-48] = new Uint8Array(r)
         }
         IndexControl.rebuildIndex()
-        redraw()
+        DrawControl.redrawAll()
     }
 }
 
@@ -433,7 +431,7 @@ var LineNumbersControl = {
         lex.numbers.width = 0
         SearchControl.flush()
         ScreenControl.checkScrollPosition()
-        redraw()
+        DrawControl.redrawAll()
     },
     addLineNumbers: function(){
         lex.numbers.width = (lex.file.lines.length+'').length+1
@@ -448,7 +446,7 @@ var LineNumbersControl = {
         lex.index.maxlen += lex.numbers.width + config.line_numbers_padding
         ScreenControl.checkScrollPosition()
         SearchControl.flush()
-        redraw()
+        DrawControl.redrawAll()
     },
     toggleLineNumbers: function(){
         if(lex.numbers.set){
@@ -469,7 +467,7 @@ var SelectionControl = {
             x2: 0,
             y2: 0,
         }
-        redraw()
+        DrawControl.redrawAll()
     },
     getSelectionText: function(){
         if(!lex.selection.set) return '';
@@ -536,7 +534,7 @@ var ScreenControl = {
     setScrollY:function(y){
         lex.screen.y = y
         ScreenControl.checkScrollPosition()
-        redraw()
+        DrawControl.redrawAll()
     },
     checkScrollPosition: function(){
         if(lex.screen.x > lex.index.maxlen - lex.screen.w + config.max_x_scroll){
@@ -562,27 +560,27 @@ var ScreenControl = {
     scrollHomeY:function(){
         if(lex.content_tree.active) return;
         lex.screen.y = 0
-        redraw()
+        DrawControl.redrawAll()
     },
     scrollEndY:function(){
         if(lex.content_tree.active) return;
         lex.screen.y = lex.file.lines.length - lex.screen.h
         ScreenControl.checkScrollPosition()
-        redraw()
+        DrawControl.redrawAll()
     },
     scrollX:function(x){
         if(lex.content_tree.active) return;
         x = Math.round(x)
         lex.screen.x -= x
         ScreenControl.checkScrollPosition()
-        redraw()
+        DrawControl.redrawAll()
     },
     scrollY:function(y){
         if(lex.content_tree.active) return;
         y = Math.round(y)
         lex.screen.y -= y
         ScreenControl.checkScrollPosition()
-        redraw()
+        DrawControl.redrawAll()
     },
 }
 
@@ -709,7 +707,7 @@ var TestControl = {
         lex.selection.y1 = 0
         lex.selection.y2 = 4
         lex.selection.set = true
-        redraw()
+        DrawControl.redrawAll()
         ExportControl.exportToPNG()
     },
     logTestResult: function(result){
