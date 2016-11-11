@@ -469,6 +469,13 @@ var SelectionControl = {
         }
         DrawControl.redrawAll()
     },
+    selectAll: function () {
+        lex.selection.set = 1;
+        lex.selection.x1 = 0;
+        lex.selection.x2 = Math.max.apply(Math, lex.file.lines.map(a => a.length));
+        lex.selection.y1 = 0;
+        lex.selection.y2 = lex.file.lines.length;
+    },
     getSelectionText: function(){
         if(!lex.selection.set) return '';
         var s = lex.selection,
