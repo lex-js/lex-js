@@ -478,32 +478,26 @@ var SelectionControl = {
             y2 = Math.max(s.y1, s.y2),
             ls = lex.file.lines,
             l  = ls.length
-        var r = ''
-        for(var y = y1 - lex.screen.y;
-            y < y2 - lex.screen.y &&
-            l > y  - lex.screen.y; y++){
-            if(!!ls[y]){
-                if(!!ls[y+ lex.screen.y]){
-                    var line = Parser.parseLine
-                    (ls[y+ lex.screen.y])
-                    for(var x = x1;
-                        x < x2 &&
-                        x < line.length; x++){
-                        if(!!line[x]){
-                            r += byteToCharCP866[line[x].char]
-                        }else{
-                            r += ' '
-                        }
-                    }
-                }else{
-                    r += '\n'
-                }
-            }
-            r += '\n'
+      var r = ''
+      for (var y = y1; y < y2; y++) {
+        // we are currently not exceeded the
+        // height of file
+        if (!!ls[y]) {
+          var line = Parser.parseLine(ls[y]);
+          for (var x = x1;
+            x < x2 && x < line.length; x++) {
+              if (!!line[x]) {
+                r += byteToCharCP866[line[x].char]
+              } else {
+                r += ' '
+              }
+          }
+          r += '\n'
         }
-        // remove last '\n'
-        r = r.substr(0,r.length-1)
-        return r
+      }
+      // remove last '\n'
+      r = r.substr(0,r.length-1);
+      return r
     },
 }
 
