@@ -458,7 +458,7 @@ var LineNumbersControl = {
 }
 
 var SelectionControl = {
-    clearSelection: function(){
+    clearSelection: function() {
         lex.selection = {
             set: false,
             start: false,
@@ -468,6 +468,12 @@ var SelectionControl = {
             y2: 0,
         }
         DrawControl.redrawAll()
+    },
+    copySelection: function () {
+        return Object.assign({}, lex.selection)
+    },
+    setSelection: function (obj) {
+        lex.selection = obj
     },
     selectAll: function () {
         lex.selection.set = 1;

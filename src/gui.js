@@ -91,7 +91,9 @@ var ContentTreeControl = {
                 m.textContent = new Date(sth.modified*1000).toISOString().slice(0, 16).replace(/T/,' ');
                 el.appendChild(t)
                 t.appendChild(n)
-                t.appendChild(m)
+                if (!isMobile()) {
+                  t.appendChild(m)
+                }
                 // direct link
                 durl = config.content_real_path+ContentTreeControl.getFilePath(n),
                 dl = document.createElement('a')
@@ -149,6 +151,7 @@ var ContentTreeControl = {
         FileControl.loadFileByURL(path, function(){
             ContentTreeControl.hide()
             GUIControl.setWindowTitle(el.textContent)
+            lex.file.name = el.textContent
         })
     },
     getFilePath: function(el){
@@ -258,6 +261,7 @@ var FileControl = {
             FileControl.loadFileBySource(
                 Coders.StringToUint8Array(value), callback)
             GUIControl.setWindowTitle(filename)
+            lex.file.name = filename
         })
     },
     loadFileByURL: function(url, callback){
@@ -359,37 +363,31 @@ var MobileUIControl = {
 }
 
 var ExportControl = {
-    exportToPNG: function(){
-        // exports selection to PNG file
-        if(!lex.selection.set) return;
-        var s = lex.selection,
-            x1 = Math.min(s.x1, s.x2),
-            x2 = Math.max(s.x1, s.x2),
-            y1 = Math.min(s.y1, s.y2),
-            y2 = Math.max(s.y1, s.y2),
-            w  = x2-x1,
+
+    // get canvas for rectangle area
+    makeCanvas: function (x1, x2, y1, y2) {
+        var w = x2 - x1,
             h  = y2-y1,
             rw = w * config.font_width,
-            rh = h * config.font_height
+            rh = h * config.font_height;
         // create new temprorary canvas
         var canvas = document.createElement('canvas')
-        canvas.width  = rw
+            canvas.width  = rw
         canvas.height = rh
-        var context = canvas.getContext('2d')
-        var imageData = context.createImageData(rw, rh)
+        var context = canvas.getContext('2d'),
+            imageData = context.createImageData(rw, rh);
         // fill context with default color
         // (otherwise it remains transparent)
-        context.fillStyle= 'rgba('+
-            config.bg_color[0]+','+
-            config.bg_color[1]+','+
-            config.bg_color[2]+','+
-            config.bg_color[3]+')'
-        context.fillRect(0, 0, rw, rh)
+        context.fillStyle = 'rgba('+ config.bg_color[0]+','+
+                            config.bg_color[1]+','+
+                            config.bg_color[2]+','+
+                            config.bg_color[3]+')'
+        context.fillRect(0, 0, rw, rh);
         // loop through chars
         for(var y = y1; y < y2 && y < lex.file.lines.length; y++){
             var line = lex.file.lines[y]
             if(typeof line == 'undefined') break;
-            line = Parser.parseLine(line)
+            line = Parser.parseLine(line);
             for(var x = x1; x < line.length && x < x2; x++){
                 var char      = line[x].char,
                     underline = line[x].underline,
@@ -398,7 +396,7 @@ var ExportControl = {
                     context.putImageData
                     (lex.fonts[font].bitmaps[char],
                      (x-x1) * config.font_width,
-                     (y-y1) * config.font_height)
+                     (y-y1) * config.font_height);
                     if(underline){
                         DrawControl.underlineChar
                         (char, font, (x-x1), (y-y1), context)
@@ -406,14 +404,85 @@ var ExportControl = {
                 }
             }
         }
+        return canvas
+    },
+
+    // exports selection to PNG file
+    exportToPNG: function(){
+        if(!lex.selection.set) return;
+        var s = lex.selection;
+        var canvas = ExportControl.makeCanvas(Math.min(s.x1, s.x2),
+                                              Math.max(s.x1, s.x2),
+                                              Math.min(s.y1, s.y2),
+                                              Math.max(s.y1, s.y2));
         canvas.toBlob(function(blob) {
-            saveAs(blob, config.export_png_file_name);
+            saveAs(blob, ExportControl.exportFileName('png'));
         });
         if(config.export_clear_selection)
             SelectionControl.clearSelection()
-    }
-}
+    },
 
+    // construct export file name
+    // TODO: add line number in file name
+    exportFileName: function (ext) {
+        return config.export_png_file_name_prefix +
+            (lex.file.name ? lex.file.name : '')
+                     .trim()
+                     .replace(/[^a-z0-9а-яА-Я]/gi, '_')
+                     .replace(/_{2,}/gi, '_') +
+             config.export_png_file_name_suffix + (ext ? ext : ext)
+    },
+
+    exportToPDF: function () {
+        // TODO: remove callback hell
+        InitControl.preloadJS
+        ('lib/pdfmake.min.js', 'pdfMake',
+         function () {
+             InitControl.preloadJS
+             ('lib/vfs_fonts.js',
+              function () { typeof window.pdfMake.vfs != 'undefined' },
+              function () {
+                  var doc = {content: []};
+                  var ph = 40;
+                  for 
+                     content: [
+                         {
+                             image: 'data:image/jpeg;base64,...encodedContent...'
+                         }
+                     ]
+                 };
+                 pdfMake.createPdf(doc).download();
+             })
+         });
+    },
+}
+/* function () {
+   ExportControl.preloadJSPDF(function () {
+   var y_step = 40, // move to config
+   dw = lex.index.maxlen * config.font_width,
+   dh = y_step * config.font_height,
+   doc = new jsPDF('p', 'pt', [dw, dh], false),
+   lines = lex.index.text.split('\n');
+   for (var y = 0; y < lex.file.lines.length; y += y_step) {
+   var canvas = ExportControl.makeCanvas(0, lex.index.maxlen,
+   y, y + y_step);
+
+   doc.addImage(canvas.toDataURL('image/png'), 'png', 0, 0,
+   dw, dh, undefined, 'slow');
+
+   // get index
+   var txt = []
+   for (var iy = 0; iy < y_step; iy++) {
+   txt.push(lines[y + iy])
+   }
+   doc.text(txt, 0, 0)
+   doc.addPage();
+   console.log('added page');
+   }
+   doc.save('test.pdf');
+   })
+
+   } */
 var InitControl = {
     init: function(){
         // on document load
@@ -532,6 +601,7 @@ var InitControl = {
                             FileControl.loadFileBySource(new Uint8Array(event.target.result))
                             GUIControl.setWindowTitle(theFile.name)
                             document.activeElement.blur()
+                            lex.file.name = theFile.name
                         }
                     }
                 })(f)
@@ -786,6 +856,20 @@ var InitControl = {
             }
         })
     },
+
+    preloadJS: function (src, providedName, callback) {
+        if (typeof provided = 'function' ?
+                              provided() :
+                              (typeof window[provided] != undefined)) {
+            callback()
+        } else {
+            var script = document.createElement('script');
+            script.type = 'text/javascript'
+            script.src = src
+            script.onload = callback;
+            document.head.appendChild(script);
+        }
+    }
 }
 
 

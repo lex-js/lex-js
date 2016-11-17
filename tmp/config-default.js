@@ -1,3 +1,5 @@
+'use strict';
+
 // Не изменяйте этот файл!
 // Чтобы поменять значение, создайте файл
 // config.js в корне проекта и замените нужные
@@ -12,7 +14,7 @@ var config = {
     // Выводить лог
     logging: true,
     // Максимальный номер шрифта
-    font_max:10,
+    font_max: 10,
     // Размеры шрифта
     font_width: 8,
     font_height: 19,
@@ -36,7 +38,7 @@ var config = {
 
     load_file_from_source: true,
     // Файл, открываемый при старте, если load_file_from_source == true
-    init_file:'/sample/info.txt',
+    init_file: '/sample/info.txt',
 
     // Файлы, хранящиеся на сервере
     content_tree_enabled: true,
@@ -61,7 +63,7 @@ var config = {
     // экспорт в PDF
     export_pdf_jspdf_path: 'lib/jspdf.min.js',
     export_pdf_image_height: 100,
-    
+
     // Часть области экрана, на которую можно
     // проскроллить после достижения конца файла
     max_overscroll: 0.3,
@@ -72,15 +74,15 @@ var config = {
     ctrl_scroll_k: 8, // not implemented
 
     // Цвет текста, rgba
-    fg_color: [0,0,0,255],
+    fg_color: [0, 0, 0, 255],
     // Цвет фона, rgba
-    bg_color: [255,255,255,255],
+    bg_color: [255, 255, 255, 255],
     // Цвет выделения
-    selection_fill_color: [0,0,255,100],
+    selection_fill_color: [0, 0, 255, 100],
     // Цвет результатов поиска
-    search_fill_color: [255,255,0,100],
+    search_fill_color: [255, 255, 0, 100],
     // Цвет активного результата поиска
-    search_active_fill_color: [0,255,0,100],
+    search_active_fill_color: [0, 255, 0, 100],
 
     // Минимальный сдвиг при прокрутке пальцем в мобильных устройствах
     touch_x_min: 10,
@@ -104,8 +106,8 @@ var config = {
     // Настройки парсера.
     // Управляющие коды, по которым происходит
     // переключение шрифтов и режимов
-    parser:{
-        fonts:{
+    parser: {
+        fonts: {
             48: 0,
             49: 1,
             50: 2,
@@ -116,13 +118,13 @@ var config = {
             55: 7,
             56: 8,
             57: 9,
-            205: 10,
+            205: 10
         },
-        underline_true:95,
-        underline_false:46,
-        command: 255,
+        underline_true: 95,
+        underline_false: 46,
+        command: 255
     }
-}
+};
 
 var lex = {
     fonts: {},
@@ -131,14 +133,14 @@ var lex = {
     },
     filelist: {},
     index: {
-        lines:[],
+        lines: []
     },
     search: {
         active: false,
         regexp: false,
         string: "",
         results: [],
-        active_entry_number:0,
+        active_entry_number: 0
     },
     selection: {
         set: false,
@@ -146,24 +148,25 @@ var lex = {
         x1: 0,
         y1: 0,
         x2: 0,
-        y2: 0,
+        y2: 0
     },
     screen: {
         x: 0,
         y: 0,
         w: 140,
-        h: 10,
+        h: 10
     },
     numbers: {
         set: config.show_line_numbers,
-        width: 0,
+        width: 0
     },
     content_tree: {
         tree: null,
         active: false
     }
-}
+};
 
-for(var i = 0; i <= config.font_max; i++){
-    lex.fonts[i] = {bitmaps:{}}
+for (var i = 0; i <= config.font_max; i++) {
+    lex.fonts[i] = { bitmaps: {} };
 }
+//# sourceMappingURL=config-default.js.map
