@@ -4,3 +4,4 @@ files/content/*
 config.js
 node_modules/*
 *.map
+tmp/*
