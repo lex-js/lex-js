@@ -812,7 +812,7 @@ var InitControl = {
     },
 
     preloadJS: function (src, providedName, callback) {
-        if (typeof provided = 'function' ?
+        if (typeof provided == 'function' ?
                               provided() :
                               (typeof window[provided] != undefined)) {
             callback()
