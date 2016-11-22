@@ -43,7 +43,8 @@ var ContentTreeControl = {
     show: function(){
         lex.content_tree.active = true
         this.update(this.load, function(err_code){
-            alert('Can\'t get directory hierarchy from server: error '+err_code)
+            err_code ? alert('Can\'t get directory hierarchy from server: error '+err_code)
+                : alert("[Can't parse response JSON] You should set up the webserver with PHP support to use content listing.");
         })
         document.getElementById('content-tree-container').style.display = 'block'
     },
@@ -65,8 +66,15 @@ var ContentTreeControl = {
         req.onreadystatechange = function() {
             if(req.readyState == 4){
                 if(req.status == 200){
-                    if(typeof callback == 'function')
-                        callback(JSON.parse(req.responseText))
+                    if(typeof callback == 'function') {
+                        var r = '';
+                        try {
+                            r = JSON.parse(req.responseText);
+                            callback(r);                            
+                        } catch (e) {
+                            err_callback(0);
+                        }
+                    }
                 }else{
                     if(typeof err_callback == 'function')
                         err_callback(req.status)
