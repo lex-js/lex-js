@@ -14,7 +14,7 @@ function log(m){
 
 var Parser = {
     parseLine: function(line){
-        // Преобразует массив байт 
+        // Преобразует массив байт
         // в список объектов, соответствующих
         // одному символу на экране
         var r = []
@@ -32,7 +32,7 @@ var Parser = {
                 switch(char){
                 case 9:{
                     // что? [todo] разобраться с этим
-                    x = Math.ceil((x/8+1)*8) 
+                    x = Math.ceil((x/8+1)*8)
                     break
                 }
                 case 255:{
@@ -146,13 +146,13 @@ var Coders = {
             }
             var c = Coders.bin2Dec(b)
             r+= Coders.num2Char(c)
-        }    
+        }
         return arrlen+':'+r
     },
     string2BinArray: function(str){
         var len = config.max_char_code
         var arrlen = str.substr(0,str.indexOf(':'))*1
-        var str = str.substr(str.indexOf(':')+1)    
+        var str = str.substr(str.indexOf(':')+1)
         var r = []
         for(var i = 0; i < str.length; i++){
             var c = Coders.char2Num(str[i])
@@ -166,7 +166,7 @@ var Coders = {
             }
         }
         return r
-    },    
+    },
 }
 
 var DrawControl = {
@@ -184,7 +184,7 @@ var DrawControl = {
         w = config.font_width
         h = config.font_height
         fg = config.fg_color
-        bg = config.bg_color    
+        bg = config.bg_color
         canvas  = document.getElementById('canvas-tmp')
         canvas.width  = w
         canvas.height = h
@@ -218,7 +218,7 @@ var DrawControl = {
         return true
     },
     underlineChar: function(char, font, x, y, context){
-        // смешивание битмапов символа _ и char 
+        // смешивание битмапов символа _ и char
         // (имитация подчеркивания)
         var imgData1 = lex.fonts[4].bitmaps[95] // "_"
         var imgData2 = lex.fonts[font].bitmaps[char]
@@ -248,7 +248,7 @@ var DrawControl = {
             sy = lex.screen.y,
             ls = lex.file.lines,
             l  = ls.length
-        
+
         context.fillStyle = 'rgba('+
             config.bg_color[0]+','+
             config.bg_color[1]+','+
@@ -283,10 +283,10 @@ var DrawControl = {
                 t[1]+','+
                 t[2]+','+
                 (t[3]/255)+')'
-            var xs = (lex.selection.x1 - lex.screen.x) * config.font_width 
+            var xs = (lex.selection.x1 - lex.screen.x) * config.font_width
             var ys = (lex.selection.y1 - lex.screen.y) * config.font_height
             var ws = (lex.selection.x2 - lex.selection.x1) * config.font_width
-            var hs = (lex.selection.y2 - lex.selection.y1) * config.font_height    
+            var hs = (lex.selection.y2 - lex.selection.y1) * config.font_height
             context.fillRect(xs, ys, ws, hs)
         }
     },
@@ -351,7 +351,7 @@ var IndexControl = {
 var FontControl = {
     fontsLoaded: function(){
         for(var fontNumber = 0; fontNumber <= config.font_max; fontNumber++){
-            if(!lex.fonts[fontNumber].source) 
+            if(!lex.fonts[fontNumber].source)
                 return false
         }
         return true;
@@ -361,7 +361,7 @@ var FontControl = {
         req = new XMLHttpRequest();
         req.responseType = "arraybuffer"
         req.open('GET', config.font_path+num+config.font_ext, true)
-        req.onreadystatechange = function() { 
+        req.onreadystatechange = function() {
             if(req.readyState == 4){
                 if(req.status == 200){
                     var source = new Uint8Array(req.response)
@@ -450,9 +450,9 @@ var LineNumbersControl = {
     },
     toggleLineNumbers: function(){
         if(lex.numbers.set){
-            this.removeLineNumbers()
+            LineNumbersControl.removeLineNumbers()
         }else{
-            this.addLineNumbers()
+            LineNumbersControl.addLineNumbers()
         }
     }
 }
@@ -600,7 +600,7 @@ var TouchControl = {
     },
     handleStart: function(event) {
         event.preventDefault();
-        var touches = event.changedTouches;        
+        var touches = event.changedTouches;
         for (var i = 0; i < touches.length; i++) {
             TouchControl.ongoingTouches.push(TouchControl.copyTouch(touches[i]));
         }
@@ -661,4 +661,3 @@ var TouchControl = {
         };
     },
 }
-

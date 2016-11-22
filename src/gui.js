@@ -98,7 +98,6 @@ var ContentTreeControl = {
                 durl = config.content_real_path+ContentTreeControl.getFilePath(n),
                 dl = document.createElement('a')
                 dl.href = durl
-                dl.innerHTML = '&#xf0c1;'
                 dl.target = '_blank'
                 dl.className = 'content-direct-link'
                 dl.tabIndex = -1
@@ -122,7 +121,6 @@ var ContentTreeControl = {
                     dd = document.createElement('a')
                     dd.href = durl
                     dd.download = sth.name
-                    dd.innerHTML = '&#xf019;'
                     dd.className = 'content-download-link'
                     dd.tabIndex = -1
                     t.appendChild(dd)
@@ -336,15 +334,18 @@ var MobileUIControl = {
                 for(var i = 0; i < list.length; i++){
                     var c = document.createElement('div')
                     c.className = 'mobile-file-item mobile-menu-item'
+
                     var n = document.createElement('span')
                     n.textContent = list[i]
+                    n.className = 'mobile-file-name'
+
                     n.addEventListener(config.mobile_click_event, function(){
                         FileControl.loadFileByFileName(this.textContent)
                         MobileUIControl.closeMenu()
                     })
                     var d = document.createElement('div')
-                    d.className = 'icon large mobile-delete-file'
-                    d.innerHTML = '&#xf00d;'
+                    d.className = 'mobile-icon large mobile-delete-file'
+                    d.id = "mobile-delete-file"
                     d.title = list[i]
                     d.addEventListener(config.mobile_click_event, function(){
                         var filename = this.title
@@ -359,6 +360,7 @@ var MobileUIControl = {
     },
     closeMenu: function(){
         document.getElementById('mobile-menu').style['display'] = 'none'
+        DrawControl.redrawAll()
     },
 }
 
@@ -369,8 +371,8 @@ var ExportControl = {
         var w = x2 - x1,
             h  = y2-y1,
             rw = w * config.font_width,
-            rh = h * config.font_height;
-        // create new temprorary canvas
+            rh = h * config.font_height
+        // create new temporary canvas
         var canvas = document.createElement('canvas')
             canvas.width  = rw
         canvas.height = rh
@@ -432,57 +434,8 @@ var ExportControl = {
                      .replace(/_{2,}/gi, '_') +
              config.export_png_file_name_suffix + (ext ? ext : ext)
     },
-
-    exportToPDF: function () {
-        // TODO: remove callback hell
-        InitControl.preloadJS
-        ('lib/pdfmake.min.js', 'pdfMake',
-         function () {
-             InitControl.preloadJS
-             ('lib/vfs_fonts.js',
-              function () { typeof window.pdfMake.vfs != 'undefined' },
-              function () {
-                  var doc = {content: []};
-                  var ph = 40;
-                  for 
-                     content: [
-                         {
-                             image: 'data:image/jpeg;base64,...encodedContent...'
-                         }
-                     ]
-                 };
-                 pdfMake.createPdf(doc).download();
-             })
-         });
-    },
 }
-/* function () {
-   ExportControl.preloadJSPDF(function () {
-   var y_step = 40, // move to config
-   dw = lex.index.maxlen * config.font_width,
-   dh = y_step * config.font_height,
-   doc = new jsPDF('p', 'pt', [dw, dh], false),
-   lines = lex.index.text.split('\n');
-   for (var y = 0; y < lex.file.lines.length; y += y_step) {
-   var canvas = ExportControl.makeCanvas(0, lex.index.maxlen,
-   y, y + y_step);
 
-   doc.addImage(canvas.toDataURL('image/png'), 'png', 0, 0,
-   dw, dh, undefined, 'slow');
-
-   // get index
-   var txt = []
-   for (var iy = 0; iy < y_step; iy++) {
-   txt.push(lines[y + iy])
-   }
-   doc.text(txt, 0, 0)
-   doc.addPage();
-   console.log('added page');
-   }
-   doc.save('test.pdf');
-   })
-
-   } */
 var InitControl = {
     init: function(){
         // on document load
@@ -542,6 +495,7 @@ var InitControl = {
         InitControl.checkLSAPIVersion()
         GUIControl.updateFileList()
         DrawControl.makeImageData()
+        DrawControl.redrawAll()    
     },
     eventsInit: function(){
         var wheel = function(event){

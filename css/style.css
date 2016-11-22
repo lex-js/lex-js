@@ -1,176 +1,186 @@
-*{
-    font-family: FontAwesome;
-    /******************************/
-    /* -webkit-user-select: none; */
-    /* -moz-user-select: none;    */
-    /* -khtml-user-select: none;  */
-    /* -ms-user-select: none;     */
-    /******************************/
-}
-
 #canvas{
-    position: fixed;
-    left:0;
-    right:0;
-    top:50px;
-    bottom: 14px;
+  position: fixed;
+  left:0;
+  right:0;
+  top:50px;
+  bottom: 14px;
 }
 
 #block-top{
-    position:fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 50px;
-    box-shadow: 0 0 3px rgba(0,0,0,0.5);
-    background-color: white;
-    z-index: 10;
+  position:fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.5);
+  background-color: white;
+  z-index: 10;
 }
 
 #block-bottom{
-    box-shadow: 0 0 3px rgba(0,0,0,0.5);
-    position:fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 14px;
-    font-size: 12px;
-    z-index: 10;
+  box-shadow: 0 0 3px rgba(0,0,0,0.5);
+  position:fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 14px;
+  font-size: 12px;
+  z-index: 10;
 }
 
 .element-container{
-    padding: 13px;
+  padding: 13px;
 }
+
 .button{
-    background-color: white;
-    height: 23px;
-    color; black;
-    font-family: FontAwesome;
-    font-size: 16px;
-    cursor: pointer;
+  background-color: white;
+  height: 23px;
+  color; black;
+  font-size: 16px;
+  cursor: pointer;
 }
+
 .icon{
-    font-family: FontAwesome;
-    padding: 3px;
-    cursor: pointer;
+  padding: 3px;
+  cursor: pointer;
+}
+
+.button-icon {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
 }
 
 .button:active{
-    background-color: #EEE;
+  background-color: #EEE;
 }
 
+/* remove webkit/safari default outline for focused fields */
 *:focus,
 *:active{
-    outline: 0 !important;
+  outline: 0 !important;
 }
+
+/* file <select> */
 #file-list{
-    max-width: 160px;
-    min-width: 160px;
+  vertical-align: top;
+  max-width: 160px;
+  min-width: 160px;
 }
 
+/* github link */
 #source-link{
-    float: right;
-    color: black;
-    font-family: FontAwesome;
-    text-decoration: none;
-    font-size: 20px;
+  float: right;
+  color: black;
+  text-decoration: none;
+  font-size: 20px;
 }
 
-/* search */
-#search-close{
-    color: #F55;
-}
+/* search block */
 #block-search{
-    position: fixed;
-    bottom: 14px;
-    border-top: 1px solid rgba(0,0,0,0.2);
-    border-right: 1px solid rgba(0,0,0,0.2);
-    left:0;
-    z-index: 0;
-    background-color: white;
-    display: inline-block;
+  position: fixed;
+  bottom: 14px;
+  border-top: 1px solid rgba(0,0,0,0.2);
+  border-right: 1px solid rgba(0,0,0,0.2);
+  left:0;
+  z-index: 0;
+  background-color: white;
+  display: inline-block;
 }
+
 #search-container{
-    margin-left: 3px;
-    margin-right: 5px;
+  margin-left: 3px;
+  margin-right: 5px;
+}
+
+#search-close {
+  width: 20px;
+  height: 20px;
+  background-size: 20px;
+  margin-bottom: -3px;
+  margin-left: 3px;
+  display: inline-block;
+  cursor: pointer;
 }
 
 #search-number,
 #search-total{
-    font-size: 20px;
-    font-family: monospace;
+  font-size: 20px;
+  font-family: monospace;
 }
 
-/* file select */
+#search-field {
+  font-size: 20px;
+  height: 20px;
+}
+
+/* file select <button> */
 #file-select {
+  vertical-align: top;
   color: transparent;
   width: 130px;
-}
-#mobile-menu{
-    display: none;
-    overflow:scroll;
 }
 
 /* content tree */
 #content-tree-container{
-    display: none;
-    position: fixed;
-    top: 50px;
-    left: 0;
-    right: 0;
-    bottom: 14px;
-    background-color: white;
-    z-index: 9;
-    overflow:auto;
-    padding-top: 3px;
+  display: none;
+  position: fixed;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 14px;
+  background-color: white;
+  z-index: 9;
+  overflow:auto;
+  padding-top: 3px;
 }
 .content-element{
-    font-family: monospace;
-    font-size: 16px;
-    cursor: pointer;
+  font-family: monospace;
+  font-size: 16px;
+  cursor: pointer;
 }
 .content-directory-name,
 .content-file-name{
-    background-color: #FFF;
-    border: none;
+  background-color: #FFF;
+  border: none;
 }
 .content-directory-name:active,
 .content-directory-name:focus,
 .content-file-name:focus{
-    outline: 1px dotted #009;
-    text-decoration: underline;
+  outline: 1px dotted #009;
+  text-decoration: underline;
 }
 .content-directory-name{
-    color: #009;
+  color: #009;
 }
 .content-file-name:hover,
 .content-directory-name:hover{
-    background-color: #EEF;
+  background-color: #EEF;
 }
 .content-file,
 .content-directory{
-    border-bottom: 1px solid rgba(200,200,200,0.1);
+  border-bottom: 1px solid rgba(200,200,200,0.1);
 }
 .content-file:last-child,
 .content-directory:last-child{
-    border-bottom: none;
+  border-bottom: none;
 }
 .content-directory-list{
-    margin-left: 20px;
+  margin-left: 20px;
 }
 .content-directory-modified,
 .content-file-modified{
-    float: right;
-    color: #999;
-    margin-right: 5px;
+  float: right;
+  color: #999;
+  margin-right: 5px;
 }
 .content-direct-link,
 .content-download-link{
-    text-decoration: none;
-    color: #555;
-    float: right;
-    margin-right: 10px;
+  text-decoration: none;
+  color: #555;
+  float: right;
+  margin-right: 10px;
 }
 .content-directory-list{
-    display: none;
+  display: none;
 }

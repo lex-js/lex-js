@@ -1,45 +1,69 @@
-#mobile-menu-open{
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    width: 43px;
-    height: 43px;
-    font-size: 48px;
-    z-index: 10;
-}
-#block-top > div {
-    display: none;
-}
 #mobile-menu{
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 11;
-    background-color: white;
+  display: none;
+  overflow:scroll;
 }
+
+#mobile-menu-open{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 43px;
+  height: 43px;
+  font-size: 48px;
+  z-index: 10;
+}
+
+#block-top > div {
+  display: none;
+}
+
+#mobile-button-table {
+  width: 100%;
+}
+
+#mobile-menu{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  background-color: white;
+}
+
 .mobile-menu-item{
-    font-size: 38px;
-    padding: 10px;
-    height: 38px;
+  font-size: 38px;
+  padding: 10px;
+  height: 38px;
 }
+
 .mobile-file-item > span{
-    color: #999;
-    padding-left: 30px;
-    position: absolute;
-    left: 0;
+  color: #999;
+  padding-left: 30px;
+  position: absolute;
+  left: 0;
 }
-.large{
-    width: 43px;
-    margin-right: 10px;
+
+
+.mobile-icon {
+  display: inline-block;
+  width: 48px;
+  height: 48px;
 }
+
 #mobile-file-list{
-    border-top: 1px solid #999;
+  border-top: 1px solid #999;
 }
+
 .mobile-delete-file{
-    position: absolute;
-    right: 0;
-    font-size: 44px;
-    color: #f55;
+  position: absolute;
+  right: 0;
+  color: #f55;
+  background-color: white;
+  box-shadow: 0 0 5px 5px white;
+}
+
+.mobile-file-name {
+  white-space: nowrap;
+  overflow: hidden;
 }

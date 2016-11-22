@@ -1,0 +1,80 @@
+#button-line-numbers {
+  background-image: url("icons/24/list-ol.png");
+}
+
+#button-load {
+  background-image: url("icons/24/folder-open.png");
+}
+
+#button-goto-line {
+  background-image: url("icons/24/arrow-circle-right.png");
+}
+
+#button-search {
+  background-image: url("icons/24/search.png");
+}
+
+#button-content {
+  background-image: url("icons/24/folder.png");
+}
+
+#button-goto-line {
+  background-image: url("icons/24/arrow-circle-right.png");
+}
+
+#button-delete {
+  background-image: url("icons/24/times-circle.png");
+}
+
+
+#button-github {
+  background-image: url("icons/24/github.png");
+}
+
+.content-download-link {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-image: url("icons/download.png");  
+}
+
+.content-direct-link {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  background-image: url("icons/link.png");  
+}
+
+#search-close {
+  background-image: url("icons/times-red.png");
+}
+
+/* mobile buttons */
+#mobile-delete-file {
+  background-image: url("icons/times-red.png");
+}
+
+#mobile-menu-open {
+  background-image: url("icons/48/navicon.png");  
+}
+
+#mobile-button-close {
+  background-image: url("icons/48/chevron-left.png");  
+}
+
+#mobile-button-open-file {
+  background-image: url("icons/48/folder-open.png");  
+}
+
+#mobile-button-toggle-lines {
+  background-image: url("icons/48/list-ol.png");
+}
+
+
+#mobile-button-goto-line {
+  background-image: url("icons/48/arrow-right.png");
+}
+
+#mobile-button-list-content {
+  background-image: url("icons/48/folder.png");
+}
