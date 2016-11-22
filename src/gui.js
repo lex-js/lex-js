@@ -91,12 +91,13 @@ var ContentTreeControl = {
                 m.textContent = new Date(sth.modified*1000).toISOString().slice(0, 16).replace(/T/,' ');
                 el.appendChild(t)
                 t.appendChild(n)
-                t.appendChild(m)
+                if (!isMobile()) {
+                  t.appendChild(m)
+                }
                 // direct link
                 durl = config.content_real_path+ContentTreeControl.getFilePath(n),
                 dl = document.createElement('a')
                 dl.href = durl
-                dl.innerHTML = '&#xf0c1;'
                 dl.target = '_blank'
                 dl.className = 'content-direct-link'
                 dl.tabIndex = -1
@@ -120,7 +121,6 @@ var ContentTreeControl = {
                     dd = document.createElement('a')
                     dd.href = durl
                     dd.download = sth.name
-                    dd.innerHTML = '&#xf019;'
                     dd.className = 'content-download-link'
                     dd.tabIndex = -1
                     t.appendChild(dd)
@@ -332,15 +332,18 @@ var MobileUIControl = {
                 for(var i = 0; i < list.length; i++){
                     var c = document.createElement('div')
                     c.className = 'mobile-file-item mobile-menu-item'
+
                     var n = document.createElement('span')
                     n.textContent = list[i]
+                    n.className = 'mobile-file-name'
+
                     n.addEventListener(config.mobile_click_event, function(){
                         FileControl.loadFileByFileName(this.textContent)
                         MobileUIControl.closeMenu()
                     })
                     var d = document.createElement('div')
-                    d.className = 'icon large mobile-delete-file'
-                    d.innerHTML = '&#xf00d;'
+                    d.className = 'mobile-icon large mobile-delete-file'
+                    d.id = "mobile-delete-file"
                     d.title = list[i]
                     d.addEventListener(config.mobile_click_event, function(){
                         var filename = this.title
@@ -355,6 +358,7 @@ var MobileUIControl = {
     },
     closeMenu: function(){
         document.getElementById('mobile-menu').style['display'] = 'none'
+        DrawControl.redrawAll()
     },
 }
 
@@ -371,7 +375,7 @@ var ExportControl = {
             h  = y2-y1,
             rw = w * config.font_width,
             rh = h * config.font_height
-        // create new temprorary canvas
+        // create new temporary canvas
         var canvas = document.createElement('canvas')
         canvas.width  = rw
         canvas.height = rh
@@ -473,6 +477,7 @@ var InitControl = {
         InitControl.checkLSAPIVersion()
         GUIControl.updateFileList()
         DrawControl.makeImageData()
+        DrawControl.redrawAll()    
     },
     eventsInit: function(){
         var wheel = function(event){
