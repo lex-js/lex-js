@@ -629,7 +629,8 @@ var InitControl = {
             },
         }
         for(var elId in arr){
-            document.getElementById(elId).addEventListener(config.mobile_click_event, arr[elId])
+            document.getElementById(elId).
+                     addEventListener(config.mobile_click_event, arr[elId])
         }
     },
     initMousetrap: function(){

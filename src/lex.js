@@ -437,11 +437,10 @@ var LineNumbersControl = {
         lex.numbers.width = (lex.file.lines.length+'').length+1
         lex.numbers.set = true
         for(var i = 0; i < lex.file.lines.length; i++){
-            var t = new Uint8Array(
+            lex.file.lines[i] = new Uint8Array(
                 Parser.getLineNumberBytes(
                     i, lex.numbers.width).concat(
-                    Array.from(lex.file.lines[i])))
-            lex.file.lines[i] = t
+                        Array.from(lex.file.lines[i])))
         }
         lex.index.maxlen += lex.numbers.width + config.line_numbers_padding
         ScreenControl.checkScrollPosition()
