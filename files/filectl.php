@@ -2,7 +2,7 @@
 include 'config-default.php';
 include 'config-user.php';
 
-function directoryList ($path, $dirs) {
+function directoryList ($path, $dirs, $allowed_exts) {
     // Sanitize the input...
     $dirs = explode('/', $dirs);
 
@@ -28,8 +28,8 @@ function directoryList ($path, $dirs) {
 
         if(!is_dir($fullpath))
         {
-            if(empty($config['allowed_exts']) ||
-               in_array($ext, $config['allowed_exts']))
+            if(empty($allowed_exts) ||
+               in_array($ext, $allowed_exts))
             {
                 $results[] = Array(
                     'name'     => $filename,
@@ -54,7 +54,7 @@ function directoryList ($path, $dirs) {
 switch ($_REQUEST['action'])
 {
     case 'list':
-    $list = directoryList($config['directory'], $_REQUEST['dirs']);
+    $list = directoryList($config['directory'], $_REQUEST['dirs'], $config['allowed_exts']);
     echo json_encode($list, JSON_UNESCAPED_UNICODE);
     break;
 
