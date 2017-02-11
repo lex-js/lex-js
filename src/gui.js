@@ -135,15 +135,15 @@ var Content = {
                 name_td.textContent = sth.name;
 
                 // Modification time
-                if(!isMobile()) {
+                if (!isMobile()) {
                     var mod_td = document.createElement('td');
+                    mod_td.className = 'file-list-mod-time';
                     mod_td.textContent = new Date(sth.modified * 1000).toISOString().slice(0, 16).replace(/T/,' ');
                     tr.appendChild(mod_td);
                 }
             } else {
                 name_td.textContent = '..';
             }
-
 
             if (sth.type === 'directory') {
 
@@ -600,12 +600,21 @@ var InitControl = {
             FileControl.deleteFile(filename);
         });
 
-        document.getElementById('button-line-numbers').addEventListener("click", LineNumbersControl.toggleLineNumbers);
-        document.getElementById('button-goto-line').addEventListener("click", GUIControl.showGotoLinePrompt);
+        document.getElementById('button-line-numbers').addEventListener("click", () => {
+            Content.hide();
+            LineNumbersControl.toggleLineNumbers();
+        });
+
+        document.getElementById('button-goto-line').addEventListener("click", () => {
+            Content.hide();
+            GUIControl.showGotoLinePrompt();
+        });
+
         document.getElementById('button-search').addEventListener('click', function () {
             if (lex.search.active) {
                 SearchControl.deactivateSearchField();
             } else {
+                Content.hide();
                 SearchControl.activateSearchField();
             }
         });

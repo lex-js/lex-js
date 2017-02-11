@@ -142,3 +142,12 @@
 #content-list-table {
   width: 100%;
 }
+
+
+#content-list-table > tr > td {
+  cursor: pointer;
+}
+
+.file-list-mod-time {
+  color: #777;
+}
