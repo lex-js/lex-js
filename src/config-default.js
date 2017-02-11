@@ -42,6 +42,7 @@ var config = {
     content_tree_enabled: true,
     get_content_tree_on_load: false, // not implemented
     content_tree_url: 'files/filectl.php?action=tree',
+    content_list_url: 'files/filectl.php?action=list&dirs=',
     content_real_path: 'files/content/',
 
     // Хранить ли source файла в памяти (см. lex.file.source)
@@ -61,7 +62,7 @@ var config = {
     // экспорт в PDF
     export_pdf_jspdf_path: 'lib/jspdf.min.js',
     export_pdf_image_height: 100,
-    
+
     // Часть области экрана, на которую можно
     // проскроллить после достижения конца файла
     max_overscroll: 0.3,
@@ -161,7 +162,11 @@ var lex = {
     content_tree: {
         tree: null,
         active: false
-    }
+    },
+    content_list: {
+        path: '',
+        active: false,
+    },
 }
 
 for(var i = 0; i <= config.font_max; i++){
