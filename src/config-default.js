@@ -3,12 +3,6 @@
 // config.js в корне проекта и замените нужные
 // свойства объекта config в нем
 var config = {
-    // Версия части кода, отвечающей за сохранение файлов
-    // если это число не совпадает с сохраненным значением,
-    // все сохраненные данные переносятся
-    ls_api_version: 1,
-    ls_api_item_name: 'ls-version',
-    check_ls_api_version: true,
     // Выводить лог
     logging: true,
     // Максимальный номер шрифта
@@ -40,8 +34,6 @@ var config = {
 
     // Файлы, хранящиеся на сервере
     content_tree_enabled: true,
-    get_content_tree_on_load: false, // not implemented
-    content_tree_url: 'files/filectl.php?action=tree',
     content_list_url: 'files/filectl.php?action=list&dirs=',
     content_real_path: 'files/content/',
 
