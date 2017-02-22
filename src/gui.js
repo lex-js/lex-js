@@ -227,9 +227,10 @@ var FileControl = {
     saveFile: function (filename, source) {
         localforage.setItem(config.ls_file_prefix + filename, source, function (err, value) {
             if (err) {
-                alert(_('Can\'t save file'))
-            }else{
-                GUIControl.updateFileList()
+                alert(_('Can\'t save file'));
+                console.log(err);
+            } else {
+                GUIControl.updateFileList();
             }
         });
     },

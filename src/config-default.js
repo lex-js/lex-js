@@ -120,7 +120,8 @@ var config = {
 var lex = {
     fonts: {},
     file: {
-        name: ''
+        name: '',
+        lines: [[]],
     },
     filelist: {},
     index: {
