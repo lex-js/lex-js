@@ -239,7 +239,8 @@ var DrawControl = {
                              x * config.font_width,
                              y * config.font_height);
     },
-    redrawCanvas: function(context){
+
+    redrawCanvas: function (context) {
         var w  = lex.screen.w,
             h  = lex.screen.h,
             rw = w * config.font_width,
@@ -247,51 +248,55 @@ var DrawControl = {
             sx = lex.screen.x,
             sy = lex.screen.y,
             ls = lex.file.lines,
-            l  = ls.length
+            l  = ls.length;
 
         context.fillStyle = 'rgba('+
             config.bg_color[0]+','+
             config.bg_color[1]+','+
             config.bg_color[2]+','+
-            config.bg_color[3]+')'
-        context.fillRect(0, 0, rw, rh)
+            config.bg_color[3]+')';
+        context.fillRect(0, 0, rw, rh);
 
-        for(var y = 0; y < h && y < l; y++){
-            var line = ls[y + sy]
+        for (var y = 0; y < h && y < l; y++) {
+            var line = ls[y + sy];
             if(typeof line == 'undefined') break;
-            line = Parser.parseLine(line)
-            for(var x = 0; x < line.length; x++){
-                var char      = line[x].char
-                var underline = line[x].underline
-                var font      = line[x].font
-                if(lex.fonts[font].bitmaps[char]){
+            line = Parser.parseLine(line);
+            for (var x = 0; x < line.length; x++) {
+                var char      = line[x].char;
+                var underline = line[x].underline;
+                var font      = line[x].font;
+                if (lex.fonts[font].bitmaps[char]) {
                     context.putImageData(lex.fonts[font].bitmaps[char],
-                                         (x - sx) * config.font_width, y * config.font_height)
-                    if(underline){
-                        DrawControl.underlineChar
-                        (char, font, x - sx, y, context)
+                                         (x - sx) * config.font_width,
+                                         y * config.font_height);
+                    if (underline) {
+                        DrawControl.underlineChar(char, font, x - sx, y, context);
                     }
                 }
             }
         }
     },
-    redrawSelection: function(context){
-        if(lex.selection.set){
-            var t = config.selection_fill_color
+
+    redrawSelection: function (context) {
+        if (lex.selection.set) {
+            var t = config.selection_fill_color;
+
             context.fillStyle = 'rgba('+
                 t[0]+','+
                 t[1]+','+
                 t[2]+','+
-                (t[3]/255)+')'
-            var xs = (lex.selection.x1 - lex.screen.x) * config.font_width
-            var ys = (lex.selection.y1 - lex.screen.y) * config.font_height
-            var ws = (lex.selection.x2 - lex.selection.x1) * config.font_width
-            var hs = (lex.selection.y2 - lex.selection.y1) * config.font_height
-            context.fillRect(xs, ys, ws, hs)
+                 (t[3]/255)+')';
+
+            var x = (lex.selection.x1 - lex.screen.x) * config.font_width;
+            var y = (lex.selection.y1 - lex.screen.y) * config.font_height;
+            var w = (lex.selection.x2 - lex.selection.x1) * config.font_width;
+            var h = (lex.selection.y2 - lex.selection.y1) * config.font_height;
+            context.fillRect(x, y, w, h)
         }
     },
-    redrawSearchResults: function(context){
-        if(lex.search.active == true){
+
+    redrawSearchResults: function (context) {
+        if (lex.search.active == true) {
             var rs = lex.search.results
             for(var i = 0; i < rs.length; i++){
                 var tr = rs[i]
@@ -317,13 +322,14 @@ var DrawControl = {
             }
         }
     },
-    redrawAll: function(){
-        var canvas = document.getElementById('canvas')
-        var context = canvas.getContext('2d')
-        GUIControl.updateBottomBlock()
-        DrawControl.redrawCanvas(context)
-        DrawControl.redrawSelection(context)
-        DrawControl.redrawSearchResults(context)
+
+    redrawAll: function () {
+        var canvas = document.getElementById('canvas');
+        var context = canvas.getContext('2d');
+        GUIControl.updateBottomBlock();
+        DrawControl.redrawCanvas(context);
+        DrawControl.redrawSelection(context);
+        DrawControl.redrawSearchResults(context);
     }
 }
 
@@ -381,42 +387,44 @@ var FontControl = {
 }
 
 var DevControl = {
-    outputFontsToJSFile: function(){
+    outputFontsToJSFile: function () {
         // Выводит все загруженные шрифты в *.js файл
         // Использовать один раз при изменении файлов исходных шрифтов
         // см. fonts/old
-        var js_output = ''
-        for(var fontNumber = 0; fontNumber <= config.font_max; fontNumber++){
-            var source = lex.fonts[fontNumber].source
-            js_output += 'lex.fonts['+fontNumber+'].source = Coders.string2BinArray('+
-                uneval(Coders.binArray2String(lex.fonts[fontNumber].source))+
-                ');\n'
+        var js_output = '';
+        for (var fontNumber = 0; fontNumber <= config.font_max; fontNumber++) {
+            var source = lex.fonts[fontNumber].source;
+            js_output += 'lex.fonts['+fontNumber+'].source = Coders.string2BinArray(' +
+                uneval(Coders.binArray2String(lex.fonts[fontNumber].source)) + ');\n';
         }
-        this.donwloadFile('fonts.js', js_output)
+        this.donwloadFile('fonts.js', js_output);
     },
-    outputFileToJSFile: function(){
-        var js_output = 'lex.file.source = new Uint8Array(['
-        for(var i = 0; i < lex.file.source.length; i++){
-            js_output += lex.file.source[i]+','
+
+    outputFileToJSFile: function () {
+        var js_output = 'lex.file.source = new Uint8Array([';
+        for (var i = 0; i < lex.file.source.length; i++) {
+            js_output += lex.file.source[i] + ',';
         }
-        js_output += '])'
-        this.donwloadFile('info.js',js_output)
+        js_output += '])';
+        this.donwloadFile('info.js', js_output);
     },
-    donwloadFile: function(name, source){
+
+    donwloadFile: function (name, source) {
         // Создает файл, загружаемый из браузера
         var blob = new Blob([source], {type: "text/plain;charset=utf-8"});
         saveAs(blob, name);
     },
-    outputFonts: function(){
-        for(var f = 48; f <= 57; f++){
-            r = [255,f]
-            for(var i = 0; i < 255; i++){
-                r.push(i)
+
+    outputFonts: function () {
+        for (var f = 48; f <= 57; f++) {
+            r = [255,f];
+            for (var i = 0; i < 255; i++) {
+                r.push(i);
             }
-            lex.file.lines[f-48] = new Uint8Array(r)
+            lex.file.lines[f-48] = new Uint8Array(r);
         }
-        IndexControl.rebuildIndex()
-        DrawControl.redrawAll()
+        IndexControl.rebuildIndex();
+        DrawControl.redrawAll();
     }
 }
 
@@ -514,15 +522,16 @@ var SelectionControl = {
 }
 
 var ScreenControl = {
-    getViewportSize: function(){
+    getViewportSize: function () {
         var w = window,
             d = document,
             e = d.documentElement,
             g = d.getElementsByTagName('body')[0],
             x = w.innerWidth || e.clientWidth || g.clientWidth,
-            y = w.innerHeight|| e.clientHeight|| g.clientHeight
-        return {w:x,h:y}
+            y = w.innerHeight|| e.clientHeight|| g.clientHeight;
+        return { w:x, h:y };
     },
+
     expandScreen: function(){
         // увеличить размер canvas при изменении размера окна
         var viewport = ScreenControl.getViewportSize(),
@@ -532,61 +541,73 @@ var ScreenControl = {
         canvas.height = Math.ceil(viewport.h - 64)
         canvas.width = Math.ceil(viewport.w)
     },
+
     // Контроль за положением прокрутки
     setDefaults: function(){
         lex.screen.x = 0
         lex.screen.y = 0
+        URIHashControl.update();
     },
-    setScrollY:function(y){
-        lex.screen.y = y
-        ScreenControl.checkScrollPosition()
-        DrawControl.redrawAll()
+
+    setScrollY: function(y){
+        lex.screen.y = y;
+        ScreenControl.checkScrollPosition();
+        DrawControl.redrawAll();
+        URIHashControl.update();
     },
-    checkScrollPosition: function(){
-        if(lex.screen.x > lex.index.maxlen - lex.screen.w + config.max_x_scroll){
-            lex.screen.x = lex.index.maxlen - lex.screen.w + config.max_x_scroll
+
+    checkScrollPosition: function () {
+        if (lex.screen.x > lex.index.maxlen - lex.screen.w + config.max_x_scroll) {
+            lex.screen.x = lex.index.maxlen - lex.screen.w + config.max_x_scroll;
         }
-        if(lex.screen.h > lex.file.lines.length){
+        if (lex.screen.h > lex.file.lines.length) {
             // файл не влезает в экран
-            if(lex.screen.y > lex.file.lines.length - lex.screen.h){
-                lex.screen.y = lex.file.lines.length - lex.screen.h
+            if (lex.screen.y > lex.file.lines.length - lex.screen.h) {
+                lex.screen.y = lex.file.lines.length - lex.screen.h;
             }
         }
-        var maxshift = lex.screen.h - Math.floor(lex.screen.h*config.max_overscroll)
-        if(lex.screen.y > lex.file.lines.length - maxshift){
-            lex.screen.y = lex.file.lines.length - maxshift
+        var maxshift = lex.screen.h - Math.floor(lex.screen.h*config.max_overscroll);
+        if (lex.screen.y > lex.file.lines.length - maxshift) {
+            lex.screen.y = lex.file.lines.length - maxshift;
         }
-        if(lex.screen.y < 0){
-            lex.screen.y = 0
+        if (lex.screen.y < 0) {
+            lex.screen.y = 0;
         }
-        if(lex.screen.x < 0){
-            lex.screen.x = 0
+        if (lex.screen.x < 0) {
+            lex.screen.x = 0;
         }
     },
-    scrollHomeY:function(){
+
+    scrollHomeY: function () {
         if(lex.content_tree.active) return;
-        lex.screen.y = 0
-        DrawControl.redrawAll()
+        lex.screen.y = 0;
+        DrawControl.redrawAll();
+        URIHashControl.update();
     },
-    scrollEndY:function(){
-        if(lex.content_tree.active) return;
-        lex.screen.y = lex.file.lines.length - lex.screen.h
-        ScreenControl.checkScrollPosition()
-        DrawControl.redrawAll()
+
+    scrollEndY: function () {
+        if (lex.content_tree.active) return;
+        lex.screen.y = lex.file.lines.length - lex.screen.h;
+        ScreenControl.checkScrollPosition();
+        DrawControl.redrawAll();
+        URIHashControl.update();
     },
-    scrollX:function(x){
-        if(lex.content_tree.active) return;
-        x = Math.round(x)
-        lex.screen.x -= x
-        ScreenControl.checkScrollPosition()
-        DrawControl.redrawAll()
+
+    scrollX: function (x) {
+        if (lex.content_tree.active) return;
+        x = Math.round(x);
+        lex.screen.x -= x;
+        ScreenControl.checkScrollPosition();
+        DrawControl.redrawAll();
     },
-    scrollY:function(y){
-        if(lex.content_tree.active) return;
-        y = Math.round(y)
-        lex.screen.y -= y
-        ScreenControl.checkScrollPosition()
-        DrawControl.redrawAll()
+
+    scrollY: function (y) {
+        if (lex.content_tree.active) return;
+        y = Math.round(y);
+        lex.screen.y -= y;
+        ScreenControl.checkScrollPosition();
+        DrawControl.redrawAll();
+        URIHashControl.update();
     },
 }
 

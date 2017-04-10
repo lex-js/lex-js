@@ -121,6 +121,9 @@ var lex = {
     fonts: {},
     file: {
         name: '',
+        // Remote file path of currently opened file (empty if file is local)
+        // Used at URIHashControl
+        remote_name: '',
         lines: [[]],
     },
     filelist: {},
@@ -160,6 +163,7 @@ var lex = {
         path: '',
         active: false,
     },
+    hash_timeout: null,
 }
 
 for(var i = 0; i <= config.font_max; i++){

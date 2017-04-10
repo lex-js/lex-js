@@ -160,12 +160,12 @@ var Content = {
             } else if (sth.type === 'file') {
 
                 tr.onclick = ((filename) => function () {
-                    FileControl.loadFileByURL(config.content_real_path + lex.content_list.path + '/' + filename, function(){
+                    var url = config.content_real_path + lex.content_list.path + '/' + filename;
+                    FileControl.loadFileByURL(url, lex.content_list.path + '/' + filename, function () {
                         GUIControl.setWindowTitle(filename);
                         lex.file.name = filename;
-                        // Content.hide();
                         Content.hide();
-                    })
+                    });
                 })(sth.name);
 
             } else {
@@ -201,10 +201,109 @@ var MessageControl = {
     }
 }
 
+var URIHashControl = {
+    set: function (newURLHash) {
+        if (lex.hash_timeout) {
+            clearTimeout(lex.hash_timeout);
+        }
+        // Allow to change the hash only once per second.
+        // Delay is required since URL hash update is quite slow.
+        lex.hash_timeout = setTimeout((() => (() => {
+            if (newURLHash) {
+                if (history.replaceState) {
+                    history.replaceState(undefined, undefined, '#' + newURLHash);
+                } else {
+                    location.hash = '#' + newURLHash;
+                }
+            } else {
+                location.hash = '';
+            }
+            lex.hash_timeout = null;
+        }))(newURLHash), 1000);
+    },
+
+    update: function () {
+        var newURLHash = '';
+        if (!!lex.file.remote_name) {
+            newURLHash = 'remote:' + lex.file.remote_name + ':' + lex.screen.y;
+        } else {
+            // We're in a local file
+            if (!!lex.file.name) {
+                newURLHash = 'local:' + lex.file.name + ':' + lex.screen.y;
+            }
+        }
+        URIHashControl.set(newURLHash);
+    },
+
+    process: function () {
+        var parsed = URIHashControl.parseHash();
+        if (typeof parsed != 'undefined' && lex.screen.y != parsed.line) {
+            ScreenControl.setScrollY(parsed.line);
+        } else {
+            URIHashControl.set(URIHashControl.getCurrent());
+        }
+    },
+
+    load: function () {
+        var parsed = URIHashControl.parseHash();
+        if (typeof parsed != 'undefined') {
+            if (parsed.type == 'remote') {
+                var baseName = parsed.file.split(/[\\/]/).pop();
+                FileControl.loadFileByURL(config.content_real_path + '/' + parsed.file,
+                                          parsed.file, () => {
+                                              GUIControl.setWindowTitle(baseName);
+                                              lex.file.name = baseName;
+                                              ScreenControl.setScrollY(parsed.line);
+                                          });
+            } else if (parsed.type == 'local') {
+                FileControl.loadFileByFileName(parsed.file, () => {
+                    ScreenControl.setScrollY(parsed.line);
+                    URIHashControl.update();
+                });
+            }
+        }
+    },
+
+    getCurrent: function () {
+        var curHash = '';
+        if (lex.file.name) {
+            curHash = ((lex.file.remote_name) ?
+                       'remote:'  + lex.file.remote_name : 'local:' + lex.file.name) + ':' + lex.screen.y;
+        }
+        return curHash;
+    },
+
+    parseHash: function (hash = location.hash) {
+        var type, file, line;
+        if (!hash) return;
+
+        hash = hash.substr(1);
+        type = hash.split(':')[0];
+        if (!(['remote', 'local'].includes(type))) return;
+
+        line  = hash.split(':')[hash.split(':').length - 1];
+        if (!(/^(0|([1-9]\d*))$/.test(line))) return;
+
+        file = hash.substr(type.length + 1, hash.length - line.length - type.length - 2);
+
+        line = parseInt(line);
+
+        return { line: line, file: file, type: type };
+    },
+}
+
 var FileControl = {
 
     isLSFileName: function (filename) {
         return filename.startsWith(config.ls_file_prefix);
+    },
+
+    parseHashURL: function () {
+        var hashURL = document.location.hash,
+            lineNumber = 0;
+        if (hashURL.lastIndexOf(':') !== -1) {
+
+        }
     },
 
     LSFileNameToFileName: function (filename) {
@@ -249,25 +348,20 @@ var FileControl = {
         reader.readAsArrayBuffer(file);
     },
 
-    loadSelected: function (file) {
-        var reader = new FileReader();
-        reader.onload = (function () {
-            return function (event) {
-                FileControl.loadFileBySource(event.target.result, DrawControl.redrawAll);
-            }
-        })(file);
-        reader.readAsArrayBuffer(file);
-    },
-
     loadFileByFileName: function (filename, callback) {
         localforage.getItem(config.ls_file_prefix + filename, function (err, value) {
-            FileControl.loadFileBySource(Coders.StringToUint8Array(value), callback);
+            FileControl.loadFileBySource(Coders.StringToUint8Array(value));
             GUIControl.setWindowTitle(filename);
             lex.file.name = filename;
+            lex.file.remote_name = '';
+            URIHashControl.update();
+            if (typeof callback == 'function') {
+                callback();
+            }
         });
     },
 
-    loadFileByURL: function (url, callback) {
+    loadFileByURL: function (url, remote_name, callback) {
         var req = null;
         req = new XMLHttpRequest();
         req.responseType = "arraybuffer";
@@ -277,8 +371,11 @@ var FileControl = {
                 if (req.status == 200) {
                     FileControl.loadFileBySource(req.response);
                     log('File loaded: ' + url);
-                    if (!!callback)
-                        callback(lex.file);
+                    lex.file.remote_name = remote_name;
+                    URIHashControl.update();
+                    if (typeof callback === 'function') {
+                        callback();
+                    }
                 } else {
                     alert('Error while loading file ('+req.status+'): '+url)
                 }
@@ -449,6 +546,7 @@ var ExportControl = {
 }
 
 var InitControl = {
+
     init: function () {
         // on document load
         InitControl.initMousetrap();
@@ -477,10 +575,14 @@ var InitControl = {
             InitControl.mobileEventsInit();
         }
 
-        if (config.load_file_from_source && !is_local) {
-            FileControl.loadFileByURL(config.init_file, InitControl.postInit);
+        if (typeof URIHashControl.parseHash() != 'undefined') {
+            URIHashControl.load();
         } else {
-            FileControl.loadFileBySource(lex.file.source, DrawControl.redrawAll);
+            if (config.load_file_from_source && !is_local) {
+                FileControl.loadFileByURL(config.init_file, '', InitControl.postInit);
+            } else {
+                FileControl.loadFileBySource(lex.file.source, DrawControl.redrawAll);
+            }
         }
 
         InitControl.postInit();
@@ -514,7 +616,8 @@ var InitControl = {
         canvas.addEventListener('touchmove', TouchControl.handleMove, false);
         canvas.addEventListener('touchend', TouchControl.handleEnd, false);
         window.onmousewheel = document.onmousewheel = wheel;
-        window.addEventListener('resize',function(){ScreenControl.expandScreen(); DrawControl.redrawAll()});
+        window.addEventListener('resize', function () { ScreenControl.expandScreen(); DrawControl.redrawAll()});
+        window.addEventListener('hashchange', URIHashControl.process);
         document.getElementById('search-field').addEventListener('keyup', SearchControl.performSearch);
         document.getElementById('search-close').addEventListener('click', function () {
             SearchControl.clearSearchField();
@@ -555,6 +658,8 @@ var InitControl = {
                             GUIControl.setWindowTitle(theFile.name);
                             document.activeElement.blur();
                             lex.file.name = theFile.name;
+                            lex.file.remote_name = '';
+                            URIHashControl.update();
                         }
                     }
                 })(f);
