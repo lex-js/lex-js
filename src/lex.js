@@ -138,74 +138,75 @@ var Coders = {
 }
 
 var DrawControl = {
-    setFontBGColor: function(bg_color){
-        config.bg_color = bg_color
-        DrawControl.redrawAll()
+    setFontBGColor: function (bg_color) {
+        config.bg_color = bg_color;
+        DrawControl.redrawAll();
     },
-    setFontFGColor: function(fg_color){
-        config.fg_color = fg_color
-        DrawControl.redrawAll()
+
+    setFontFGColor: function (fg_color) {
+        config.fg_color = fg_color;
+        DrawControl.redrawAll();
     },
-    makeImageData: function(){
-        if(config.load_font_from_source && !FontControl.fontsLoaded()) return false;
-        var t, w, h, canvas, context, data, fg, bg, u, char, pos, imageData
-        w = config.font_width
-        h = config.font_height
-        fg = config.fg_color
-        bg = config.bg_color
-        canvas  = document.getElementById('canvas-tmp')
-        canvas.width  = w
-        canvas.height = h
-        context = canvas.getContext('2d')
-        imageData = context.getImageData(0, 0, w, h)
-        data = imageData.data
-        for(var fontNumber = 0; fontNumber <= config.font_max; fontNumber++){
-            var buff = lex.fonts[fontNumber].source
-            for(var charCode = 0; charCode < 256; charCode ++){
-                var shift = w * h * charCode
-                var char  = String.fromCharCode(charCode)
-                var t_imageData = context.createImageData(imageData)
-                for(var y = 0; y < h; y++){
-                    for(var x = 0; x < w; x++){
-                        var t = buff[shift + y * w + x] == true
-                        if(t){
-                            u = fg
-                        }else{
-                            u = bg
-                        }
-                        pos = ((w * y) + x) * 4
-                        t_imageData.data[pos]     = u[0]
-                        t_imageData.data[pos + 1] = u[1]
-                        t_imageData.data[pos + 2] = u[2]
-                        t_imageData.data[pos + 3] = u[3]
+
+    makeImageData: function () {
+        if (config.load_font_from_source && !lex.fonts.every((f) => !!f.source)) {
+            return false;
+        }
+        var t, w, h, canvas, context, data, fg, bg, u, char, pos, imageData;
+        w = config.font_width;
+        h = config.font_height;
+        fg = config.fg_color;
+        bg = config.bg_color;
+        canvas = document.getElementById('canvas-tmp');
+        canvas.width = w;
+        canvas.height = h;
+        context = canvas.getContext('2d');
+        imageData = context.getImageData(0, 0, w, h);
+        data = imageData.data;
+
+        for (var fontNumber = 0; fontNumber <= config.font_max; fontNumber++) {
+            var buff = lex.fonts[fontNumber].source;
+            for (var charCode = 0; charCode < 256; charCode++) {
+                var shift = w * h * charCode,
+                    char  = String.fromCharCode(charCode),
+                    t_imageData = context.createImageData(imageData);
+
+                for (var y = 0; y < h; y++) {
+                    for (var x = 0; x < w; x++) {
+                        u = !!buff[shift + y * w + x] ? fg : bg;
+                        pos = (w * y + x) * 4;
+                        t_imageData.data[pos]     = u[0];
+                        t_imageData.data[pos + 1] = u[1];
+                        t_imageData.data[pos + 2] = u[2];
+                        t_imageData.data[pos + 3] = u[3];
                     }
                 }
-                lex.fonts[fontNumber].bitmaps[charCode] = t_imageData
+
+                lex.fonts[fontNumber].bitmaps[charCode] = t_imageData;
             }
         }
         return true
     },
-    underlineChar: function(char, font, x, y, context){
+
+    underlineChar: function (char, font, x, y, context) {
         // смешивание битмапов символа _ и char
         // (имитация подчеркивания)
-        var imgData1 = lex.fonts[4].bitmaps[95] // "_"
-        var imgData2 = lex.fonts[font].bitmaps[char]
-        var imgData3 = context.createImageData(imgData1)
-        for(var i=0; i < imgData1.data.length; i+=4)
-        {
-            for(var j = 0; j < 4; j++){
+        var imgData1 = lex.fonts[4].bitmaps[95]; // "_"
+        var imgData2 = lex.fonts[font].bitmaps[char];
+        var imgData3 = context.createImageData(imgData1);
+        for (var i = 0; i < imgData1.data.length; i += 4) {
+            for (var j = 0; j < 4; j++) {
                 // обход r, g, b, a
-                if(imgData1.data[i+j] == config.fg_color[j] ||
-                   imgData2.data[i+j] == config.fg_color[j]){
-                    imgData3.data[i+j] = config.fg_color[j]
-                }else{
-                    imgData3.data[i+j] = config.bg_color[j]
+                if (imgData1.data[i+j] == config.fg_color[j] ||
+                    imgData2.data[i+j] == config.fg_color[j]){
+                    imgData3.data[i+j] = config.fg_color[j];
+                } else {
+                    imgData3.data[i+j] = config.bg_color[j];
                 }
             }
         }
-        context.putImageData(imgData3,
-                             x * config.font_width,
-                             y * config.font_height);
+
+        context.putImageData(imgData3, x * config.font_width, y * config.font_height);
     },
 
     redrawCanvas: function (context) {
@@ -227,7 +228,9 @@ var DrawControl = {
 
         for (var y = 0; y < h && y < l; y++) {
             var line = ls[y + sy];
-            if(typeof line == 'undefined') break;
+            if (typeof line == 'undefined') {
+                break;
+            }
             line = Parser.parseLine(line);
             for (var x = 0; x < line.length; x++) {
                 var char      = line[x].char;
@@ -248,43 +251,28 @@ var DrawControl = {
     redrawSelection: function (context) {
         if (lex.selection.set) {
             var t = config.selection_fill_color;
-
-            context.fillStyle = 'rgba('+
-                t[0]+','+
-                t[1]+','+
-                t[2]+','+
-                 (t[3]/255)+')';
-
-            var x = (lex.selection.x1 - lex.screen.x) * config.font_width;
-            var y = (lex.selection.y1 - lex.screen.y) * config.font_height;
-            var w = (lex.selection.x2 - lex.selection.x1) * config.font_width;
-            var h = (lex.selection.y2 - lex.selection.y1) * config.font_height;
-            context.fillRect(x, y, w, h)
+            context.fillStyle = 'rgba(' + t[0] + ',' + t[1] + ',' + t[2] + ',' + (t[3] / 255) + ')';
+            context.fillRect((lex.selection.x1 - lex.screen.x) * config.font_width,
+                             (lex.selection.y1 - lex.screen.y) * config.font_height,
+                             (lex.selection.x2 - lex.selection.x1) * config.font_width,
+                             (lex.selection.y2 - lex.selection.y1) * config.font_height);
         }
     },
 
     redrawSearchResults: function (context) {
         if (lex.search.active == true) {
-            var rs = lex.search.results
-            for(var i = 0; i < rs.length; i++){
-                var tr = rs[i]
-                for(var j = 0; j < tr.length; j++){
-                    var r = tr[j]
-                    if(r.line >= lex.screen.y &&
-                       r.line <= lex.screen.y + lex.screen.h){
-                        var t = (i == lex.search.active_entry_number)?
-                            config.search_active_fill_color:
-                            config.search_fill_color
-                        context.fillStyle =
-                            'rgba('+t[0]+','+
-                            t[1]+','+
-                            t[2]+','+
-                            (t[3]/255)+')'
-                        var ys = (r.line - lex.screen.y) * config.font_height,
-                            xs = (r.start - lex.screen.x) * config.font_width,
-                            hs = config.font_height,
-                        ws = r.length * config.font_width
-                        context.fillRect(xs, ys, ws, hs)
+            var rs = lex.search.results;
+            for (var i = 0; i < rs.length; i++) {
+                var tr = rs[i];
+                for (var j = 0; j < tr.length; j++) {
+                    var r = tr[j];
+                    if (r.line >= lex.screen.y && r.line <= lex.screen.y + lex.screen.h) {
+                        var t = config['search_' + ((i == lex.search.active_entry_number) ? 'active_' : '')
+                                     + 'fill_color'];
+                        context.fillStyle = 'rgba(' + t[0] + ',' + t[1] + ',' + t[2] + ',' + (t[3] / 255) + ')';
+                        context.fillRect((r.start - lex.screen.x) * config.font_width,
+                                         (r.line - lex.screen.y) * config.font_height,
+                                         r.length * config.font_width, config.font_height);
                     }
                 }
             }
@@ -303,54 +291,44 @@ var DrawControl = {
 
 var IndexControl = {
     // Индекс. Используется для поиска.
-    rebuildIndex: function(){
+    rebuildIndex: function () {
         // clear old value
-        lex.index.text = ''
-        lex.index.maxlen = 0
-        for(var i = 0; i < lex.file.lines.length; i++){
+        lex.index.text = '';
+        lex.index.maxlen = 0;
+        for (var i = 0; i < lex.file.lines.length; i++) {
             var parsed = Parser.parseLine(lex.file.lines[i]),
-                line = Coders.Uint8ArrayToString(parsed.map(
-                    function(c){
-                        return c.char
-                    }
-                ))
-            lex.index.text += line+'\n'
-            if(lex.index.maxlen < line.length){
-                lex.index.maxlen = line.length
+                line = Coders.Uint8ArrayToString(parsed.map((c) => c.char));
+            lex.index.text += line + '\n';
+            if (lex.index.maxlen < line.length) {
+                lex.index.maxlen = line.length;
             }
         }
     },
 }
 
 var FontControl = {
-    fontsLoaded: function(){
-        for(var fontNumber = 0; fontNumber <= config.font_max; fontNumber++){
-            if(!lex.fonts[fontNumber].source)
-                return false
-        }
-        return true;
-    },
-    loadFont: function(num,callback){
-        var req = null
+    loadFont: function (num,callback) {
+        var req = null;
         req = new XMLHttpRequest();
-        req.responseType = "arraybuffer"
-        req.open('GET', config.font_path+num+config.font_ext, true)
-        req.onreadystatechange = function() {
-            if(req.readyState == 4){
-                if(req.status == 200){
-                    var source = new Uint8Array(req.response)
-                    source = Uint8Array2BinArray(source)
+        req.responseType = "arraybuffer";
+        req.open('GET', config.font_path + num + config.font_ext, true);
+        req.onreadystatechange = function () {
+            if (req.readyState == 4) {
+                if (req.status == 200) {
+                    var source = new Uint8Array(req.response);
+                    source = Uint8Array2BinArray(source);
                     lex.fonts[num] = {
-                        source:source,
-                        bitmaps:{},
+                        source: source,
+                        bitmaps: {},
+                    };
+                    log('Font loaded: '+num);
+                    if(!!callback) {
+                        callback(lex.fonts[num]);
                     }
-                    log('Font loaded: '+num)
-                    if(!!callback)
-                        callback(lex.fonts[num])
                 }
             }
         }
-        req.send( null );
+        req.send(null);
     },
 }
 
@@ -397,43 +375,44 @@ var DevControl = {
 }
 
 var LineNumbersControl = {
-    removeLineNumbers: function(){
-        for(var i = 0; i < lex.file.lines.length; i++){
-            lex.file.lines[i] = new Uint8Array
-            (Array.from(lex.file.lines[i]).splice(lex.numbers.width+2))
+    removeLineNumbers: function () {
+        for (var i = 0; i < lex.file.lines.length; i++) {
+            lex.file.lines[i] = new Uint8Array(Array.from(lex.file.lines[i]).splice(lex.numbers.width + 2));
         }
-        lex.index.maxlen -= lex.numbers.width + config.line_numbers_padding
-        lex.numbers.set = false
-        lex.numbers.width = 0
-        SearchControl.flush()
-        ScreenControl.checkScrollPosition()
-        DrawControl.redrawAll()
+        lex.index.maxlen -= lex.numbers.width + config.line_numbers_padding;
+        lex.numbers.set = false;
+        lex.numbers.width = 0;
+        SearchControl.flush();
+        ScreenControl.checkScrollPosition();
+        DrawControl.redrawAll();
     },
-    addLineNumbers: function(){
-        lex.numbers.width = (lex.file.lines.length+'').length+1
-        lex.numbers.set = true
-        for(var i = 0; i < lex.file.lines.length; i++){
+
+    addLineNumbers: function () {
+        lex.numbers.width = (lex.file.lines.length + '').length + 1;
+        lex.numbers.set = true;
+        for (var i = 0; i < lex.file.lines.length; i++) {
             lex.file.lines[i] = new Uint8Array(
                 Parser.getLineNumberBytes(
                     i, lex.numbers.width).concat(
                         Array.from(lex.file.lines[i])))
         }
-        lex.index.maxlen += lex.numbers.width + config.line_numbers_padding
-        ScreenControl.checkScrollPosition()
-        SearchControl.flush()
-        DrawControl.redrawAll()
+        lex.index.maxlen += lex.numbers.width + config.line_numbers_padding;
+        ScreenControl.checkScrollPosition();
+        SearchControl.flush();
+        DrawControl.redrawAll();
     },
-    toggleLineNumbers: function(){
-        if(lex.numbers.set){
-            LineNumbersControl.removeLineNumbers()
-        }else{
-            LineNumbersControl.addLineNumbers()
+
+    toggleLineNumbers: function () {
+        if (lex.numbers.set) {
+            LineNumbersControl.removeLineNumbers();
+        } else {
+            LineNumbersControl.addLineNumbers();
         }
     }
 }
 
 var SelectionControl = {
-    clearSelection: function() {
+    clearSelection: function () {
         lex.selection = {
             set: false,
             start: false,
@@ -441,15 +420,18 @@ var SelectionControl = {
             y1: 0,
             x2: 0,
             y2: 0,
-        }
-        DrawControl.redrawAll()
+        };
+        DrawControl.redrawAll();
     },
+
     copySelection: function () {
-        return Object.assign({}, lex.selection)
+        return Object.assign({}, lex.selection);
     },
+
     setSelection: function (obj) {
-        lex.selection = obj
+        lex.selection = obj;
     },
+
     selectAll: function () {
         lex.selection.set = 1;
         lex.selection.x1 = 0;
@@ -457,35 +439,38 @@ var SelectionControl = {
         lex.selection.y1 = 0;
         lex.selection.y2 = lex.file.lines.length;
     },
+
     getSelectionText: function(){
-        if(!lex.selection.set) return '';
+        if (!lex.selection.set) {
+            return '';
+        }
         var s = lex.selection,
             x1 = Math.min(s.x1, s.x2),
             x2 = Math.max(s.x1, s.x2),
             y1 = Math.min(s.y1, s.y2),
             y2 = Math.max(s.y1, s.y2),
             ls = lex.file.lines,
-            l  = ls.length
-      var r = ''
+            l  = ls.length, r = '';
+
       for (var y = y1; y < y2; y++) {
         // we are currently not exceeded the
         // height of file
         if (!!ls[y]) {
           var line = Parser.parseLine(ls[y]);
-          for (var x = x1;
-            x < x2 && x < line.length; x++) {
+          for (var x = x1; x < x2 && x < line.length; x++) {
               if (!!line[x]) {
-                r += byteToCharCP866[line[x].char]
+                r += byteToCharCP866[line[x].char];
               } else {
-                r += ' '
+                r += ' ';
               }
           }
-          r += '\n'
+          r += '\n';
         }
       }
+
       // remove last '\n'
       r = r.substr(0,r.length-1);
-      return r
+      return r;
     },
 }
 
@@ -500,24 +485,17 @@ var ScreenControl = {
         return { w:x, h:y };
     },
 
-    expandScreen: function(){
+    expandScreen: function () {
         // увеличить размер canvas при изменении размера окна
         var viewport = ScreenControl.getViewportSize(),
-            canvas = document.getElementById('canvas')
+            canvas = document.getElementById('canvas');
         lex.screen.h = Math.ceil((viewport.h - 64) / config.font_height);
         lex.screen.w = Math.ceil((viewport.w) / config.font_width);
-        canvas.height = Math.ceil(viewport.h - 64)
-        canvas.width = Math.ceil(viewport.w)
+        canvas.height = Math.ceil(viewport.h - 64);
+        canvas.width = Math.ceil(viewport.w);
     },
 
-    // Контроль за положением прокрутки
-    setDefaults: function(){
-        lex.screen.x = 0
-        lex.screen.y = 0
-        URIHashControl.update();
-    },
-
-    setScrollY: function(y){
+    setScrollY: function (y) {
         lex.screen.y = y;
         ScreenControl.checkScrollPosition();
         DrawControl.redrawAll();
@@ -528,19 +506,24 @@ var ScreenControl = {
         if (lex.screen.x > lex.index.maxlen - lex.screen.w + config.max_x_scroll) {
             lex.screen.x = lex.index.maxlen - lex.screen.w + config.max_x_scroll;
         }
+
         if (lex.screen.h > lex.file.lines.length) {
             // файл не влезает в экран
             if (lex.screen.y > lex.file.lines.length - lex.screen.h) {
                 lex.screen.y = lex.file.lines.length - lex.screen.h;
             }
         }
+
         var maxshift = lex.screen.h - Math.floor(lex.screen.h*config.max_overscroll);
+
         if (lex.screen.y > lex.file.lines.length - maxshift) {
             lex.screen.y = lex.file.lines.length - maxshift;
         }
+
         if (lex.screen.y < 0) {
             lex.screen.y = 0;
         }
+
         if (lex.screen.x < 0) {
             lex.screen.x = 0;
         }
@@ -586,53 +569,53 @@ var TouchControl = {
         x: 0,
         y: 0,
     },
-    handleStart: function(event) {
+    handleStart: function (event) {
         event.preventDefault();
         var touches = event.changedTouches;
         for (var i = 0; i < touches.length; i++) {
             TouchControl.ongoingTouches.push(TouchControl.copyTouch(touches[i]));
         }
     },
-    handleMove: function(event){
+
+    handleMove: function (event) {
         event.preventDefault();
-        var touches = event.changedTouches
+        var touches = event.changedTouches;
         for (var i = 0; i < touches.length; i++) {
-            var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier)
-            var deltaX = touches[i].pageX - TouchControl.ongoingTouches[idx].pageX
-            var deltaY = touches[i].pageY - TouchControl.ongoingTouches[idx].pageY
-            TouchControl.scrollBuffer.x += deltaX
-            TouchControl.scrollBuffer.y += deltaY
+            var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier),
+                deltaX = touches[i].pageX - TouchControl.ongoingTouches[idx].pageX,
+                deltaY = touches[i].pageY - TouchControl.ongoingTouches[idx].pageY;
+            TouchControl.scrollBuffer.x += deltaX;
+            TouchControl.scrollBuffer.y += deltaY;
             if (idx >= 0) {
                 TouchControl.ongoingTouches.splice(idx, 1, TouchControl.copyTouch(touches[i]));
             } else {
                 log("can't figure out which touch to continue");
             }
-            if(Math.abs(TouchControl.scrollBuffer.y) > config.touch_y_min){
-                ScreenControl.scrollY
-                (TouchControl.scrollBuffer.y * config.touch_y_speed / config.touch_y_min)
-                TouchControl.scrollBuffer.y = 0
+            if (Math.abs(TouchControl.scrollBuffer.y) > config.touch_y_min) {
+                ScreenControl.scrollY(TouchControl.scrollBuffer.y * config.touch_y_speed / config.touch_y_min);
+                TouchControl.scrollBuffer.y = 0;
             }
-            if(Math.abs(TouchControl.scrollBuffer.x) > config.touch_x_min){
-                ScreenControl.scrollX
-                (TouchControl.scrollBuffer.x * config.touch_x_speed / config.touch_x_min)
-                TouchControl.scrollBuffer.x = 0
+            if (Math.abs(TouchControl.scrollBuffer.x) > config.touch_x_min) {
+                ScreenControl.scrollX(TouchControl.scrollBuffer.x * config.touch_x_speed / config.touch_x_min);
+                TouchControl.scrollBuffer.x = 0;
             }
         }
     },
-    handleEnd: function(event) {
+
+    handleEnd: function (event) {
         event.preventDefault();
         var touches = event.changedTouches;
         for (var i = 0; i < touches.length; i++) {
-            var idx = TouchControl.ongoingTouchIndexById
-            (touches[i].identifier);
+            var idx = TouchControl.ongoingTouchIndexById(touches[i].identifier);
             if (idx >= 0) {
-                TouchControl.ongoingTouches.splice(idx, 1)
+                TouchControl.ongoingTouches.splice(idx, 1);
             } else {
                 log("can't figure out which touch to end");
             }
         }
     },
-    ongoingTouchIndexById: function(idToFind) {
+
+    ongoingTouchIndexById: function (idToFind) {
         for (var i = 0; i < TouchControl.ongoingTouches.length; i++) {
             var id = TouchControl.ongoingTouches[i].identifier;
             if (id == idToFind) {
@@ -641,7 +624,8 @@ var TouchControl = {
         }
         return -1;
     },
-    copyTouch: function(touch) {
+
+    copyTouch: function (touch) {
         return {
             identifier: touch.identifier,
             pageX: touch.pageX,

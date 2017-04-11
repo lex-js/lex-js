@@ -416,9 +416,13 @@ var FileControl = {
         if (lex.numbers.set) {
             LineNumbersControl.addLineNumbers();
         }
+
         SearchControl.flush();
-        ScreenControl.setDefaults();
+        lex.screen.x = 0
+        lex.screen.y = 0
+        URIHashControl.update();
         SelectionControl.clearSelection();
+
         setTimeout(DrawControl.redrawAll, 10);
     }
 }

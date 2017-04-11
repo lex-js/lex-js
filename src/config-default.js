@@ -119,7 +119,7 @@ var config = {
 }
 
 var lex = {
-    fonts: {},
+    fonts: [],
     file: {
         name: '',
         // Remote file path of currently opened file (empty if file is local)
