@@ -113,6 +113,7 @@ var config = {
         },
         underline_true:95,
         underline_false:46,
+        empty_line: 232,
         command: 255,
     }
 }

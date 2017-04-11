@@ -17,36 +17,47 @@ var Parser = {
         // Преобразует массив байт
         // в список объектов, соответствующих
         // одному символу на экране
-        var r = []
-        var font      = 0
-        var command   = false
-        var underline = false
-        for(var x = 0; x < line.length; x++){
-            var char = line[x]
-            if(command){
-                var t = this.switchCommand(char, underline, font)
-                font = t.font
-                underline = t.underline
-                command = 0
+        var r = [], font = 0, command = false, underline = false;
+
+        for (var x = 0; x < line.length; x++) {
+            var char = line[x];
+            if (command) {
+                switch (char) {
+                    case config.parser.underline_false:
+                        underline = false;
+                        break;
+                    case config.parser.underline_true:
+                        underline = true;
+                        break;
+                    case config.parser.empty_line:
+                        return r;
+                        break;
+                    default:
+                        if (typeof config.parser.fonts[char] !== 'undefined') {
+                            font = config.parser.fonts[char];
+                        }
+                        break;
+                }
+                command = 0;
             }else{
                 switch(char){
-                case 9:{
-                    // что? [todo] разобраться с этим
-                    x = Math.ceil((x/8+1)*8)
-                    break
-                }
-                case 255:{
-                    command = true
-                    break
-                }
-                default:{
-                    r.push({
-                        char: char,
-                        underline: underline,
-                        font: font,
-                    })
-                    break
-                }
+                    case 9:{
+                        // что? [todo] разобраться с этим
+                        x = Math.ceil((x/8+1)*8)
+                        break
+                    }
+                    case 255:{
+                        command = true
+                        break
+                    }
+                    default:{
+                        r.push({
+                            char: char,
+                            underline: underline,
+                            font: font,
+                        })
+                        break
+                    }
                 }
             }
         }
@@ -73,26 +84,6 @@ var Parser = {
         // space
         arr.push(32)
         return arr
-    },
-    switchCommand: function(char, underline, font){
-        // изменить состояние
-        if(char == config.parser.underline_false){
-            underline = false
-        }
-        if(char == config.parser.underline_true){
-            underline = true
-        }
-        if(typeof config.parser.fonts[char] != 'undefined'){
-            // изменить шрифт
-            font = config.parser.fonts[char]
-        }
-        if(char == 255){
-            // todo
-        }
-        return {
-            font: font,
-            underline: underline,
-        }
     },
 }
 
