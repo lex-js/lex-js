@@ -32,18 +32,13 @@ var TestControl = {
         ].map(function (arr) {
             if (!checkEquality(arr,
                               Coders.string2BinArray(Coders.binArray2String(arr)))) {
-                                  TestControl.logTestResult('array decoders test failed')
+                TestControl.logTestResult('array decoders test failed')
+            } else {
+                TestControl.logTestResult('array decoders test was passed successfully!');
             }
-        })
+        });
     },
-    testNumCharDecoders: function () {
-        for (var i = 0; i < 10000; i++) {
-            if (Coders.char2Num(Coders.num2Char(i)) != i) {
-                TestControl.logTestResult('char decoders test failed!');
-                return;
-            }
-        }
-    },
+
     testPNGExporting: function () {
         lex.selection.x1 = 0;
         lex.selection.x2 = 4;
@@ -57,7 +52,6 @@ var TestControl = {
         console.log(result);
     },
     runAll: function () {
-        TestControl.testNumCharDecoders();
         TestControl.testArrayDecoders();
     },
 }

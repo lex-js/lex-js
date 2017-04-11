@@ -4,19 +4,17 @@
 function _(m){return m}
 
 function log(m){
-    // redefine it
-    if(config.logging){
-        if(m.length > config.log_max_length)
-            m = m.substr(0,config.log_max_length)
-        console.log(m)
+    if (config.logging) {
+        if (m.length > config.log_max_length)
+            m = m.substr(0,config.log_max_length);
+        console.log(m);
     }
 }
 
 var Parser = {
-    parseLine: function(line){
-        // Преобразует массив байт
-        // в список объектов, соответствующих
-        // одному символу на экране
+    parseLine: function (line) {
+        // Transforms the byte array into a list of objects.
+        // Each object is exactly 1 character on the screen.
         var r = [], font = 0, command = false, underline = false;
 
         for (var x = 0; x < line.length; x++) {
@@ -39,124 +37,103 @@ var Parser = {
                         break;
                 }
                 command = 0;
-            }else{
-                switch(char){
-                    case 9:{
-                        // что? [todo] разобраться с этим
-                        x = Math.ceil((x/8+1)*8)
-                        break
-                    }
-                    case 255:{
-                        command = true
-                        break
-                    }
-                    default:{
-                        r.push({
-                            char: char,
-                            underline: underline,
-                            font: font,
-                        })
-                        break
-                    }
+            } else {
+                if (char === 255) {
+                    command = true;
+                } else {
+                    r.push({
+                        char: char,
+                        underline: underline,
+                        font: font,
+                    });
                 }
             }
         }
-        return r
+        return r;
     },
-    getLineNumberBytes: function(n, width){
-        var r = '                    '
-        var arr = []
-        n = n+''
-        // padding
-        r = r.substr(0, width - n.length)
-        r += n
-        for(var i = 0; i < r.length; i++){
-            if(r[i] == ' '){
+
+    getLineNumberBytes: function (n, width) {
+        var r = '                    ';
+        var arr = [];
+        n = n+'';
+
+        r = r.substr(0, width - n.length);
+        r += n;
+        for (var i = 0; i < r.length; i++) {
+            if (r[i] == ' ') {
                 // space
-                arr.push(32)
-            }else{
-                // number
-                arr.push(r[i]*1+48)
+                arr.push(32);
+            } else {
+                // number by ASCII code
+                arr.push(r[i] * 1 + 48);
             }
         }
+
         // separator
-        arr.push(179)
+        arr.push(179);
         // space
-        arr.push(32)
-        return arr
+        arr.push(32);
+        return arr;
     },
 }
 
 var Coders = {
     // encoders+decoders
-    Uint8ArrayToString: function(ui8arr){
-        // преобразует массив байт в стоку
-        // используя кодировку ibm866
-        var string = ''
-        for(var i = 0, b; b = ui8arr[i]; i++){
-            string += byteToCharCP866[b]
+
+    Uint8ArrayToString: function (ui8arr) {
+        return Array.from(ui8arr).map((b) => byteToCharCP866[b]).join('');
+    },
+
+    StringToUint8Array: function (string) {
+        return Uint8Array.from(Array.from(string).map((c) => charToByteCP866[c]));
+    },
+
+    binArray2String: function (arr) {
+        var len = config.max_char_code,
+            r = '', arrlen = arr.length;
+
+        while (arr.length % len) {
+            arr.push(0);
         }
-        return string
-    },
-    StringToUint8Array: function(string){
-        // преобразует строку в массив байт
-        // используя кодировку ibm866
-        var arr = []
-        for(var i = 0, c; c = string[i]; i++){
-            arr.push(charToByteCP866[c])
-        }
-        return new Uint8Array(arr)
-    },
-    num2Char: function(num){
-        return String.fromCharCode(num)
-    },
-    char2Num: function(chr){
-        return chr.charCodeAt(0)
-    },
-    dec2Bin: function(dec)
-    {
-        return Number(dec).toString(2)
-    },
-    bin2Dec: function(bin){
-        return parseInt(bin,2)
-    },
-    binArray2String: function(arr){
-        var len = config.max_char_code
-        var r   = ''
-        var arrlen = arr.length
-        while(arr.length % len){
-            arr.push(0)
-        }
-        for(var i = 0; i < arr.length; ){
-            var b = ''
-            while(b.length < len){
-                if(typeof arr[i] == 'undefined')
+
+        for (var i = 0; i < arr.length; ) {
+            var b = '';
+            while (b.length < len) {
+                if (typeof arr[i] == 'undefined') {
                     break;
-                b += arr[i]
-                i++
+                }
+                b += arr[i];
+                i++;
             }
-            var c = Coders.bin2Dec(b)
-            r+= Coders.num2Char(c)
+
+            var c = parseInt(b, 2);
+            r+= String.fromCharCode(c);
         }
-        return arrlen+':'+r
+
+        return arrlen + ':' + r;
     },
-    string2BinArray: function(str){
-        var len = config.max_char_code
-        var arrlen = str.substr(0,str.indexOf(':'))*1
-        var str = str.substr(str.indexOf(':')+1)
-        var r = []
-        for(var i = 0; i < str.length; i++){
-            var c = Coders.char2Num(str[i])
-            var n = Coders.dec2Bin(c).split('')
-            while(n.length < len){
-                n = ['0'].concat(n)
+
+    string2BinArray: function (str) {
+        var len = config.max_char_code,
+            arrlen = str.substr(0, str.indexOf(':')) * 1,
+            str = str.substr(str.indexOf(':') + 1), r = [], c, n;
+
+        for (var i = 0; i < str.length; i++) {
+            c = str[i].charCodeAt(0);
+            n = Number(c).toString(2).split('');
+
+            while (n.length < len) {
+                n = ['0'].concat(n);
             }
-            n = n.reverse()
-            for(var j = n.length-1; j >= 0; j--){
-                r.push((n[j] == '1')*1)
+
+            n = n.reverse();
+
+            for (var j = n.length - 1; j >= 0; j--) {
+                r.push((n[j] == '1') * 1);
             }
         }
-        return r
+
+        return r;
     },
 }
 
