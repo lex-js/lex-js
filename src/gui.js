@@ -202,13 +202,10 @@ var MessageControl = {
 }
 
 var URIHashControl = {
+    // Allow to change the hash only once per config.uri_hash_update_delay.
+    // Delay is required since URL hash update is quite slow.
     set: function (newURLHash) {
-        if (lex.hash_timeout) {
-            clearTimeout(lex.hash_timeout);
-        }
-        // Allow to change the hash only once per second.
-        // Delay is required since URL hash update is quite slow.
-        lex.hash_timeout = setTimeout((() => (() => {
+        var updateFunction = (() => () => {
             if (newURLHash) {
                 if (history.replaceState) {
                     history.replaceState(undefined, undefined, '#' + newURLHash);
@@ -216,10 +213,20 @@ var URIHashControl = {
                     location.hash = '#' + newURLHash;
                 }
             } else {
-                location.hash = '';
+                history.pushState('', document.title, window.location.pathname);
             }
             lex.hash_timeout = null;
-        }))(newURLHash), 1000);
+        })(newURLHash);
+
+        if (lex.hash_timeout) {
+            clearTimeout(lex.hash_timeout);
+            lex.hash_timeout = setTimeout(updateFunction, config.uri_hash_update_delay);
+        } else {
+            updateFunction();
+            lex.hash_timeout = setTimeout(() => {
+                lex.hash_timeout = null;
+            }, config.uri_hash_update_delay);
+        }
     },
 
     update: function () {

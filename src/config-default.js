@@ -55,6 +55,9 @@ var config = {
     export_pdf_jspdf_path: 'lib/jspdf.min.js',
     export_pdf_image_height: 100,
 
+    // URIHash settings
+    uri_hash_update_delay: 500,
+
     // Часть области экрана, на которую можно
     // проскроллить после достижения конца файла
     max_overscroll: 0.3,
