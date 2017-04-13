@@ -22,15 +22,24 @@ var GUIControl = {
 
         FileControl.getFileList( function (arr) {
             el.innerHTML = '';
+
             // case-insensitive sorting
             arr = arr.sort(function (a, b) {
                 return a.toLowerCase().localeCompare(b.toLowerCase());
             });
-            arr.map(function (filename) {
+
+            arr.forEach(function (filename) {
                 var o = document.createElement('option');
                 o.textContent = filename;
                 el.appendChild(o);
             });
+
+            // hide if no files, show otherwise
+            var displayStyle = arr.length ? 'inline-block' : 'none';
+            ['file-list', 'button-load', 'button-delete'].forEach((e) => {
+                document.getElementById(e).style.display = displayStyle;
+            });
+
         })
     },
 
