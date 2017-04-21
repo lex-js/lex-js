@@ -84,6 +84,10 @@ var config = {
     // Коэффицент скорости прокрутки в мобильных устройствах
     touch_x_speed: 1,
     touch_y_speed: 0.5,
+    // Расстояния, на которые нужно проскроллить в мобильных устройствах,
+    // чтобы изменить видимость панели сверху.
+    hide_top_bar_delta: 10,
+    show_top_bar_delta: 10,
 
     // just don't modify it
     max_char_code: 8,
@@ -122,6 +126,7 @@ var config = {
 }
 
 var lex = {
+    is_mobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
     fonts: [],
     file: {
         name: '',
@@ -168,6 +173,7 @@ var lex = {
         active: false,
     },
     hash_timeout: null,
+    top_bar_shown: true,
 }
 
 for(var i = 0; i <= config.font_max; i++){

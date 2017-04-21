@@ -31,9 +31,6 @@ if (!HTMLCanvasElement.prototype.toBlob) {
 	}
     });
 }
-function isMobile(){
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-}
 
 // Production steps of ECMA-262, Edition 6, 22.1.2.1
 if (!Array.from) {
@@ -88,7 +85,7 @@ if (!Array.from) {
             var len = toLength(items.length);
 
             // 13. If IsConstructor(C) is true, then
-            // 13. a. Let A be the result of calling the [[Construct]] internal method 
+            // 13. a. Let A be the result of calling the [[Construct]] internal method
             // of C with an argument list containing the single item len.
             // 14. a. Else, Let A be ArrayCreate(len).
             var A = isCallable(C) ? Object(new C(len)) : new Array(len);

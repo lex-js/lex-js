@@ -144,7 +144,7 @@ var Content = {
                 name_td.textContent = sth.name;
 
                 // Modification time
-                if (!isMobile()) {
+                if (!lex.is_mobile) {
                     var mod_td = document.createElement('td');
                     mod_td.className = 'file-list-mod-time';
                     mod_td.textContent = new Date(sth.modified * 1000).toISOString().slice(0, 16).replace(/T/,' ');
@@ -590,7 +590,7 @@ var InitControl = {
             TestControl.runAll();
         }
 
-        if (isMobile()) {
+        if (lex.is_mobile) {
             InitControl.mobileInit();
             InitControl.mobileEventsInit();
         }

@@ -13,6 +13,19 @@
   z-index: 10;
 }
 
+#canvas {
+  top: 0;
+}
+
+#block-top {
+  width: 60px;
+}
+
+#content-list-container {
+  top: 0;
+  z-index: 11;
+}
+
 #block-top > div {
   display: none;
 }

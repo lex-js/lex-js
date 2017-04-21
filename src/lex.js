@@ -488,10 +488,12 @@ var ScreenControl = {
     expandScreen: function () {
         // увеличить размер canvas при изменении размера окна
         var viewport = ScreenControl.getViewportSize(),
-            canvas = document.getElementById('canvas');
-        lex.screen.h = Math.ceil((viewport.h - 64) / config.font_height);
+            canvas = document.getElementById('canvas'),
+            h_shift = lex.is_mobile ? 14 : 64;
+
+        lex.screen.h = Math.ceil((viewport.h - h_shift) / config.font_height);
         lex.screen.w = Math.ceil((viewport.w) / config.font_width);
-        canvas.height = Math.ceil(viewport.h - 64);
+        canvas.height = Math.ceil(viewport.h - h_shift);
         canvas.width = Math.ceil(viewport.w);
     },
 
