@@ -490,6 +490,17 @@ var MobileUIControl = {
         document.getElementById('mobile-menu').style['display'] = 'none';
         DrawControl.redrawAll();
     },
+
+    // Show/hide menu on scrolling up/down
+    showMenu: function () {
+        document.getElementById('mobile-menu-open').style.top = 0;
+        document.getElementById('block-top').style.top = 0;
+    },
+
+    hideMenu: function () {
+        document.getElementById('mobile-menu-open').style.top = '-100px';
+        document.getElementById('block-top').style.top = '-100px';
+    }
 }
 
 var ExportControl = {

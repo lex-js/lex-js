@@ -571,6 +571,7 @@ var TouchControl = {
         x: 0,
         y: 0,
     },
+
     handleStart: function (event) {
         event.preventDefault();
         var touches = event.changedTouches;
@@ -593,6 +594,15 @@ var TouchControl = {
             } else {
                 log("can't figure out which touch to continue");
             }
+
+            /* show and hide "open menu" button */
+            if (TouchControl.scrollBuffer.y > config.show_top_bar_delta || lex.screen.y === 0) {
+                MobileUIControl.showMenu();
+            }
+            if (TouchControl.scrollBuffer.y * -1 > config.hide_top_bar_delta) {
+                MobileUIControl.hideMenu();
+            }
+
             if (Math.abs(TouchControl.scrollBuffer.y) > config.touch_y_min) {
                 ScreenControl.scrollY(TouchControl.scrollBuffer.y * config.touch_y_speed / config.touch_y_min);
                 TouchControl.scrollBuffer.y = 0;
