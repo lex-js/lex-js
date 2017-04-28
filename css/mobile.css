@@ -28,6 +28,14 @@
   z-index: 11;
 }
 
+#close-content-list-mobile {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+}
+
 #block-top > div {
   display: none;
 }
@@ -57,8 +65,8 @@
   padding-left: 30px;
   position: absolute;
   left: 0;
+  right: 0;
 }
-
 
 .mobile-icon {
   display: inline-block;

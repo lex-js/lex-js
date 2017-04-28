@@ -26,7 +26,6 @@
   background-image: url("icons/24/times-circle.png");
 }
 
-
 #button-github {
   background-image: url("icons/24/github.png");
 }
@@ -35,14 +34,14 @@
   display: inline-block;
   width: 1em;
   height: 1em;
-  background-image: url("icons/download.png");  
+  background-image: url("icons/download.png");
 }
 
 .content-direct-link {
   display: inline-block;
   width: 1em;
   height: 1em;
-  background-image: url("icons/link.png");  
+  background-image: url("icons/link.png");
 }
 
 #search-close {
@@ -50,20 +49,20 @@
 }
 
 /* mobile buttons */
-#mobile-delete-file {
+#mobile-delete-file, #close-content-list-mobile {
   background-image: url("icons/times-red.png");
 }
 
 #mobile-menu-open {
-  background-image: url("icons/48/navicon.png");  
+  background-image: url("icons/48/navicon.png");
 }
 
 #mobile-button-close {
-  background-image: url("icons/48/chevron-left.png");  
+  background-image: url("icons/48/chevron-left.png");
 }
 
 #mobile-button-open-file {
-  background-image: url("icons/48/folder-open.png");  
+  background-image: url("icons/48/folder-open.png");
 }
 
 #mobile-button-toggle-lines {

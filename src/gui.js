@@ -464,10 +464,10 @@ var MobileUIControl = {
                 var n = document.createElement('span');
                 n.textContent = list[i];
                 n.className = 'mobile-file-name';
-                n.addEventListener(config.mobile_click_event, function () {
-                    FileControl.loadFileByFileName(this.textContent);
+                n.addEventListener(config.mobile_click_event, ((name) => () => {
+                    FileControl.loadFileByFileName(name);
                     MobileUIControl.closeMenu();
-                });
+                })(list[i]));
 
                 var d = document.createElement('div');
                 d.className = 'mobile-icon large mobile-delete-file';
@@ -760,6 +760,9 @@ var InitControl = {
             'mobile-open-file': function () {
                 document.getElementById('file-select').click();
                 closeMenu();
+            },
+            'close-content-list-mobile': function () {
+                Content.hide();
             },
             'mobile-toggle-lines': function () {
                 LineNumbersControl.toggleLineNumbers();

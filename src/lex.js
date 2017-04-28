@@ -599,7 +599,7 @@ var TouchControl = {
             if (TouchControl.scrollBuffer.y > config.show_top_bar_delta || lex.screen.y === 0) {
                 MobileUIControl.showMenu();
             }
-            if (TouchControl.scrollBuffer.y * -1 > config.hide_top_bar_delta) {
+            if (TouchControl.scrollBuffer.y * -1 > config.hide_top_bar_delta && lex.screen.y !== 0) {
                 MobileUIControl.hideMenu();
             }
 
