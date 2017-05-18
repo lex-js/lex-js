@@ -51,6 +51,10 @@ var GUIControl = {
         document.getElementById('line-count').textContent  = l;
         document.getElementById('scroll-percentage').textContent = Math.ceil(y / l * 100) + '%';
     },
+
+    duplicateWindow: function () {
+        window.open(document.location.href, '_blank');
+    }
 }
 
 var Content = {
@@ -822,30 +826,20 @@ var InitControl = {
             'и': function () {
                 ScreenControl.scrollY(lex.screen.h-1);
             },
-            'alt+g': function () {
-                GUIControl.showGotoLinePrompt();
-            },
-            'v': function () {
-                LineNumbersControl.toggleLineNumbers();
-            },
-            'м': function () {
-                LineNumbersControl.toggleLineNumbers();
-            },
+            'alt+g': GUIControl.showGotoLinePrompt,
+            'v': LineNumbersControl.toggleLineNumbers,
+            'м': LineNumbersControl.toggleLineNumbers,
             'esc': function () {
                 lex.screen.x = 0;
                 SelectionControl.clearSelection();
                 Content.hide();
                 DrawControl.redrawAll();
             },
-            'alt+f3': function () {
-                SearchControl.activateSearchField();;
-            },
-            'ы': function () {
-                SearchControl.activateSearchField();;
-            },
-            's': function () {
-                SearchControl.activateSearchField();;
-            },
+            'alt+f3': SearchControl.activateSearchField,
+            'ы': SearchControl.activateSearchField,
+            's': SearchControl.activateSearchField,
+            'n': GUIControl.duplicateWindow,
+            'т': GUIControl.duplicateWindow,
             'щ': function () {
                 document.getElementById('file-select').click();
             },
