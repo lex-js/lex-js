@@ -1,80 +1,81 @@
 <!DOCTYPE html>
 <html>
-    <head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
-	<title>Lex.js</title>
-	<script type="text/javascript" src="public/bundle.min.js"></script>
-	<script type="text/javascript" src="sample/info.js"></script>
-	<script type="text/javascript" src="config.js"></script>
-	<link rel="stylesheet" type="text/css" href="css/style.css">
-	<link rel="stylesheet" type="text/css" href="css/icons.css">
-    </head>
-    <body>
-	<div id="content-container">
-	    <div id="block-top">
-		<div class="element-container">
-		    <span id="file-select-container">
-			<input type="file" id="file-select" multiple title="Load file from your computer">
-		    </span>
-		    <select class="button" id="file-list">
-		    </select>
-		    <span class="button button-icon" id="button-load" title="Load selected file"></span>
-		    <span class="button button-icon" id="button-delete" title="Delete selected file"></span>
-		    &nbsp;
-		    <span class="button button-icon" id="button-line-numbers" title="Toggle line numbers (v)"></span>
-		    <span class="button button-icon" id="button-goto-line" title="Go to line... (Alt+g)"></span>
-		    <span class="button button-icon" id="button-search" title="Search text (s)"></span>
-		    <span class="button button-icon" id="button-content" title="Show contents (c)"></span>
-		    <a href="https://github.com/lex-js/lex-js" target="_blank" id="source-link">
-                      <span class="button button-icon" id="button-github" title="View source code on Github"></span>
-                    </a>
-		</div>
-	    </div>
-	    <div id="block-search">
-		<span id="search-close"></span>
-		<input id="search-field" class="input-field search-input" placeholder="Search here..." value="" autocomplete="off">
-		<span id="search-container">
-		    <span id="search-number">-</span>/<span id="search-total">-</span>
-		</span>
-	    </div>
-	    <div id="content">
-		<canvas id="canvas" width=1000 height=1000></canvas>
-		<canvas id="canvas-tmp" width=100 height=100></canvas>
-	    </div>
-	    <div id="block-bottom">
-		<span id="line-number">--</span> / <span id="line-count">--</span> (<span id="scroll-percentage">--</span>)
-		<span id="tip-content"><span class="tip-text"></span></span>
-	    </div>
-            <div id="content-list-container">
-              <div id="content-list">
-              </div>
-              <div class="button" id="close-content-list-mobile"></div>
-            </div>
-            <div id="mobile-menu-open"></div>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
+    <title>Lex.js</title>
+    <script type="text/javascript" src="public/bundle.min.js"></script>
+    <script type="text/javascript" src="sample/info.js"></script>
+    <script type="text/javascript" src="config.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link rel="stylesheet" type="text/css" href="css/icons.css">
+  </head>
+  <body>
+    <div id="content-container">
+      <div id="block-top">
+	<div class="element-container">
+	  <span id="file-select-container">
+	    <input type="file" id="file-select" multiple title="Load file from your computer">
+	  </span>
+	  <select class="button" id="file-list">
+	  </select>
+	  <span class="button button-icon" id="button-load" title="Load selected file"></span>
+	  <span class="button button-icon" id="button-delete" title="Delete selected file"></span>
+	  &nbsp;
+	  <span class="button button-icon" id="button-line-numbers" title="Toggle line numbers (v)"></span>
+	  <span class="button button-icon" id="button-goto-line" title="Go to line... (Alt+g)"></span>
+	  <span class="button button-icon" id="button-search" title="Search text (s)"></span>
+	  <span class="button button-icon" id="button-content" title="Show contents (c)"></span>
+	  <span class="button button-icon" id="button-open-copy" title="Open this file in new tab (n)"></span>
+	  <a href="https://github.com/lex-js/lex-js" target="_blank" id="source-link">
+            <span class="button button-icon" id="button-github" title="View source code on Github"></span>
+          </a>
 	</div>
-	<div id="mobile-menu">
-            <table id="mobile-button-table">
-                <tr>
-                    <td id="mobile-menu-close">
-                        <span class="mobile-icon large" id="mobile-button-close"></span>
-                    </td>
-                    <td id="mobile-open-file">
-                        <span class="mobile-icon large" id="mobile-button-open-file"></span>
-                    </td>
-                    <td id="mobile-toggle-lines">
-                        <span class="mobile-icon large" id="mobile-button-toggle-lines"></span>
-                    </td>
-                    <td id="mobile-goto-line">
-                        <span class="mobile-icon large" id="mobile-button-goto-line"></span>
-                    </td>
-                    <td id="mobile-list-content">
-                        <span class="mobile-icon large" id="mobile-button-list-content"></span>
-                    </td>
-                </tr>
-            </table>
-	    <div class="mobile-menu-group" id="mobile-file-list">
-	    </div>
-	</div>
-    </body>
+      </div>
+      <div id="block-search">
+	<span id="search-close"></span>
+	<input id="search-field" class="input-field search-input" placeholder="Search here..." value="" autocomplete="off">
+	<span id="search-container">
+	  <span id="search-number">-</span>/<span id="search-total">-</span>
+	</span>
+      </div>
+      <div id="content">
+	<canvas id="canvas" width=1000 height=1000></canvas>
+	<canvas id="canvas-tmp" width=100 height=100></canvas>
+      </div>
+      <div id="block-bottom">
+	<span id="line-number">--</span> / <span id="line-count">--</span> (<span id="scroll-percentage">--</span>)
+	<span id="tip-content"><span class="tip-text"></span></span>
+      </div>
+      <div id="content-list-container">
+        <div id="content-list">
+        </div>
+        <div class="button" id="close-content-list-mobile"></div>
+      </div>
+      <div id="mobile-menu-open"></div>
+    </div>
+    <div id="mobile-menu">
+      <table id="mobile-button-table">
+        <tr>
+          <td id="mobile-menu-close">
+            <span class="mobile-icon large" id="mobile-button-close"></span>
+          </td>
+          <td id="mobile-open-file">
+            <span class="mobile-icon large" id="mobile-button-open-file"></span>
+          </td>
+          <td id="mobile-toggle-lines">
+            <span class="mobile-icon large" id="mobile-button-toggle-lines"></span>
+          </td>
+          <td id="mobile-goto-line">
+            <span class="mobile-icon large" id="mobile-button-goto-line"></span>
+          </td>
+          <td id="mobile-list-content">
+            <span class="mobile-icon large" id="mobile-button-list-content"></span>
+          </td>
+        </tr>
+      </table>
+      <div class="mobile-menu-group" id="mobile-file-list">
+      </div>
+    </div>
+  </body>
 </html>

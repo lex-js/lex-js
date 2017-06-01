@@ -732,6 +732,7 @@ var InitControl = {
         });
 
         document.getElementById('button-content').addEventListener('click', Content.toggle);
+        document.getElementById('button-open-copy').addEventListener("click", GUIControl.duplicateWindow);
     },
 
     mobileInit: function(){

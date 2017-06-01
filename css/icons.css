@@ -30,6 +30,10 @@
   background-image: url("icons/24/github.png");
 }
 
+#button-open-copy {
+  background-image: url("icons/24/external-link-square.png");
+}
+
 .content-download-link {
   display: inline-block;
   width: 1em;
