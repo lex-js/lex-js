@@ -90,3 +90,7 @@
   white-space: nowrap;
   overflow: hidden;
 }
+
+#close-content-list-mobile {
+  display: block;
+}
