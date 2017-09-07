@@ -1,7 +1,7 @@
 # lex-js
 Lexicon Viewer JS port
 
-(based on UNIX version of Lexicon Viewer - http://www.lexview.ru/)
+(based on [UNIX version of Lexicon Viewer](http://www.lexview.spb.ru/))
 
 # Usage
 
