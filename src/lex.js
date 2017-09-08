@@ -1,5 +1,57 @@
-// gettext
-// todo
+var lex = {
+    is_mobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+    fonts: [],
+    file: {
+        name: '',
+        // Remote file path of currently opened file (empty if file is local)
+        // Used at URIHashControl
+        remote_name: '',
+        lines: [[]],
+    },
+    index: {
+        lines:[],
+    },
+    search: {
+        active: false,
+        regexp: false,
+        string: "",
+        results: [],
+        active_entry_number: 0,
+    },
+    selection: {
+        set: false,
+        start: false,
+        x1: 0,
+        y1: 0,
+        x2: 0,
+        y2: 0,
+    },
+    screen: {
+        x: 0,
+        y: 0,
+        w: 140,
+        h: 10,
+    },
+    numbers: {
+        set: config.show_line_numbers,
+        width: 0,
+    },
+    content_tree: {
+        tree: null,
+        active: false
+    },
+    content_list: {
+        path: '',
+        active: false,
+    },
+    hash_timeout: null,
+    top_bar_shown: true,
+}
+
+for(var i = 0; i <= config.font_max; i++){
+    lex.fonts[i] = {bitmaps:{}}
+}
+
 
 function _(m){return m}
 
@@ -89,8 +141,7 @@ var Coders = {
     },
 
     binArray2String: function (arr) {
-        var len = config.max_char_code,
-            r = '', arrlen = arr.length;
+        var len = 8, r = '', arrlen = arr.length;
 
         while (arr.length % len) {
             arr.push(0);
@@ -114,8 +165,7 @@ var Coders = {
     },
 
     string2BinArray: function (str) {
-        var len = config.max_char_code,
-            arrlen = str.substr(0, str.indexOf(':')) * 1,
+        var len = 8, arrlen = str.substr(0, str.indexOf(':')) * 1,
             str = str.substr(str.indexOf(':') + 1), r = [], c, n;
 
         for (var i = 0; i < str.length; i++) {

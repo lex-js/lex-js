@@ -468,7 +468,7 @@ var MobileUIControl = {
                 var n = document.createElement('span');
                 n.textContent = list[i];
                 n.className = 'mobile-file-name';
-                n.addEventListener(config.mobile_click_event, ((name) => () => {
+                n.addEventListener('click', ((name) => () => {
                     FileControl.loadFileByFileName(name);
                     MobileUIControl.closeMenu();
                 })(list[i]));
@@ -477,7 +477,7 @@ var MobileUIControl = {
                 d.className = 'mobile-icon large mobile-delete-file';
                 d.id = "mobile-delete-file";
                 d.title = list[i];
-                d.addEventListener(config.mobile_click_event, function () {
+                d.addEventListener('click', function () {
                     var filename = this.title;
                     FileControl.deleteFile(filename);
                     this.parentNode.remove();
@@ -583,6 +583,8 @@ var ExportControl = {
 var InitControl = {
 
     init: function () {
+
+
         // on document load
         InitControl.initMousetrap();
         ScreenControl.expandScreen();
@@ -613,8 +615,8 @@ var InitControl = {
         if (typeof URIHashControl.parseHash() != 'undefined') {
             URIHashControl.load();
         } else {
-            if (config.load_file_from_source && !is_local) {
-                FileControl.loadFileByURL(config.init_file, '', InitControl.postInit);
+            if (config.load_greeting_file_from_source && !is_local) {
+                FileControl.loadFileByURL(config.greeting_file, '', InitControl.postInit);
             } else {
                 FileControl.loadFileBySource(lex.file.source, DrawControl.redrawAll);
             }
@@ -784,7 +786,7 @@ var InitControl = {
         }
 
         for(var id in events) {
-            document.getElementById(id).addEventListener(config.mobile_click_event, events[id]);
+            document.getElementById(id).addEventListener('click', events[id]);
         }
     },
 
