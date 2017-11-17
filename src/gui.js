@@ -269,6 +269,13 @@ var URIHashControl = {
         if (typeof parsed != 'undefined') {
             if (parsed.type == 'remote') {
                 var baseName = parsed.file.split(/[\\/]/).pop();
+
+                // Set lex.content_list.path to be equal to the path of
+                // the file being loaded
+                var path = parsed.file
+                                 .substr(0, parsed.file.length - baseName.length - 1);
+                lex.content_list.path = path;
+
                 FileControl.loadFileByURL(config.content_real_path + '/' + parsed.file,
                                           parsed.file, () => {
                                               GUIControl.setWindowTitle(baseName);
@@ -297,7 +304,7 @@ var URIHashControl = {
         var type, file, line;
         if (!hash) return;
 
-        hash = hash.substr(1);
+        hash = decodeURIComponent(hash).substr(1);
         type = hash.split(':')[0];
         if (!(['remote', 'local'].includes(type))) return;
 
