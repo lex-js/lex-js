@@ -257,8 +257,19 @@ var URIHashControl = {
 
     process: function () {
         var parsed = URIHashControl.parseHash();
-        if (typeof parsed != 'undefined' && lex.screen.y != parsed.line) {
-            ScreenControl.setScrollY(parsed.line);
+        if (typeof parsed != 'undefined') {
+            if (lex.screen.y != parsed.line) {
+                ScreenControl.setScrollY(parsed.line);
+            }
+            if (parsed.type == 'remote' &&
+                lex.file.remote_name != parsed.file) {
+                FileControl.loadFileByURL(config.content_real_path + '/' + parsed.file,
+                                          parsed.file, () => {
+                                              GUIControl.setWindowTitle(parsed.file);
+                                              lex.file.name = parsed.file;
+                                              ScreenControl.setScrollY(parsed.line);
+                                          });
+            }
         } else {
             URIHashControl.set(URIHashControl.getCurrent());
         }
