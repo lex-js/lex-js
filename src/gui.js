@@ -265,8 +265,12 @@ var URIHashControl = {
                 lex.file.remote_name != parsed.file) {
                 FileControl.loadFileByURL(config.content_real_path + '/' + parsed.file,
                                           parsed.file, () => {
-                                              GUIControl.setWindowTitle(parsed.file);
-                                              lex.file.name = parsed.file;
+                                              var baseName = parsed.file.split(/[\\/]/).pop()
+                                              GUIControl.setWindowTitle(baseName);
+                                              lex.file.name = baseName;
+                                              lex.file.remote_name = parsed.file;
+                                              // -1 to strip the last `/`
+                                              lex.content_list.path = parsed.file.substr(0, parsed.file.length - baseName.length - 1);
                                               ScreenControl.setScrollY(parsed.line);
                                           });
             }
