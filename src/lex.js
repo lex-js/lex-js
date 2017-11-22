@@ -36,10 +36,6 @@ var lex = {
         set: config.show_line_numbers,
         width: 0,
     },
-    content_tree: {
-        tree: null,
-        active: false
-    },
     content_list: {
         path: '',
         active: false,
@@ -582,14 +578,12 @@ var ScreenControl = {
     },
 
     scrollHomeY: function () {
-        if(lex.content_tree.active) return;
         lex.screen.y = 0;
         DrawControl.redrawAll();
         URIHashControl.update();
     },
 
     scrollEndY: function () {
-        if (lex.content_tree.active) return;
         lex.screen.y = lex.file.lines.length - lex.screen.h;
         ScreenControl.checkScrollPosition();
         DrawControl.redrawAll();
@@ -597,7 +591,6 @@ var ScreenControl = {
     },
 
     scrollX: function (x) {
-        if (lex.content_tree.active) return;
         x = Math.round(x);
         lex.screen.x -= x;
         ScreenControl.checkScrollPosition();
@@ -605,7 +598,6 @@ var ScreenControl = {
     },
 
     scrollY: function (y) {
-        if (lex.content_tree.active) return;
         y = Math.round(y);
         lex.screen.y -= y;
         ScreenControl.checkScrollPosition();
