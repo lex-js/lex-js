@@ -58,7 +58,7 @@ switch ($_REQUEST['action'])
 {
     case 'list':
     $list = directoryList($config['directory'], $_REQUEST['dirs'], $config['allowed_exts']);
-    echo json_encode($list, JSON_UNESCAPED_UNICODE);
+    echo json_encode($list);
     break;
 
     default:
