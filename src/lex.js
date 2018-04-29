@@ -184,6 +184,12 @@ var Coders = {
 }
 
 var DrawControl = {
+    state: null,
+
+    resetState: function () {
+        DrawControl.state = null;
+    },
+
     setFontBGColor: function (bg_color) {
         config.bg_color = bg_color;
         DrawControl.redrawAll();
@@ -263,16 +269,38 @@ var DrawControl = {
             sx = lex.screen.x,
             sy = lex.screen.y,
             ls = lex.file.lines,
-            l  = ls.length;
+            l  = ls.length,
+            start = 0, end = h;
 
-        context.fillStyle = 'rgba('+
-            config.bg_color[0]+','+
-            config.bg_color[1]+','+
-            config.bg_color[2]+','+
-            config.bg_color[3]+')';
-        context.fillRect(0, 0, rw, rh);
+        if (DrawControl.state) {
+            var { x: old_x, y: old_y } = DrawControl.state,
+                x_shift = old_x - sx,
+                y_shift = old_y - sy;
 
-        for (var y = 0; y < h && y < l; y++) {
+            if (Math.abs(y_shift) < h) {
+                var id  = context.getImageData(0, 0, rw, rh);
+                context.putImageData(id,
+                                     x_shift * config.font_width,
+                                     y_shift * config.font_height);
+                if (y_shift < 0) {
+                    start = h + y_shift;
+                    end   = h;
+                } else if (y_shift > 0) {
+                    start = 0;
+                    end   = y_shift;
+                }
+            }
+        } else {
+            context.fillRect(0, 0, rw, rh);
+        }
+
+        // Clear new area
+        context.fillRect(0, start * config.font_height,
+                         rw, (end - start) * config.font_height);
+
+        DrawControl.state = { x: sx, y: sy };
+
+        for (var y = start; y < end && y < h && y + sy < l; y++) {
             var line = ls[y + sy];
             if (typeof line == 'undefined') {
                 break;
@@ -303,6 +331,7 @@ var DrawControl = {
                              (lex.selection.x2 - lex.selection.x1) * config.font_width,
                              (lex.selection.y2 - lex.selection.y1) * config.font_height);
         }
+        DrawControl.resetState();
     },
 
     redrawSearchResults: function (context) {
@@ -323,11 +352,19 @@ var DrawControl = {
                 }
             }
         }
+        DrawControl.resetState();
     },
 
     redrawAll: function () {
         var canvas = document.getElementById('canvas');
         var context = canvas.getContext('2d');
+
+        context.fillStyle = 'rgba('+
+                            config.bg_color[0]+','+
+                            config.bg_color[1]+','+
+                            config.bg_color[2]+','+
+                            config.bg_color[3]+')';
+
         GUIControl.updateBottomBlock();
         DrawControl.redrawCanvas(context);
         DrawControl.redrawSelection(context);
@@ -541,6 +578,7 @@ var ScreenControl = {
         lex.screen.w = Math.ceil((viewport.w) / config.font_width);
         canvas.height = Math.ceil(viewport.h - h_shift);
         canvas.width = Math.ceil(viewport.w);
+        DrawControl.resetState();
     },
 
     setScrollY: function (y) {
