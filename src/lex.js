@@ -616,12 +616,16 @@ var ScreenControl = {
     },
 
     scrollHomeY: function () {
+        if (lex.content_list.active) return;
+
         lex.screen.y = 0;
         DrawControl.redrawAll();
         URIHashControl.update();
     },
 
     scrollEndY: function () {
+        if (lex.content_list.active) return;
+
         lex.screen.y = lex.file.lines.length - lex.screen.h;
         ScreenControl.checkScrollPosition();
         DrawControl.redrawAll();
@@ -629,6 +633,8 @@ var ScreenControl = {
     },
 
     scrollX: function (x) {
+        if (lex.content_list.active) return;
+
         x = Math.round(x);
         lex.screen.x -= x;
         ScreenControl.checkScrollPosition();
@@ -636,6 +642,8 @@ var ScreenControl = {
     },
 
     scrollY: function (y) {
+        if (lex.content_list.active) return;
+
         y = Math.round(y);
         lex.screen.y -= y;
         ScreenControl.checkScrollPosition();
