@@ -59,6 +59,26 @@ function log(m){
     }
 }
 
+function $(sel) {
+    return document.querySelector(sel);
+}
+
+function $$(sel) {
+    return document.querySelectorAll(sel);
+}
+
+function scrollIfNeeded (element, container) {
+    if (element.offsetTop < container.scrollTop) {
+        container.scrollTop = element.offsetTop;
+    } else {
+        var offsetBottom = element.offsetTop + element.offsetHeight;
+        var scrollBottom = container.scrollTop + container.offsetHeight;
+        if (offsetBottom > scrollBottom) {
+            container.scrollTop = offsetBottom - container.offsetHeight;
+        }
+    }
+}
+
 var Parser = {
     parseLine: function (line) {
         // Transforms the byte array into a list of objects.
@@ -621,6 +641,8 @@ var ScreenControl = {
         lex.screen.y = 0;
         DrawControl.redrawAll();
         URIHashControl.update();
+
+        return 1;
     },
 
     scrollEndY: function () {
@@ -630,6 +652,8 @@ var ScreenControl = {
         ScreenControl.checkScrollPosition();
         DrawControl.redrawAll();
         URIHashControl.update();
+
+        return 1;
     },
 
     scrollX: function (x) {
@@ -639,6 +663,7 @@ var ScreenControl = {
         lex.screen.x -= x;
         ScreenControl.checkScrollPosition();
         DrawControl.redrawAll();
+        return 1;
     },
 
     scrollY: function (y) {
@@ -649,6 +674,7 @@ var ScreenControl = {
         ScreenControl.checkScrollPosition();
         DrawControl.redrawAll();
         URIHashControl.update();
+        return 1;
     },
 }
 

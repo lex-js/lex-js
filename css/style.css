@@ -147,9 +147,12 @@
   width: 100%;
 }
 
-
 #content-list-table > tr > td {
   cursor: pointer;
+}
+
+.content-list-active > *:nth-child(2){
+  background-color: #DDF;
 }
 
 .file-list-mod-time {

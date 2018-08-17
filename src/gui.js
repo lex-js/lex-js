@@ -84,6 +84,49 @@ var Content = {
         Content[lex.content_list.active ? 'hide' : 'show']();
     },
 
+    // where = "top" | "bottom" | number
+    navigate: function (where) {
+        var trs = Array.from($$('#content-list-table > tr'));
+
+        function setActive (el) {
+            let old = $('.content-list-active');
+            if (old) {
+                old.classList.remove('content-list-active');
+            }
+            el.classList.add('content-list-active');
+
+            scrollIfNeeded(el, $('#content-list-container'));
+        }
+
+        if (!$('.content-list-active')) {
+            setActive(trs[0]);
+            return;
+        }
+
+        if ("top" === where) {
+            setActive(trs[0]);
+        } else if ("bottom" === where) {
+            setActive(trs.pop());
+        } else {
+            var active = 0;
+            for (var el of trs) {
+                if (el.matches('.content-list-active')) {
+                    break;
+                }
+                active++;
+            }
+
+            var to = active + where;
+            if (to < 0) {
+                to = 0;
+            } else if (to >= trs.length) {
+                to = trs.length - 1;
+            }
+
+            setActive(trs[to]);
+        }
+    },
+
     update: function (callback, err_callback) {
         document.getElementById('content-list').textContent = 'Loading...';
 
@@ -816,16 +859,16 @@ var InitControl = {
         // Mousetrap bindings
         var t = {
             'k': function () {
-                ScreenControl.scrollY(1);
+                ScreenControl.scrollY(1) || Content.navigate(-1);
             },
             'л': function () {
-                ScreenControl.scrollY(1);
+                ScreenControl.scrollY(1) || Content.navigate(-1);
             },
             'j': function () {
-                ScreenControl.scrollY(-1);
+                ScreenControl.scrollY(-1) || Content.navigate(1);
             },
             'о': function () {
-                ScreenControl.scrollY(-1);
+                ScreenControl.scrollY(-1) || Content.navigate(1);
             },
             'l': function () {
                 ScreenControl.scrollX(-1);
@@ -840,16 +883,16 @@ var InitControl = {
                 ScreenControl.scrollX(1);
             },
             'f': function () {
-                ScreenControl.scrollY(-lex.screen.h+1);
+                ScreenControl.scrollY(-lex.screen.h+1) || Content.navigate('bottom');
             },
             'а': function () {
-                ScreenControl.scrollY(-lex.screen.h+1);
+                ScreenControl.scrollY(-lex.screen.h+1) || Content.navigate('bottom');
             },
             'b': function () {
-                ScreenControl.scrollY(lex.screen.h-1);
+                ScreenControl.scrollY(lex.screen.h-1) || Content.navigate('top');
             },
             'и': function () {
-                ScreenControl.scrollY(lex.screen.h-1);
+                ScreenControl.scrollY(lex.screen.h-1) || Content.navigate('top');
             },
             'alt+g': GUIControl.showGotoLinePrompt,
             'v': LineNumbersControl.toggleLineNumbers,
@@ -884,10 +927,10 @@ var InitControl = {
             'с': Content.toggle,
             'c': Content.toggle,
             'up': function () {
-                ScreenControl.scrollY(1);
+                ScreenControl.scrollY(1) || Content.navigate(-1);
             },
             'down': function () {
-                ScreenControl.scrollY(-1);
+                ScreenControl.scrollY(-1) || Content.navigate(1);
             },
             'left': function () {
                 ScreenControl.scrollX(1);
@@ -896,10 +939,10 @@ var InitControl = {
                 ScreenControl.scrollX(-1);
             },
             'ctrl+up': function () {
-                ScreenControl.scrollY(1*config.ctrl_scroll_k);
+                ScreenControl.scrollY(1*config.ctrl_scroll_k) || Content.navigate('top');
             },
             'ctrl+down': function () {
-                ScreenControl.scrollY(-1*config.ctrl_scroll_k);
+                ScreenControl.scrollY(-1*config.ctrl_scroll_k) || Content.navigate('bottom');
             },
             'ctrl+left': function () {
                 ScreenControl.scrollX(1*config.ctrl_scroll_k);
@@ -907,14 +950,26 @@ var InitControl = {
             'ctrl+right': function () {
                 ScreenControl.scrollX(-1*config.ctrl_scroll_k);
             },
-            'end': ScreenControl.scrollEndY,
-            'home': ScreenControl.scrollHomeY,
+            'end': function () {
+                ScreenControl.scrollEndY() || Content.navigate('bottom')
+            },
+            'home': function () {
+                ScreenControl.scrollHomeY() || Content.navigate('top');
+            },
             'pagedown': function () {
                 ScreenControl.scrollY(-lex.screen.h+1);
             },
             'pageup': function () {
                 ScreenControl.scrollY(lex.screen.h-1);
             },
+            'enter': function () {
+                if (lex.content_list.active) {
+                    var el = $('.content-list-active');
+                    if (el) {
+                        el.click();
+                    }
+                }
+            }
         }
 
         for (var k in t) {
