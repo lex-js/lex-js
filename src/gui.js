@@ -68,7 +68,7 @@ var Content = {
             } else if (err) {
                 alert('Can\'t get directory hierarchy from server: error ' + err);
             } else if (err == 0) {
-                alert("[Can't parse response JSON] You should set up the webserver with PHP support to use content listing.");
+                alert("[Can't parse response JSON] You should set up a webserver with PHP support to use content listing.");
             }
         });
 
