@@ -926,11 +926,13 @@ var InitControl = {
             },
             'с': Content.toggle,
             'c': Content.toggle,
-            'up': function () {
+            'up': function (evt) {
                 ScreenControl.scrollY(1) || Content.navigate(-1);
+                evt.preventDefault();
             },
-            'down': function () {
+            'down': function (evt) {
                 ScreenControl.scrollY(-1) || Content.navigate(1);
+                evt.preventDefault();
             },
             'left': function () {
                 ScreenControl.scrollX(1);
