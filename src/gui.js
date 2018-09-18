@@ -525,6 +525,13 @@ var MobileUIControl = {
             // remove old entries
             elem.innerHTML = ''
 
+            // If no local files found, show remote list instead.
+            if (!list.length) {
+                MobileUIControl.closeMenu();
+                Content.show();
+                return;
+            }
+
             // cycle through file names and create appropriative elements
             for (var i = 0; i < list.length; i++) {
                 var c = document.createElement('div');
