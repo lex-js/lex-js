@@ -78,9 +78,6 @@ var Content = {
     hide: function () {
         lex.content_list.active = false;
         document.getElementById('content-list-container').style.display = 'none';
-        if (lex.is_mobile) {
-            MobileUIControl.openMenu(false);
-        }
     },
 
     toggle: function () {
@@ -845,6 +842,9 @@ var InitControl = {
             },
             'close-content-list-mobile': function () {
                 Content.hide();
+                if (lex.is_mobile) {
+                    MobileUIControl.openMenu(false);
+                }
             },
             'mobile-toggle-lines': function () {
                 LineNumbersControl.toggleLineNumbers();
