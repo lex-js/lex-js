@@ -78,6 +78,9 @@ var Content = {
     hide: function () {
         lex.content_list.active = false;
         document.getElementById('content-list-container').style.display = 'none';
+        if (lex.is_mobile) {
+            MobileUIControl.openMenu(false);
+        }
     },
 
     toggle: function () {
@@ -514,19 +517,19 @@ var FileControl = {
 
 var MobileUIControl = {
 
-    openMenu: function () {
-        MobileUIControl.setFileList();
+    openMenu: function (showRemote) {
+        MobileUIControl.setFileList(showRemote);
         document.getElementById('mobile-menu').style['display'] = 'block';
     },
 
-    setFileList: function () {
+    setFileList: function (showRemote = true) {
         var elem = document.getElementById('mobile-file-list');
         FileControl.getFileList(function (list) {
             // remove old entries
             elem.innerHTML = ''
 
             // If no local files found, show remote list instead.
-            if (!list.length) {
+            if (!list.length && showRemote) {
                 MobileUIControl.closeMenu();
                 Content.show();
                 return;
