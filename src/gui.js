@@ -523,7 +523,8 @@ var MobileUIControl = {
         var elem = document.getElementById('mobile-file-list');
         FileControl.getFileList(function (list) {
             // remove old entries
-            elem.innerHTML = ''
+            elem.innerHTML = list.length ? '':
+                '<span id="no-local-files-warning">No local files</span>';
 
             // If no local files found, show remote list instead.
             if (!list.length && showRemote) {

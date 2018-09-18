@@ -94,3 +94,11 @@
 #close-content-list-mobile {
   display: block;
 }
+
+#no-local-files-warning {
+  color: #888;
+  font-style: italic;
+  margin-top: 30px;
+  text-align: center;
+  display: block;
+}
