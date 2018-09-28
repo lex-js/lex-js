@@ -190,6 +190,10 @@ var Content = {
                 // Name
                 name_td.textContent = sth.name;
 
+                if (lex.content_list.path + '/' + sth.name == lex.file.remote_name) {
+                    tr.classList.add('content-list-active');
+                }
+
                 // Modification time
                 if (!lex.is_mobile) {
                     var mod_td = document.createElement('td');
