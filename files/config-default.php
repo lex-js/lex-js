@@ -1,7 +1,7 @@
 <?php
 
 $config = array(
-    'directory'    => '',
+    'directory'    => 'files' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR,
     'allowed_exts' => [],
     'static_page_file' => 'index.html',
     'static_page_file_replacement' => '<title>Lex.js</title>',

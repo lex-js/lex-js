@@ -7,14 +7,14 @@ function directoryList ($path, $dirs, $allowed_exts) {
     $dirs = explode(DIRECTORY_SEPARATOR, $dirs);
 
     $dirs = array_values(array_filter($dirs, function ($dirname) {
-       return ($dirname != '.' && $dirname != '..' && $dirname != '');
+        return ($dirname != '.' && $dirname != '..' && $dirname != '');
     }));
 
-    $path = $path . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $dirs);
+    $path = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR .
+            $path . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $dirs);
 
     if(!is_dir($path))
     {
-        echo "not a directory";
         die(500);
     }
 
