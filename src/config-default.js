@@ -128,7 +128,7 @@ var config = {
 
     // URL to retrieve directory listings from server
     // URL для получения листинга директории с сервера
-    content_list_url: 'files/filectl.php?action=list&dirs=',
+    content_list_url: '/api?action=listdir&dir=',
 
     // URL prefix pointing to directory on server where actual files are stored
     // Префикс URL указывающий на директорию, где хранятся файлы
