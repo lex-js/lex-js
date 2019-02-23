@@ -2,17 +2,20 @@
 
 include 'include/config.php';
 
-
-function directoryList ($path, $dirs, $allowed_exts) {
-    // Sanitize the input...
-    $dirs = explode(DIRECTORY_SEPARATOR, $dirs);
+function sanitize($dir) {
+    $dirs = explode(DIRECTORY_SEPARATOR, $dir);
 
     $dirs = array_values(array_filter($dirs, function ($dirname) {
         return ($dirname != '.' && $dirname != '..' && $dirname != '');
     }));
 
     $path = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR .
-            $path . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $dirs);
+            implode(DIRECTORY_SEPARATOR, $dirs);
+    return $path;
+}
+
+function directoryList ($content_dir, $dir, $allowed_exts) {
+    $path = sanitize($content_dir . DIRECTORY_SEPARATOR . $dir);
 
     if(!is_dir($path))
     {
@@ -57,12 +60,21 @@ function directoryList ($path, $dirs, $allowed_exts) {
 
 switch ($_REQUEST['action'])
 {
-    case 'listdir':
-    $list = directoryList($config->directory, $_REQUEST['dir'], $config->allowed_exts);
+case 'listdir':
+    $list = directoryList($config->content_dir, $_REQUEST['dir'], $config->allowed_exts);
     echo json_encode($list);
     break;
 
-    default:
+case 'getfile':
+    $file = sanitize($config->content_dir . DIRECTORY_SEPARATOR . $_REQUEST['file']);
+    if (file_exists($file)) {
+        echo file_get_contents($file);
+    } else {
+        die(500);
+    }
+    break;
+
+default:
     echo 'incorrect action';
     break;
 }

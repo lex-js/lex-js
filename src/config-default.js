@@ -132,7 +132,7 @@ var config = {
 
     // URL prefix pointing to directory on server where actual files are stored
     // Префикс URL указывающий на директорию, где хранятся файлы
-    content_real_path: 'files/content/',
+    content_real_path: '/api?action=getfile&file=',
 
 
     /* PNG exporting */

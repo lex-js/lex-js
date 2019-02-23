@@ -1,7 +1,7 @@
 <?php
 
 $default_config = array(
-    'directory'    => 'files' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR,
+    'content_dir' => 'files' . DIRECTORY_SEPARATOR . 'content' . DIRECTORY_SEPARATOR,
     'allowed_exts' => [],
     'static_page_file' => 'index.html',
     'static_page_file_replacement' => '<!-- header -->',
