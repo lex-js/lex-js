@@ -1,9 +1,9 @@
-#mobile-menu{
+#mobile-menu {
   display: none;
-  overflow:scroll;
+  overflow: scroll;
 }
 
-#mobile-menu-open{
+#mobile-menu-open {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -44,7 +44,7 @@
   width: 100%;
 }
 
-#mobile-menu{
+#mobile-menu {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -54,13 +54,13 @@
   background-color: white;
 }
 
-.mobile-menu-item{
+.mobile-menu-item {
   font-size: 38px;
   padding: 10px;
   height: 38px;
 }
 
-.mobile-file-item > span{
+.mobile-file-item > span {
   color: #999;
   padding-left: 30px;
   position: absolute;
@@ -74,11 +74,11 @@
   height: 48px;
 }
 
-#mobile-file-list{
+#mobile-file-list {
   border-top: 1px solid #999;
 }
 
-.mobile-delete-file{
+.mobile-delete-file {
   position: absolute;
   right: 0;
   color: #f55;

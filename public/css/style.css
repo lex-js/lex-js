@@ -1,18 +1,18 @@
 #canvas {
   position: fixed;
-  left:0;
-  right:0;
-  top:50px;
+  left: 0;
+  right: 0;
+  top: 50px;
   bottom: 14px;
 }
 
 #block-top {
-  position:fixed;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 50px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.5);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   background-color: white;
   z-index: 10;
 }
@@ -22,8 +22,8 @@
 }
 
 #block-bottom {
-  box-shadow: 0 0 3px rgba(0,0,0,0.5);
-  position:fixed;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
@@ -39,7 +39,7 @@
 .button {
   background-color: white;
   height: 23px;
-  color; black;
+  color: black;
   font-size: 16px;
   cursor: pointer;
 }
@@ -56,11 +56,12 @@
 }
 
 .button:active {
-  background-color: #EEE;
+  background-color: #eee;
 }
 
 /* remove webkit/safari default outline for focused fields */
-*:focus, *:active {
+*:focus,
+*:active {
   outline: 0 !important;
 }
 
@@ -83,8 +84,8 @@
 #block-search {
   position: fixed;
   bottom: 14px;
-  border-top: 1px solid rgba(0,0,0,0.2);
-  border-right: 1px solid rgba(0,0,0,0.2);
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
   left: 0;
   z-index: 0;
   background-color: white;
@@ -106,7 +107,8 @@
   cursor: pointer;
 }
 
-#search-number, #search-total {
+#search-number,
+#search-total {
   font-size: 20px;
   font-family: monospace;
 }
@@ -151,8 +153,8 @@
   cursor: pointer;
 }
 
-.content-list-active > *:nth-child(2){
-  background-color: #DDF;
+.content-list-active > *:nth-child(2) {
+  background-color: #ddf;
 }
 
 .file-list-mod-time {
