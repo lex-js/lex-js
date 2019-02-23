@@ -21,8 +21,7 @@
     "binary:create": "pkg . --targets node10-linux-x64,node10-linux-x86,node10-macos-x64,node10-win-x64,node10-win-x86 --out-path build/",
     "binary:prepare": "bash scripts/prepareBinary.sh",
     "binary:build": "npm run binary:create && npm run binary:prepare",
-    "all:build": "npm run bundle:build && npm run binary:build",
-    "heroku-postbuild": "npm run bundle:build"
+    "all:build": "npm run bundle:build && npm run binary:build"
   },
   "keywords": [],
   "author": "lex-js & limitedeternity",
@@ -40,16 +39,6 @@
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
     "pkg": "^4.3.7",
-    "uglify-js": "^3.4.9",
-    "babel-cli": "^6.8.0",
-    "babel-preset-es2015": "^6.6.0",
-    "grunt": "^0.4.5",
-    "grunt-babel": "^6.0.0",
-    "grunt-cli": "^1.3.2",
-    "grunt-contrib-clean": "^1.0.0",
-    "grunt-contrib-concat": "^1.0.1",
-    "grunt-contrib-uglify": "^1.0.1",
-    "grunt-contrib-watch": "^1.0.0",
-    "localforage": "^1.4.2"
+    "uglify-js": "^3.4.9"
   }
 }

@@ -1,1 +1,1 @@
-config.content_real_path = "files/content/";
+// config.content_real_path = "files/content";
