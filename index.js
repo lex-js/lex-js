@@ -1,4 +1,5 @@
 const fs = require("fs");
+const Readable = require("stream").Readable;
 const path = require("path");
 const glob = require("glob");
 const pathIsInside = require("path-is-inside");
@@ -23,7 +24,14 @@ function listDir(
     basePath = rootPath;
   }
 
-  let globResult = glob.sync("*", { cwd: basePath });
+  let globResult;
+
+  try {
+    globResult = glob.sync("*", { cwd: basePath });
+  } catch (e) {
+    globResult = [];
+  }
+
   let exactGlobResult = [];
 
   for (let entry of globResult) {
@@ -56,6 +64,25 @@ function listDir(
   return exactGlobResult;
 }
 
+function getFile(pathQuery) {
+  let rootPath = path.join(externalCwd, "files", "content");
+  let basePath = path.join(rootPath, path.normalize(pathQuery));
+
+  if (
+    !fs.existsSync(basePath) ||
+    !pathIsInside(basePath, rootPath) ||
+    !fs.lstatSync(basePath).isFile()
+  ) {
+    let s = new Readable();
+    s.push("No such file");
+    s.push(null);
+
+    return s;
+  }
+
+  return fs.createReadStream(basePath);
+}
+
 const api = express();
 api.use(compression());
 api.use(helmet());
@@ -64,18 +91,25 @@ api.get("/", (req, res) => {
   return res.sendFile(path.join(internalCwd, "index.html"));
 });
 
-api.get("/listContentDir", (req, res) => {
-  let pathQuery = req.query.path;
-  return res.json(listDir(pathQuery));
+api.get("/api", (req, res) => {
+  switch (req.query.action) {
+    case "listdir":
+      return res.json(listDir(req.query.dir));
+
+    case "getfile":
+      return getFile(req.query.file).pipe(res);
+
+    default:
+      return res.status(400);
+  }
 });
 
 api.use("/public", express.static(path.join(internalCwd, "public")));
-api.use("/files", express.static(path.join(externalCwd, "files")));
 
 api.listen(listenPort, () => {
   if (process.env.NODE_ENV === "production") {
     return;
   }
 
-  require("opn")(`http://localhost:${listenPort}/`).then(() => process.exit(0));
+  require("opn")(`http://localhost:${listenPort}/`);
 });

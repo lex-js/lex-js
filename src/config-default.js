@@ -119,7 +119,7 @@ var config = {
 
     // URL of .css for mobile devices
     // URL CSS-стиля для мобильных устройств
-    mobile_style_url: 'css/mobile.css',
+    mobile_style_url: '/public/css/mobile.css',
 
     // Minimal shift for scrolling in mobile devices (in pixels)
     // Минимальный сдвиг при прокрутке пальцем в мобильных устройствах
