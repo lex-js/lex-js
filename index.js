@@ -6,12 +6,22 @@ const pathIsInside = require("path-is-inside");
 const express = require("express");
 const helmet = require("helmet");
 const compression = require("compression");
-
 const externalCwd = process.pkg ? path.dirname(process.execPath) : __dirname;
 const internalCwd = process.pkg
   ? path.dirname(process.pkg.entrypoint)
   : __dirname;
-const listenPort = Number(process.env.PORT) || 1337;
+
+const Ajv = require('ajv');
+const config = JSON.parse(fs.readFileSync(externalCwd + "/config-server.json"));
+const ajv = new Ajv();
+const schema = JSON.parse(fs.readFileSync(externalCwd + "/src/config-server-schema.json"));
+const valid = ajv.validate(schema, config);
+if (!valid) {
+  console.log(ajv.errorsText(ajv.errors, { dataVar: "config-server.json" }));
+  process.exit(1);
+}
+const listenPort = config.port;
+
 
 function listDir(
   pathQuery = ".",
@@ -107,9 +117,10 @@ api.get("/api", (req, res) => {
 api.use("/public", express.static(path.join(internalCwd, "public")));
 
 api.listen(listenPort, () => {
+  console.log(`Listening on http://localhost:${listenPort}/`);
+
   if (process.env.NODE_ENV === "production") {
     return;
   }
-
   require("opn")(`http://localhost:${listenPort}/`);
 });

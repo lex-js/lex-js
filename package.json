@@ -38,6 +38,7 @@
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
+    "ajv": "^6.9.2",
     "pkg": "^4.3.7",
     "uglify-js": "^3.4.9"
   }

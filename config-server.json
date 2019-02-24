@@ -5,6 +5,6 @@
         "keywords": ["lex-js", "lexicon"],
         "author": "lex-js"
     },
-    "port": 80,
+    "port": 1337,
     "content_dir": "./files/content"
 }
