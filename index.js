@@ -6,6 +6,7 @@ const pathIsInside = require("path-is-inside");
 const express = require("express");
 const helmet = require("helmet");
 const compression = require("compression");
+const anymatch = require('anymatch');
 const externalCwd = process.pkg ? path.dirname(process.execPath) : __dirname;
 const internalCwd = process.pkg
   ? path.dirname(process.pkg.entrypoint)
@@ -23,10 +24,7 @@ if (!valid) {
 const listenPort = config.port;
 
 
-function listDir(
-  pathQuery = ".",
-  allowedExtensions = [/\.txt$/i, /\.c$/i, /\.hs$/i]
-) {
+function listDir (pathQuery = ".") {
   let rootPath = path.join(externalCwd, "files", "content");
   let basePath = path.join(rootPath, path.normalize(pathQuery));
 
@@ -42,40 +40,32 @@ function listDir(
     globResult = [];
   }
 
-  let exactGlobResult = [];
+  return globResult.reduce((acc, name) => {
+    const fullPath = path.join(basePath, name);
+    const stats = fs.lstatSync(fullPath);
+    const modified = stats.mtimeMs;
 
-  for (let entry of globResult) {
-    let fullPath = path.join(basePath, entry);
-    let entryStats = fs.lstatSync(fullPath);
-
-    let isDir = entryStats.isDirectory();
-    if (isDir) {
-      exactGlobResult.push({
-        name: entry,
+    if (stats.isDirectory()) {
+      acc.push({
+        name, modified,
         type: "directory",
-        modified: entryStats.mtimeMs
       });
     } else {
-      let extension = path.extname(fullPath);
-
-      if (!allowedExtensions.some(regex => regex.test(extension))) {
-        continue;
+      if (anymatch(config.allowed_files, fullPath)) {
+        acc.push({
+          name, modified,
+          type: "file",
+          size: stats.size
+        });
       }
-
-      exactGlobResult.push({
-        name: entry,
-        type: "file",
-        modified: entryStats.mtimeMs,
-        size: entryStats.size
-      });
     }
-  }
 
-  return exactGlobResult;
+    return acc;
+  }, []);
 }
 
 function getFile(pathQuery) {
-  let rootPath = path.join(externalCwd, "files", "content");
+  let rootPath = path.join(externalCwd, config.content_dir);
   let basePath = path.join(rootPath, path.normalize(pathQuery));
 
   if (

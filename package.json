@@ -27,6 +27,7 @@
   "author": "lex-js & limitedeternity",
   "license": "GPL-3.0",
   "dependencies": {
+    "anymatch": "^2.0.0",
     "compression": "^1.7.3",
     "express": "^4.16.4",
     "glob": "^7.1.3",
