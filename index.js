@@ -25,7 +25,7 @@ const listenPort = config.port;
 
 
 function listDir (pathQuery = ".") {
-  let rootPath = path.join(externalCwd, "files", "content");
+  let rootPath = path.join(externalCwd, config.content_dir);
   let basePath = path.join(rootPath, path.normalize(pathQuery));
 
   if (!pathIsInside(basePath, rootPath)) {
