@@ -64,5 +64,6 @@ typings/
 build/
 tmp/
 
-include
-**/*.php
+files/
+public/js/bundle.min.js
+

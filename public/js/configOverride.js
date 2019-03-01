@@ -1,1 +1,4 @@
-// config.content_real_path = "files/content";
+// See `src/config-default.js` for available options.
+window.userConfig = {
+
+};

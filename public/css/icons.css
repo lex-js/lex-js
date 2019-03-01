@@ -1,83 +1,95 @@
 #button-line-numbers {
-  background-image: url("/public/icons/24/list-ol.png");
+  background-image: url("../icons/24/list-ol.png");
 }
 
 #button-load {
-  background-image: url("/public/icons/24/folder-open.png");
+  background-image: url("../icons/24/folder-open.png");
 }
 
 #button-goto-line {
-  background-image: url("/public/icons/24/arrow-circle-right.png");
+  background-image: url("../icons/24/arrow-circle-right.png");
 }
 
 #button-search {
-  background-image: url("/public/icons/24/search.png");
+  background-image: url("../icons/24/search.png");
 }
 
 #button-content {
-  background-image: url("/public/icons/24/folder.png");
+  background-image: url("../icons/24/folder.png");
 }
 
 #button-goto-line {
-  background-image: url("/public/icons/24/arrow-circle-right.png");
+  background-image: url("../icons/24/arrow-circle-right.png");
 }
 
 #button-delete {
-  background-image: url("/public/icons/24/times-circle.png");
+  background-image: url("../icons/24/times-circle.png");
 }
 
 #button-github {
-  background-image: url("/public/icons/24/github.png");
+  background-image: url("../icons/24/github.png");
 }
 
 #button-open-copy {
-  background-image: url("/public/icons/24/external-link-square.png");
+  background-image: url("../icons/24/external-link-square.png");
 }
 
 .content-download-link {
   display: inline-block;
   width: 1em;
   height: 1em;
-  background-image: url("/public/icons/download.png");
+  background-image: url("../icons/download.png");
 }
 
 .content-direct-link {
   display: inline-block;
   width: 1em;
   height: 1em;
-  background-image: url("/public/icons/link.png");
+  background-image: url("../icons/link.png");
 }
 
 #search-close {
-  background-image: url("/public/icons/times-red.png");
+  background-image: url("../icons/times-red.png");
 }
 
 /* mobile buttons */
 #mobile-delete-file,
 #close-content-list-mobile {
-  background-image: url("/public/icons/times-red.png");
+  background-image: url("../icons/times-red.png");
 }
 
 #mobile-menu-open {
-  background-image: url("/public/icons/48/navicon.png");
+  background-image: url("../icons/48/navicon.png");
 }
 
 #mobile-button-close {
-  background-image: url("/public/icons/48/chevron-left.png");
+  background-image: url("../icons/48/chevron-left.png");
 }
 
 #mobile-button-open-file {
-  background-image: url("/public/icons/48/folder-open.png");
+  background-image: url("../icons/48/folder-open.png");
 }
 
 #mobile-button-toggle-lines {
-  background-image: url("/public/icons/48/list-ol.png");
+  background-image: url("../icons/48/list-ol.png");
 }
 
 #mobile-button-goto-line {
-  background-image: url("/public/icons/48/arrow-right.png");
+  background-image: url("../icons/48/arrow-right.png");
 }
 
 #mobile-button-list-content {
-  background-image: url("/public/icons/48/folder.png");
+  background-image: url("../icons/48/folder.png");
+}
+
+.content-list-icon-file {
+  background-image: url("../icons/file.png");
+}
+
+.content-list-icon-directory {
+  background-image: url("../icons/directory.png");
+}
+
+.content-list-icon-parent {
+  background-image: url("../icons/parent.png");
 }
