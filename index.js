@@ -38,9 +38,11 @@ if (!isValid) {
 
 /*
 --- fn listDir() ---
-@does: Returns listing of config.content_dir + $pathQuery
-@accepts: pathQuery: String [Path to dir, default -> "."]
-@returns: Array<Object> { 
+@does: Returns listing of ($config.content_dir + $pathQuery)
+@accepts: {
+  pathQuery: String [Path to dir, @default -> "."] 
+}
+@returns: Array<Object> {
   name: String [name of file or dir],
   modified: Number [date of last file modification in milliseconds],
   type: "file" | "directory" [entry type],
@@ -92,8 +94,10 @@ function listDir(pathQuery = ".") {
 
 /*
 --- fn getFile() ---
-@does: Validates file in ($config.content_dir + $pathQuery) and returns it if valid
-@accepts: pathQuery: String [Path to file, @required]
+@does: Validates file in ($config.content_dir + $pathQuery) and returns it, if valid
+@accepts: {
+  pathQuery: String [Path to file, @required]
+}
 @returns: Object {
   status: Number [HTTP code],
   file: String | Null
