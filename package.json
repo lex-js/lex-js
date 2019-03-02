@@ -15,7 +15,7 @@
     "start:dev": "node index.js",
     "start:production": "export NODE_ENV=production && node index.js",
     "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",
-    "bundle:transpile": "babel lib/ --out-dir tmp/ && babel src/ --out-dir tmp/",
+    "bundle:transpile": "babel src/ --out-dir tmp/",
     "bundle:browserify": "browserify tmp/init.js -o tmp/bundle.js",
     "bundle:uglify": "uglifyjs tmp/bundle.js -c -o public/js/bundle.min.js",
     "bundle:clean": "rm -rf tmp/",
