@@ -88,14 +88,11 @@ module.exports = class ContentBrowser {
   async update () {
     document.getElementById('content-list').textContent = "Loading...";
 
-    return await fetch(
-        this.app.config.content_list_url +
-        this.app.state.content_list.path
-    ).then(
-      response => response.text()
-    ).then(
-      text => JSON.parse(text)
+    const response = await fetch(
+      this.app.config.content_list_url + this.app.state.content_list.path
     );
+
+    return response.json();
   }
 
   load (list) {
