@@ -18,7 +18,9 @@ module.exports = class FontControl {
       this.app.log(`Loaded font ${ix} from preloaded fonts`);
       return;
     }
-    const buffer = await fetch(path).then(response => response.arrayBuffer());
+
+    const response = await fetch(path);
+    const buffer = await response.arrayBuffer();
     this.setFont(ix, Uint8Array2BinArray(new Uint8Array(buffer)));
     this.app.log(`Loaded font ${ix} from remote path ${path}`);
   }

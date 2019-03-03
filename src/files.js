@@ -66,7 +66,8 @@ module.exports = class Files {
   }
 
   async loadRemote(url, remoteName) {
-    const buffer = await fetch(url).then(response => response.arrayBuffer());
+    const response = await fetch(url);
+    const buffer = await response.arrayBuffer();
 
     this.loadFromSource(buffer);
     this.app.state.file.remote_name = remoteName;

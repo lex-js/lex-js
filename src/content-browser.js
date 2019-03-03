@@ -40,7 +40,9 @@ module.exports = class ContentBrowser {
 
   // where = 'top' | 'bottom' | number
   navigate(where) {
-    var trs = Array.prototype.slice.call(document.querySelectorAll("#content-list-table > tr"));
+    var trs = Array.prototype.slice.call(
+      document.querySelectorAll("#content-list-table > tr")
+    );
 
     const setActive = el => {
       let old = document.querySelector(".content-list-active");
@@ -87,11 +89,12 @@ module.exports = class ContentBrowser {
   async update() {
     document.getElementById("content-list").textContent = "Loading...";
 
-    return await fetch(
+    const response = await fetch(
       this.app.config.content_list_url + this.app.state.content_list.path
-    )
-      .then(response => response.text())
-      .then(text => JSON.parse(text));
+    );
+
+    const json = await response.json();
+    return json;
   }
 
   load(list) {
