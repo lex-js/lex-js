@@ -46,10 +46,14 @@ module.exports = class ContentBrowser {
 
   // where = 'top' | 'bottom' | number
   navigate (where) {
-    var trs = Array.from(document.querySelectorAll('#content-list-table > tr'));
+    var trs = Array.from(
+      document.querySelectorAll('#content-list-table > tr')
+    );
+    
     if (!trs.length) {
       return;
     }
+    
     const setActive = el => {
       let old = document.querySelector('.content-list-active');
       if (old) {
@@ -92,14 +96,11 @@ module.exports = class ContentBrowser {
   async update () {
     document.getElementById('content-list').textContent = "Loading...";
 
-    return await fetch(
-        this.app.config.content_list_url +
-        this.app.state.content_list.path
-    ).then(
-      response => response.text()
-    ).then(
-      text => JSON.parse(text)
+    const response = await fetch(
+      this.app.config.content_list_url + this.app.state.content_list.path
     );
+
+    return response.json();
   }
 
   load (list) {
