@@ -41,8 +41,10 @@ module.exports = class ContentBrowser {
   }
 
   // where = 'top' | 'bottom' | number
-  navigate (where) {
-    var trs = Array.from(document.querySelectorAll('#content-list-table > tr'));
+  navigate(where) {
+    var trs = Array.prototype.slice.call(
+      document.querySelectorAll("#content-list-table > tr")
+    );
 
     const setActive = el => {
       let old = document.querySelector('.content-list-active');

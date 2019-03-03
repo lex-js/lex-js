@@ -8,7 +8,8 @@ module.exports = class LineNumbers {
 
     for (var i = 0; i < state.file.lines.length; i++) {
       state.file.lines[i] = new Uint8Array(
-        Array.from(state.file.lines[i]).splice(state.numbers.width + 2)
+        Array.prototype.slice
+          .call(state.file.lines[i], state.numbers.width + 2)
       );
     }
     state.index.maxlen -= state.numbers.width + config.line_numbers_padding;
@@ -20,15 +21,16 @@ module.exports = class LineNumbers {
   }
 
   addLineNumbers () {
-    const { config, state, screen, render,
-            search, parser } = this.app;
+    const { config, state, screen, render, search, parser } = this.app;
+
     state.numbers.width = (state.file.lines.length + "").length + 1;
     state.numbers.set = true;
+
     for (var i = 0; i < state.file.lines.length; i++) {
       state.file.lines[i] = new Uint8Array(
-        parser.getLineNumberBytes(i, state.numbers.width).concat(
-          Array.from(state.file.lines[i])
-        )
+        parser
+          .getLineNumberBytes(i, state.numbers.width)
+          .concat(Array.prototype.slice.call(state.file.lines[i]))
       );
     }
 
@@ -40,6 +42,7 @@ module.exports = class LineNumbers {
 
   toggleLineNumbers () {
     const { state } = this.app;
+
     if (state.numbers.set) {
       this.removeLineNumbers();
     } else {
