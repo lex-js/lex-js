@@ -342,7 +342,7 @@ module.exports = class App {
         fileList = [fileList[fileList.length - 1]];
       }
 
-      Array.from(fileList).forEach(file => {
+      Array.prototype.forEach.call(fileList, file => {
         var reader = new FileReader();
         reader.onload = async event => {
           if (config.save_to_ls) {

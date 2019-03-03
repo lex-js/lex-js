@@ -5,13 +5,14 @@ const { charToByteCP866, byteToCharCP866 } = require("./cp866.js");
  */
 module.exports = {
   Uint8ArrayToString: function(ui8arr) {
-    return Array.from(ui8arr)
+    return Array.prototype.slice
+      .call(ui8arr)
       .map(b => byteToCharCP866[b])
       .join("");
   },
 
   stringToUint8Array: function(string) {
-    return Uint8Array.from(Array.from(string).map(c => charToByteCP866[c]));
+    return new Uint8Array(string.split("").map(c => charToByteCP866[c]));
   },
 
   Uint8Array2BinArray: function(uarr) {
@@ -61,9 +62,12 @@ module.exports = {
 
     string = string.substr(string.indexOf(":") + 1);
 
-    Array.from(string).forEach(char => {
+    string.split("").forEach(char => {
       charCode = char.charCodeAt(0);
-      bits = Array.from(Number(charCode).toString(2)).map(x => x * 1);
+      bits = charCode
+        .toString(2)
+        .split("")
+        .map(x => Number(x));
 
       // prepend with zeros
       new Array(byteLength - bits.length)
