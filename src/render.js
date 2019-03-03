@@ -27,10 +27,9 @@ module.exports = class Render {
     }
 
     const { config, state } = this.app;
-
     const fontWidth = config.font_width;
     const fontHeight = config.font_height;
-    const canvas = document.getElementById('canvas-tmp');
+    const canvas = document.createElement('canvas');
     canvas.width = fontWidth;
     canvas.height = fontHeight;
     const context = canvas.getContext('2d');
@@ -95,16 +94,16 @@ module.exports = class Render {
   }
 
   updateCanvas (context) {
-    const { config, state, parser } = this.app;
+    const { config, screen, state, parser, scroll } = this.app;
 
-    var charWidth = state.screen.w,
-        charHeight = state.screen.h,
-        pixelWidth = charWidth * config.font_width,
-        pixelHeight = charHeight * config.font_height,
-        xShift = state.screen.x,
-        yShift = state.screen.y,
+    let textWidth = screen.w,
+        textHeight = screen.h,
+        pixelWidth = textWidth * config.font_width,
+        pixelHeight = textHeight * config.font_height,
+        xShift = scroll.x,
+        yShift = scroll.y,
         start = 0,
-        end = charHeight;
+        end = textHeight;
 
     // Redraw only recently appeared area.
     if (this.state) {
@@ -112,7 +111,7 @@ module.exports = class Render {
           x_shift = old_x - xShift,
           y_shift = old_y - yShift;
 
-      if (Math.abs(y_shift) < charHeight) {
+      if (Math.abs(y_shift) < textHeight) {
         var id = context.getImageData(0, 0, pixelWidth, pixelHeight);
         context.putImageData(
           id,
@@ -120,8 +119,8 @@ module.exports = class Render {
           y_shift * config.font_height
         );
         if (y_shift < 0) {
-          start = charHeight + y_shift;
-          end = charHeight;
+          start = textHeight + y_shift;
+          end = textHeight;
         } else if (y_shift > 0) {
           start = 0;
           end = y_shift;
@@ -143,7 +142,7 @@ module.exports = class Render {
 
     const linesCount = state.file.lines.length;
 
-    for (let y = start; y < end && y < charHeight && y + yShift < linesCount; y++) {
+    for (let y = start; y < end && y < textHeight && y + yShift < linesCount; y++) {
       let line = state.file.lines[y + yShift];
       if (typeof line == 'undefined') {
         break; // TODO: impossible?
@@ -169,14 +168,14 @@ module.exports = class Render {
   }
 
   updateSelection (context) {
-    const { config, state } = this.app;
+    const { config, state, scroll } = this.app;
     if (state.selection.set) {
       var t = config.selection_fill_color;
       context.fillStyle =
         'rgba(' + t[0] + ',' + t[1] + ',' + t[2] + ',' + t[3] / 255 + ')';
       context.fillRect(
-        (state.selection.x1 - state.screen.x) * config.font_width,
-        (state.selection.y1 - state.screen.y) * config.font_height,
+        (state.selection.x1 - scroll.x) * config.font_width,
+        (state.selection.y1 - scroll.y) * config.font_height,
         (state.selection.x2 - state.selection.x1) * config.font_width,
         (state.selection.y2 - state.selection.y1) * config.font_height
       );
@@ -185,15 +184,16 @@ module.exports = class Render {
   }
 
   updateSearchResults (context) {
-    const { config, state } = this.app;
-    const { screen, search } = state;
+    const { screen, scroll, config, state } = this.app;
+    const { search } = state;
 
     if (search.active == true) {
       // TODO: consider exiting the loops after the last result
       // visible on screen.
       search.results.forEach((blocks, resultIndex) => {
         blocks.forEach(block => {
-          if (block.line >= screen.y && block.line <= screen.y + screen.h) {
+          const scrollY = scroll.y; // it is a getter, not a value
+          if (block.line >= scrollY && block.line <= scrollY + screen.h) {
             var style = config[
               'search_' +
                 (resultIndex == search.activeResult ? 'active_' : '') +
@@ -208,8 +208,8 @@ module.exports = class Render {
             );
 
             context.fillRect(
-              (block.start - screen.x) * config.font_width,
-              (block.line - screen.y) * config.font_height,
+              (block.start - scroll.x) * config.font_width,
+              (block.line - scroll.y) * config.font_height,
               block.length * config.font_width,
               config.font_height
             );

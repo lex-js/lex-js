@@ -8,7 +8,7 @@ module.exports = class UI {
   }
 
   showGotoLinePrompt () {
-    var userInput = prompt("Enter line number", this.app.state.screen.y);
+    var userInput = prompt("Enter line number", this.app.scroll.y);
 
     if (userInput == null) return;
     userInput = parseInt(userInput);
@@ -16,7 +16,8 @@ module.exports = class UI {
       this.app.alert("Incorrect line number!");
       return;
     }
-    this.app.screen.setScrollY(userInput);
+
+    this.app.scroll.y = userInput;
     this.app.render.update();
   }
 
@@ -45,13 +46,10 @@ module.exports = class UI {
 
   // update scroll position info
   updateBottomBlock () {
-    var y = this.app.state.screen.y;
-    var l = this.app.state.file.lines.length - 1;
-    l = l ? l : 1; // prevent division by zero
-    document.getElementById("line-number").textContent = y;
-    document.getElementById("line-count").textContent = l;
-    document.getElementById("scroll-percentage").textContent =
-      Math.ceil((y / l) * 100) + "%";
+    document.getElementById("line-number").textContent = this.app.scroll.y;
+    document.getElementById("line-count").textContent = (
+      this.app.state.file.lines.length - 1
+    );
   }
 
   duplicateWindow () {

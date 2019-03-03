@@ -55,7 +55,7 @@ module.exports = class Files {
   }
 
   loadLocal (filename) {
-    const { coders, state, ui, URIHashControl } = this.app;
+    const { coders, state, ui } = this.app;
     return localforage.getItem(
       this.app.config.ls_file_prefix + filename
     ).then(contents => {
@@ -63,7 +63,7 @@ module.exports = class Files {
       ui.setWindowTitle(filename);
       state.file.name = filename;
       state.file.remote_name = "";
-      URIHashControl.update();
+      this.postLoad();
     });
   }
 
@@ -72,7 +72,7 @@ module.exports = class Files {
 
     this.loadFromSource(buffer);
     this.app.state.file.remote_name = remoteName;
-    this.app.URIHashControl.update();
+    this.postLoad();
   }
 
   // TODO: remove callback
@@ -103,20 +103,19 @@ module.exports = class Files {
 
     this.app.state.file.lines.push(new Uint8Array(lineBytes));
 
-    this.postLoad();
     return this.app.state.file;
   }
 
   postLoad () {
     this.app.search.rebuildIndex();
+    this.app.search.close();
+
     if (this.app.state.numbers.set) {
       this.app.lineNumbers.addLineNumbers();
     }
 
-    this.app.search.flush();
-    this.app.state.screen.x = 0;
-    this.app.state.screen.y = 0;
     this.app.URIHashControl.update();
     this.app.selection.clear();
-  }
+    this.app.scroll.update();
+ }
 };

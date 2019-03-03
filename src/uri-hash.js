@@ -36,11 +36,11 @@ module.exports = class URIHashControl {
   update () {
     var newURLHash = '';
     if (!!this.app.state.file.remote_name) {
-      newURLHash = 'remote:' + this.app.state.file.remote_name + ':' + this.app.state.screen.y;
+      newURLHash = 'remote:' + this.app.state.file.remote_name + ':' + this.app.scroll.y;
     } else {
       // We're in a local file
       if (!!this.app.state.file.name) {
-        newURLHash = 'local:' + this.app.state.file.name + ':' + this.app.state.screen.y;
+        newURLHash = 'local:' + this.app.state.file.name + ':' + this.app.scroll.y;
       }
     }
     this.set(newURLHash);
@@ -56,10 +56,10 @@ module.exports = class URIHashControl {
     }
 
     const { line, file, type } = parsedHash;
-    const { state, screen, config, ui, files } = this.app;
+    const { scroll, state, config, ui, files } = this.app;
 
-    if (state.screen.y != line) {
-      screen.setScrollY(line);
+    if (scroll.y != line) {
+      scroll.y = line;
     }
 
     // TODO: add ability to open local files by editing URI hash
@@ -77,7 +77,7 @@ module.exports = class URIHashControl {
         0,
         file.length - baseName.length - 1  // -1 to strip the last `/`
       );
-      screen.setScrollY(line);
+      scroll.y = line;
 
     }
   }
@@ -101,11 +101,11 @@ module.exports = class URIHashControl {
       ).then(() => {
         this.app.ui.setWindowTitle(baseName);
         this.app.state.file.name = baseName;
-        this.app.screen.setScrollY(parsed.line);
+        this.app.scroll.y = parsed.line;
       });
     } else if (parsed.type == 'local') {
       return await this.app.files.loadLocal(parsed.file).then(() => {
-        this.app.screen.setScrollY(parsed.line);
+        this.app.scroll.y = parsed.line;
         return this.update();
       });
     } else {
@@ -123,7 +123,7 @@ module.exports = class URIHashControl {
           ? 'remote:' + this.app.state.file.remote_name
           : 'local:' + this.app.state.file.name) +
         ':' +
-        this.app.state.screen.y;
+        this.app.scroll.y;
     }
     return curHash;
   }
