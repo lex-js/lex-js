@@ -1,32 +1,32 @@
 module.exports = class SearchControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  search (text, str) {
+  search(text, str) {
     switch (this.app.state.search.mode) {
-    case 'default':
-      return this.searchDefault(text, str);
-      break;
-    case 'case-insensitive':
-      return this.searchCaseInsensitive(text, str);
-      break;
-    default:
-      throw "SearchControl.search: incorrect mode";
+      case "default":
+        return this.searchDefault(text, str);
+        break;
+      case "case-insensitive":
+        return this.searchCaseInsensitive(text, str);
+        break;
+      default:
+        throw "SearchControl.search: incorrect mode";
     }
   }
 
-  searchDefault (text, str) {
+  searchDefault(text, str) {
     var c,
-        n = 0,
-        line,
-        r = [],
-        tr = [],
-        lines = text.split('\n'),
-        tn = 0,
-        lineNumbersWidth = this.app.state.numbers.width || (
-            this.app.state.numbers.width + this.app.config.line_numbers_padding
-        );
+      n = 0,
+      line,
+      r = [],
+      tr = [],
+      lines = text.split("\n"),
+      tn = 0,
+      lineNumbersWidth =
+        this.app.state.numbers.width ||
+        this.app.state.numbers.width + this.app.config.line_numbers_padding;
 
     // Remove ' ' & '-'
     // TODO: refactor;
@@ -35,7 +35,7 @@ module.exports = class SearchControl {
     for (var y = 0; y < lines.length; y++) {
       while (
         lines[y].length &&
-          (lines[y].endsWith('-') || lines[y].endsWith(' '))
+        (lines[y].endsWith("-") || lines[y].endsWith(" "))
       ) {
         lines[y] = lines[y].slice(0, -1);
       }
@@ -46,7 +46,7 @@ module.exports = class SearchControl {
       var ix = 0;
 
       // затираем ' ' и '-' в начале строки
-      while (ix < line.length && ' -'.indexOf(line[ix]) != -1) {
+      while (ix < line.length && " -".indexOf(line[ix]) != -1) {
         ix++;
       }
 
@@ -96,7 +96,7 @@ module.exports = class SearchControl {
     return r;
   }
 
-  searchCaseInsensitive (text, str) {
+  searchCaseInsensitive(text, str) {
     // make case-insensitive
     text = text.toLowerCase();
     str = str.toLowerCase();
@@ -104,10 +104,10 @@ module.exports = class SearchControl {
   }
 
   // DOM functions
-  activateSearchField () {
+  activateSearchField() {
     this.app.state.search.active = true;
-    var el = document.getElementById('search-field');
-    var el2 = document.getElementById('block-search');
+    var el = document.getElementById("search-field");
+    var el2 = document.getElementById("block-search");
     el2.style.zIndex = 11;
 
     setTimeout(function() {
@@ -117,57 +117,62 @@ module.exports = class SearchControl {
     this.app.render.update();
   }
 
-  deactivateSearchField () {
+  deactivateSearchField() {
     this.app.state.search.active = false;
-    var el = document.getElementById('search-field');
-    var el2 = document.getElementById('block-search');
+    var el = document.getElementById("search-field");
+    var el2 = document.getElementById("block-search");
     el2.style.zIndex = 0;
     el.blur();
     this.app.render.update();
   }
 
-  clearSearchField () {
-    var el = document.getElementById('search-field');
-    el.value = '';
+  clearSearchField() {
+    var el = document.getElementById("search-field");
+    el.value = "";
     this.app.render.update();
   }
 
-  updateSearchBlock () {
+  updateSearchBlock() {
     var number =
-        this.app.state.search.results.length == 0 ? 0 : this.app.state.search.activeResult + 1;
+      this.app.state.search.results.length == 0
+        ? 0
+        : this.app.state.search.activeResult + 1;
     var total = number ? this.app.state.search.results.length : 0;
 
-    document.getElementById('search-number').textContent = number;
-    document.getElementById('search-total').textContent = total;
+    document.getElementById("search-number").textContent = number;
+    document.getElementById("search-total").textContent = total;
   }
 
-  jumpToIndex (index) {
+  jumpToIndex(index) {
     if (index < this.app.state.search.results.length - 1) {
       this.app.state.search.activeResult = index;
     }
     if (!this.app.state.search.results[index]) {
-      this.app.state.search.activeResult = this.app.state.search.results.length - 1;
+      this.app.state.search.activeResult =
+        this.app.state.search.results.length - 1;
       return;
     }
     this.scrollToCurrentResult();
   }
 
-  scrollToCurrentResult () {
+  scrollToCurrentResult() {
     var index = this.app.state.search.activeResult,
-        arr = this.app.state.search.results[index];
+      arr = this.app.state.search.results[index];
 
     if (!arr) return;
 
     // TODO: correct minimum line number detection
     var line = arr[arr.length - 1].line - 1;
-    if (line < this.app.state.screen.y ||
-        line > this.app.state.screen.y + this.app.state.screen.h / 2) {
+    if (
+      line < this.app.state.screen.y ||
+      line > this.app.state.screen.y + this.app.state.screen.h / 2
+    ) {
       this.app.screen.setScrollY(line);
       this.app.render.update();
     }
   }
 
-  searchNext () {
+  searchNext() {
     const { search } = this.app.state;
 
     if (search.activeResult < search.results.length - 1) {
@@ -179,7 +184,7 @@ module.exports = class SearchControl {
     this.updateSearchBlock();
   }
 
-  searchPrevious () {
+  searchPrevious() {
     const { search } = this.app.state;
 
     if (search.activeResult > 0) {
@@ -192,7 +197,7 @@ module.exports = class SearchControl {
     this.updateSearchBlock();
   }
 
-  flush () {
+  flush() {
     this.app.state.search.active = false;
     this.app.state.search.activeResult = 0;
     this.app.state.search.results = [];
@@ -202,20 +207,20 @@ module.exports = class SearchControl {
   }
 
   // main functions
-  performSearch () {
+  performSearch() {
     this.performSearchByFunction();
     this.updateSearchBlock();
     this.app.render.update();
   }
 
-  performSearchByFunction () {
+  performSearchByFunction() {
     var text = this.app.state.index.text,
-        str = document.getElementById('search-field').value;
+      str = document.getElementById("search-field").value;
     this.app.state.search.results = this.search(text, str);
     this.scrollToCurrentResult();
   }
 
-  rebuildIndex () {
+  rebuildIndex() {
     const { state, parser, coders } = this.app;
 
     // clear old value
@@ -223,7 +228,7 @@ module.exports = class SearchControl {
     state.index.maxlen = 0;
     for (var i = 0; i < state.file.lines.length; i++) {
       var parsed = parser.parseLine(state.file.lines[i]),
-          line = coders.Uint8ArrayToString(parsed.map(c => c.char));
+        line = coders.Uint8ArrayToString(parsed.map(c => c.char));
       state.index.text += line + "\n";
       if (state.index.maxlen < line.length) {
         state.index.maxlen = line.length;

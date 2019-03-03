@@ -1,20 +1,20 @@
 module.exports = class URIHashControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
   // Allows to change the hash only once per config.uri_hash_update_delay.
   // Delay is required since URL hash update is quite slow.
-  set (newURLHash) {
+  set(newURLHash) {
     var updateFunction = () => {
       if (newURLHash) {
         if (history.replaceState) {
-          history.replaceState(undefined, undefined, '#' + newURLHash);
+          history.replaceState(undefined, undefined, "#" + newURLHash);
         } else {
-          location.hash = '#' + newURLHash;
+          location.hash = "#" + newURLHash;
         }
       } else {
-        history.pushState('', document.title, window.location.pathname);
+        history.pushState("", document.title, window.location.pathname);
       }
       this.app.state.hash_timeout = null;
     };
@@ -33,20 +33,25 @@ module.exports = class URIHashControl {
     }
   }
 
-  update () {
-    var newURLHash = '';
+  update() {
+    var newURLHash = "";
     if (!!this.app.state.file.remote_name) {
-      newURLHash = 'remote:' + this.app.state.file.remote_name + ':' + this.app.state.screen.y;
+      newURLHash =
+        "remote:" +
+        this.app.state.file.remote_name +
+        ":" +
+        this.app.state.screen.y;
     } else {
       // We're in a local file
       if (!!this.app.state.file.name) {
-        newURLHash = 'local:' + this.app.state.file.name + ':' + this.app.state.screen.y;
+        newURLHash =
+          "local:" + this.app.state.file.name + ":" + this.app.state.screen.y;
       }
     }
     this.set(newURLHash);
   }
 
-  async process (hash) {
+  async process(hash) {
     const parsedHash = this.parseHash(hash);
 
     if (parsedHash === null) {
@@ -63,11 +68,8 @@ module.exports = class URIHashControl {
     }
 
     // TODO: add ability to open local files by editing URI hash
-    if (type == 'remote' && state.file.remote_name != file) {
-      await files.loadRemote(
-        config.content_real_path + '/' + file,
-        file
-      );
+    if (type == "remote" && state.file.remote_name != file) {
+      await files.loadRemote(config.content_real_path + "/" + file, file);
 
       var baseName = file.split(/[\\/]/).pop();
       ui.setWindowTitle(baseName);
@@ -75,15 +77,14 @@ module.exports = class URIHashControl {
       state.file.remote_name = file;
       state.content_list.path = file.substr(
         0,
-        file.length - baseName.length - 1  // -1 to strip the last `/`
+        file.length - baseName.length - 1 // -1 to strip the last `/`
       );
       screen.setScrollY(line);
-
     }
   }
 
-  async load (parsed) {
-    if (parsed.type == 'remote') {
+  async load(parsed) {
+    if (parsed.type == "remote") {
       var baseName = parsed.file.split(/[\\/]/).pop();
 
       // Set state.content_list.path to be equal to the path of
@@ -95,15 +96,17 @@ module.exports = class URIHashControl {
 
       this.app.state.content_list.path = path;
 
-      return await this.app.files.loadRemote(
-        this.app.config.content_real_path + '/' + parsed.file,
-        parsed.file
-      ).then(() => {
-        this.app.ui.setWindowTitle(baseName);
-        this.app.state.file.name = baseName;
-        this.app.screen.setScrollY(parsed.line);
-      });
-    } else if (parsed.type == 'local') {
+      return await this.app.files
+        .loadRemote(
+          this.app.config.content_real_path + "/" + parsed.file,
+          parsed.file
+        )
+        .then(() => {
+          this.app.ui.setWindowTitle(baseName);
+          this.app.state.file.name = baseName;
+          this.app.screen.setScrollY(parsed.line);
+        });
+    } else if (parsed.type == "local") {
       return await this.app.files.loadLocal(parsed.file).then(() => {
         this.app.screen.setScrollY(parsed.line);
         return this.update();
@@ -115,28 +118,28 @@ module.exports = class URIHashControl {
     }
   }
 
-  getCurrent () {
-    var curHash = '';
+  getCurrent() {
+    var curHash = "";
     if (this.app.state.file.name) {
       curHash =
         (this.app.state.file.remote_name
-          ? 'remote:' + this.app.state.file.remote_name
-          : 'local:' + this.app.state.file.name) +
-        ':' +
+          ? "remote:" + this.app.state.file.remote_name
+          : "local:" + this.app.state.file.name) +
+        ":" +
         this.app.state.screen.y;
     }
     return curHash;
   }
 
-  parseHash (hash) {
+  parseHash(hash) {
     var type, file, line;
     if (!hash) return null;
 
     hash = decodeURIComponent(hash).substr(1);
-    type = hash.split(':')[0];
-    if (!['remote', 'local'].includes(type)) return null;
+    type = hash.split(":")[0];
+    if (!["remote", "local"].includes(type)) return null;
 
-    line = hash.split(':')[hash.split(':').length - 1];
+    line = hash.split(":")[hash.split(":").length - 1];
     if (!/^(0|([1-9]\d*))$/.test(line)) return null;
 
     file = hash.substr(

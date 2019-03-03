@@ -1,19 +1,19 @@
-const localforage = require('localforage');
+const localforage = require("localforage");
 
 module.exports = class Files {
-  constructor (app, localforage) {
+  constructor(app, localforage) {
     this.app = app;
   }
 
-  isLSFileName (filename) {
+  isLSFileName(filename) {
     return filename.startsWith(this.app.config.ls_file_prefix);
   }
 
-  LSFileNameToFileName (filename) {
+  LSFileNameToFileName(filename) {
     return filename.substr(this.app.config.ls_file_prefix.length);
   }
 
-  getFileList () {
+  getFileList() {
     return localforage.keys().then(value => {
       var filtered = [];
       for (var i in value) {
@@ -26,7 +26,7 @@ module.exports = class Files {
     });
   }
 
-  async saveFile (filename, source) {
+  async saveFile(filename, source) {
     const value = await localforage.setItem(
       this.app.config.ls_file_prefix + filename,
       source
@@ -34,17 +34,15 @@ module.exports = class Files {
     await this.app.ui.updateFileList();
   }
 
-  async deleteFile (filename) {
-    await localforage.removeItem(
-      this.app.config.ls_file_prefix + filename
-    );
+  async deleteFile(filename) {
+    await localforage.removeItem(this.app.config.ls_file_prefix + filename);
     await this.app.ui.updateFileList();
   }
 
-  pushSelectedToLS (file) {
+  pushSelectedToLS(file) {
     const reader = new FileReader();
 
-    reader.onload = (event) => {
+    reader.onload = event => {
       this.saveFile(
         file.name,
         this.app.coders.Uint8ArrayToString(event.target.result)
@@ -54,20 +52,20 @@ module.exports = class Files {
     reader.readAsArrayBuffer(file);
   }
 
-  loadLocal (filename) {
+  loadLocal(filename) {
     const { coders, state, ui, URIHashControl } = this.app;
-    return localforage.getItem(
-      this.app.config.ls_file_prefix + filename
-    ).then(contents => {
-      this.loadFromSource(coders.stringToUint8Array(contents));
-      ui.setWindowTitle(filename);
-      state.file.name = filename;
-      state.file.remote_name = "";
-      URIHashControl.update();
-    });
+    return localforage
+      .getItem(this.app.config.ls_file_prefix + filename)
+      .then(contents => {
+        this.loadFromSource(coders.stringToUint8Array(contents));
+        ui.setWindowTitle(filename);
+        state.file.name = filename;
+        state.file.remote_name = "";
+        URIHashControl.update();
+      });
   }
 
-  async loadRemote (url, remoteName) {
+  async loadRemote(url, remoteName) {
     const buffer = await fetch(url).then(response => response.arrayBuffer());
 
     this.loadFromSource(buffer);
@@ -76,7 +74,7 @@ module.exports = class Files {
   }
 
   // TODO: remove callback
-  loadFromSource (source) {
+  loadFromSource(source) {
     source = new Uint8Array(source);
 
     // Save file source or flush it.
@@ -87,7 +85,7 @@ module.exports = class Files {
       this.app.state.file.source = new Uint8Array();
     }
 
-    this.app.state.file.lines = [new Uint8Array()];  // insert one empty line
+    this.app.state.file.lines = [new Uint8Array()]; // insert one empty line
 
     // TODO: refactor
     var lineBytes = [];
@@ -107,7 +105,7 @@ module.exports = class Files {
     return this.app.state.file;
   }
 
-  postLoad () {
+  postLoad() {
     this.app.search.rebuildIndex();
     if (this.app.state.numbers.set) {
       this.app.lineNumbers.addLineNumbers();

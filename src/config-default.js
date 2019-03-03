@@ -4,13 +4,11 @@
 // Не изменяйте этот файл!
 // Чтобы поменять значение, используйте `public/js/configOverride.js`
 module.exports = {
-
   /* Application */
 
   // App name used in page title
   // Название программы (используется в заголовке страницы)
   app_full_name: "Lexicon Viewer App",
-
 
   /* Fonts */
 
@@ -19,16 +17,18 @@ module.exports = {
   font_width: 8,
   font_height: 19,
 
-  fonts: [ 'public/fonts/VGA0.SFN',
-           'public/fonts/VGA1.SFN',
-           'public/fonts/VGA2.SFN',
-           'public/fonts/VGA3.SFN',
-           'public/fonts/VGA4.SFN',
-           'public/fonts/VGA5.SFN',
-           'public/fonts/VGA6.SFN',
-           'public/fonts/VGA7.SFN',
-           'public/fonts/VGA8.SFN',
-           'public/fonts/VGA9.SFN' ],
+  fonts: [
+    "public/fonts/VGA0.SFN",
+    "public/fonts/VGA1.SFN",
+    "public/fonts/VGA2.SFN",
+    "public/fonts/VGA3.SFN",
+    "public/fonts/VGA4.SFN",
+    "public/fonts/VGA5.SFN",
+    "public/fonts/VGA6.SFN",
+    "public/fonts/VGA7.SFN",
+    "public/fonts/VGA8.SFN",
+    "public/fonts/VGA9.SFN"
+  ],
 
   // Load fonts from source (.SFN) files?
   // If set to true, fonts from `public/fonts` will be used.
@@ -39,7 +39,6 @@ module.exports = {
   // true : используются шрифты из `public/fonts`
   // false: используются шрифты из `public/fonts/fonts.js` (если доступны)
   load_fonts_from_source: true,
-
 
   /* Appearance */
 
@@ -88,12 +87,11 @@ module.exports = {
   // Множитель скорости прокрутки при нажатом ctrl
   ctrl_scroll_k: 8,
 
-
   /* Settings for mobile devices */
 
   // URL of .css for mobile devices.
   // URL CSS-стиля для мобильных устройств.
-  mobile_style_url: 'public/css/mobile.css',
+  mobile_style_url: "public/css/mobile.css",
 
   // Minimal shift for scrolling in mobile devices (in pixels).
   // Минимальный сдвиг при прокрутке пальцем в мобильных устройствах.
@@ -112,7 +110,6 @@ module.exports = {
   hide_top_bar_delta: 10,
   show_top_bar_delta: 10,
 
-
   /* Greeting file */
 
   // Load greeting file from source?
@@ -121,30 +118,27 @@ module.exports = {
 
   // Greeting file URL, used if load_file_from_source is set to `true`
   // Файл, открываемый при старте, если load_file_from_source == true
-  greeting_file:'public/startPage/info.txt',
-
+  greeting_file: "public/startPage/info.txt",
 
   /* Files */
 
   // URL to retrieve directory listings from server.
   // URL для получения листинга директории с сервера.
-  content_list_url: 'api?action=listdir&dir=',
+  content_list_url: "api?action=listdir&dir=",
 
   // URL to retrieve files from server.
   // URL для получения файлов с сервера.
-  content_real_path: 'api?action=getfile&file=',
-
+  content_real_path: "api?action=getfile&file=",
 
   /* PNG exporting */
 
   // PNG filename prefix.
   // Префикс имени файла.
-  export_png_file_name_prefix: 'lex_',
+  export_png_file_name_prefix: "lex_",
 
   // Clear selection after exporting file?
   // Очищать выделение после сохранения файла?
   export_clear_selection: true,
-
 
   /* Parser */
 
@@ -163,7 +157,7 @@ module.exports = {
       55: 7,
       56: 8,
       57: 9,
-      205: 10,
+      205: 10
     },
     underline_true: 95,
     underline_false: 46,
@@ -189,7 +183,7 @@ module.exports = {
 
   // Prefix for filenames in localforage.
   // Префекс для сохранения файлов в localforage.
-  ls_file_prefix: 'file_',
+  ls_file_prefix: "file_",
 
   // Save all files opened locally to localforage?
   // Сохранять ли все открываемые пользователем с компьютера
@@ -198,5 +192,5 @@ module.exports = {
 
   // Search mode: 'default' or 'case-insensitive'
   // Режим поиска: 'default' or 'case-insensitive'
-  search_mode: 'case-insensitive',
+  search_mode: "case-insensitive"
 };

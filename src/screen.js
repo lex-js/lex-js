@@ -1,26 +1,28 @@
 module.exports = class Screen {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  getViewportSize () {
+  getViewportSize() {
     return {
-      w: window.innerWidth ||
-        document.documentElement.clientWidth  ||
+      w:
+        window.innerWidth ||
+        document.documentElement.clientWidth ||
         document.body.clientWidth,
-      h: window.innerHeight ||
+      h:
+        window.innerHeight ||
         document.documentElement.clientHeight ||
         document.body.clientHeight
     };
   }
 
-  expandScreen () {
+  expandScreen() {
     const { state, config, render } = this.app;
 
     // увеличить размер canvas при изменении размера окна
     var viewport = this.getViewportSize(),
-        canvas = document.getElementById("canvas"),
-        h_shift = state.is_mobile ? 14 : 64;
+      canvas = document.getElementById("canvas"),
+      h_shift = state.is_mobile ? 14 : 64;
 
     state.screen.h = Math.ceil((viewport.h - h_shift) / config.font_height);
     state.screen.w = Math.ceil(viewport.w / config.font_width);
@@ -29,7 +31,7 @@ module.exports = class Screen {
     render.resetState();
   }
 
-  setScrollY (y) {
+  setScrollY(y) {
     const { state, config, screen, render, URIHashControl } = this.app;
     state.screen.y = y;
     screen.checkScrollPosition();
@@ -37,11 +39,15 @@ module.exports = class Screen {
     URIHashControl.update();
   }
 
-  checkScrollPosition () {
+  checkScrollPosition() {
     const { state, config } = this.app;
 
-    if (state.screen.x > state.index.maxlen - state.screen.w + config.max_x_scroll) {
-      state.screen.x = state.index.maxlen - state.screen.w + config.max_x_scroll;
+    if (
+      state.screen.x >
+      state.index.maxlen - state.screen.w + config.max_x_scroll
+    ) {
+      state.screen.x =
+        state.index.maxlen - state.screen.w + config.max_x_scroll;
     }
 
     if (state.screen.h > state.file.lines.length) {
@@ -67,7 +73,7 @@ module.exports = class Screen {
     }
   }
 
-  scrollHomeY () {
+  scrollHomeY() {
     const { state, render, URIHashControl } = this.app;
     if (state.content_list.active) return;
 
@@ -78,7 +84,7 @@ module.exports = class Screen {
     return 1;
   }
 
-  scrollEndY () {
+  scrollEndY() {
     const { state, render, URIHashControl, screen } = this.app;
     if (state.content_list.active) return;
 
@@ -90,7 +96,7 @@ module.exports = class Screen {
     return 1;
   }
 
-  scrollX (x) {
+  scrollX(x) {
     const { state, render, screen } = this.app;
     if (state.content_list.active) return;
 
@@ -101,7 +107,7 @@ module.exports = class Screen {
     return 1;
   }
 
-  scrollY (y) {
+  scrollY(y) {
     const { state, render, URIHashControl, screen } = this.app;
     if (state.content_list.active) return;
 

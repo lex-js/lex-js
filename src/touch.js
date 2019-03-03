@@ -1,5 +1,5 @@
 module.exports = class TouchControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.ongoingTouches = [];
     this.scrollBuffer = {
@@ -8,7 +8,7 @@ module.exports = class TouchControl {
     };
   }
 
-  handleStart (event) {
+  handleStart(event) {
     event.preventDefault();
     var touches = event.changedTouches;
     for (var i = 0; i < touches.length; i++) {
@@ -16,7 +16,7 @@ module.exports = class TouchControl {
     }
   }
 
-  handleMove (event) {
+  handleMove(event) {
     const { state, config, mobileUI, screen } = this.app;
 
     event.preventDefault();
@@ -28,11 +28,7 @@ module.exports = class TouchControl {
       this.scrollBuffer.x += deltaX;
       this.scrollBuffer.y += deltaY;
       if (idx >= 0) {
-        this.ongoingTouches.splice(
-          idx,
-          1,
-          this.copyTouch(touches[i])
-        );
+        this.ongoingTouches.splice(idx, 1, this.copyTouch(touches[i]));
       } else {
         // log("can't figure out which touch to continue");
       }
@@ -53,22 +49,20 @@ module.exports = class TouchControl {
 
       if (Math.abs(this.scrollBuffer.y) > config.touch_y_min) {
         screen.scrollY(
-          (this.scrollBuffer.y * config.touch_y_speed) /
-            config.touch_y_min
+          (this.scrollBuffer.y * config.touch_y_speed) / config.touch_y_min
         );
         this.scrollBuffer.y = 0;
       }
       if (Math.abs(this.scrollBuffer.x) > config.touch_x_min) {
         screen.scrollX(
-          (this.scrollBuffer.x * config.touch_x_speed) /
-            config.touch_x_min
+          (this.scrollBuffer.x * config.touch_x_speed) / config.touch_x_min
         );
         this.scrollBuffer.x = 0;
       }
     }
   }
 
-  handleEnd (event) {
+  handleEnd(event) {
     event.preventDefault();
     var touches = event.changedTouches;
     for (var i = 0; i < touches.length; i++) {
@@ -76,12 +70,12 @@ module.exports = class TouchControl {
       if (idx >= 0) {
         this.ongoingTouches.splice(idx, 1);
       } else {
-        log("can't figure out which touch to end");
+        console.log("can't figure out which touch to end");
       }
     }
   }
 
-  ongoingTouchIndexById (idToFind) {
+  ongoingTouchIndexById(idToFind) {
     for (var i = 0; i < this.ongoingTouches.length; i++) {
       var id = this.ongoingTouches[i].identifier;
       if (id == idToFind) {
@@ -91,7 +85,7 @@ module.exports = class TouchControl {
     return -1;
   }
 
-  copyTouch (touch) {
+  copyTouch(touch) {
     return {
       identifier: touch.identifier,
       pageX: touch.pageX,

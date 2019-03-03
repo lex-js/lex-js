@@ -1,13 +1,13 @@
 module.exports = class UI {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  setWindowTitle (fileName) {
+  setWindowTitle(fileName) {
     document.title = fileName + " - " + this.app.config.app_full_name;
   }
 
-  showGotoLinePrompt () {
+  showGotoLinePrompt() {
     var userInput = prompt("Enter line number", this.app.state.screen.y);
 
     if (userInput == null) return;
@@ -20,12 +20,10 @@ module.exports = class UI {
     this.app.render.update();
   }
 
-  async updateFileList () {
+  async updateFileList() {
     var el = document.getElementById("file-list");
 
-    const list = (
-      await this.app.files.getFileList()
-    ).sort((a, b) => {
+    const list = (await this.app.files.getFileList()).sort((a, b) => {
       return a.toLowerCase().localeCompare(b.toLowerCase());
     });
 
@@ -44,7 +42,7 @@ module.exports = class UI {
   }
 
   // update scroll position info
-  updateBottomBlock () {
+  updateBottomBlock() {
     var y = this.app.state.screen.y;
     var l = this.app.state.file.lines.length - 1;
     l = l ? l : 1; // prevent division by zero
@@ -54,7 +52,7 @@ module.exports = class UI {
       Math.ceil((y / l) * 100) + "%";
   }
 
-  duplicateWindow () {
+  duplicateWindow() {
     window.open(document.location.href, "_blank");
   }
 };

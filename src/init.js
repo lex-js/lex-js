@@ -1,5 +1,5 @@
-const App = require('./app');
-const attachFastClick = require('fastclick');
+const App = require("./app");
+const attachFastClick = require("fastclick");
 
 try {
   // remove 300ms delay for 'click' events in mobile browsers
@@ -8,8 +8,7 @@ try {
   console.log(e);
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {
-  const app = window.app = new App();
+  const app = (window.app = new App());
   app.init();
 });

@@ -1,26 +1,26 @@
-const { saveAs } = require('file-saver');
+const { saveAs } = require("file-saver");
 
 module.exports = class Export {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.saveAs = saveAs;
   }
 
   // get canvas for rectangle area
-  makeCanvas (x1, x2, y1, y2) {
+  makeCanvas(x1, x2, y1, y2) {
     var config = this.app.config,
-        state = this.app.state,
-        w = x2 - x1,
-        h = y2 - y1,
-        rw = w * config.font_width,
-        rh = h * config.font_height;
+      state = this.app.state,
+      w = x2 - x1,
+      h = y2 - y1,
+      rw = w * config.font_width,
+      rh = h * config.font_height;
 
     // create new temporary canvas
-    var canvas = document.createElement('canvas');
+    var canvas = document.createElement("canvas");
     canvas.width = rw;
     canvas.height = rh;
-    var context = canvas.getContext('2d'),
-        imageData = context.createImageData(rw, rh);
+    var context = canvas.getContext("2d"),
+      imageData = context.createImageData(rw, rh); // eslint-disable-line no-unused-vars
 
     // fill context with default color
     // (otherwise it remains transparent)
@@ -41,13 +41,13 @@ module.exports = class Export {
       var line = state.file.lines[y];
 
       // TODO: remove
-      if (typeof line == 'undefined') break;
+      if (typeof line == "undefined") break;
 
       line = this.app.parser.parseLine(line);
       for (var x = x1; x < line.length && x < x2; x++) {
         var char = line[x].char,
-            underline = line[x].underline,
-            font = line[x].font;
+          underline = line[x].underline,
+          font = line[x].font;
         if (state.fonts[font].bitmaps[char]) {
           context.putImageData(
             state.fonts[font].bitmaps[char],
@@ -64,7 +64,7 @@ module.exports = class Export {
   }
 
   // exports selection to PNG file
-  toPNG () {
+  toPNG() {
     if (!this.app.state.selection.set) return;
     var s = this.app.state.selection;
     var canvas = this.makeCanvas(
@@ -74,26 +74,25 @@ module.exports = class Export {
       Math.max(s.y1, s.y2)
     );
 
-    canvas.toBlob((blob) => {
+    canvas.toBlob(blob => {
       this.saveAs(blob, this.exportFileName());
     });
 
-    if (this.app.config.export_clear_selection)
-      this.app.selection.clear();
+    if (this.app.config.export_clear_selection) this.app.selection.clear();
   }
 
   // construct export file name
   // TODO: add line number in file name
-  exportFileName (ext) {
+  exportFileName(ext) {
     const state = this.app.state;
 
     return (
       this.app.config.export_png_file_name_prefix +
-        (state.file.name ? state.file.name : "local")
+      (state.file.name ? state.file.name : "local")
         .trim()
         .replace(/[^a-z0-9]/gi, "_") // TODO: include alphabets other than latin
         .replace(/_{2,}/gi, "_") +
-        '.png'
+      ".png"
     );
   }
 };
