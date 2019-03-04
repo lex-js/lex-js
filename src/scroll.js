@@ -14,7 +14,7 @@ module.exports = class Scroll {
 
   get x () {
     return (
-      Math.floor(this.container.scrollLeft / this.app.config.font_width)
+      Math.round(this.container.scrollLeft / this.app.config.font_width)
     );
   }
 
@@ -32,12 +32,17 @@ module.exports = class Scroll {
       this.x = 0;
     }
 
-    this.container.scrollLeft = Math.floor(value * config.font_width);
+    this.container.scrollLeft = Math.round(value * config.font_width);
   }
 
   get y () {
-    return (
-      Math.floor(this.container.scrollTop / this.app.config.font_height)
+    const { state, config } = this.app;
+    const { file } = state;
+    const fileHeight = file.lines.length;
+    const coeff = (fileHeight + config.blank_lines) / fileHeight;
+
+    return Math.round(
+      coeff * this.container.scrollTop / this.app.config.font_height
     );
   }
 
@@ -45,6 +50,7 @@ module.exports = class Scroll {
     const { screen, state, config, scroll } = this.app;
     const { file } = state;
     const fileHeight = file.lines.length;
+    const coeff = (fileHeight + config.blank_lines) / fileHeight;
 
     if (value < 0) {
       value = 0;
@@ -56,7 +62,7 @@ module.exports = class Scroll {
       }
     }
 
-    this.container.scrollTop = Math.floor(value * config.font_height);
+    this.container.scrollTop = Math.round(value * config.font_height / coeff);
   }
 
   fromScrollBar () {
@@ -70,6 +76,7 @@ module.exports = class Scroll {
       );
       render.update();
     });
+
     URIHashControl.update();
   }
 
@@ -79,7 +86,7 @@ module.exports = class Scroll {
   }
 
   toEnd () {
-    this.y = this.app.state.file.lines.length - this.app.screen.h;
+    this.y = this.app.state.file.lines.length;
     this.update();
   }
 

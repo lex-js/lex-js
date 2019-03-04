@@ -75,6 +75,10 @@ module.exports = {
   // Множитель скорости прокрутки при нажатом ctrl
   ctrl_scroll_k: 8,
 
+  // Number of blank lines to append to the end of file.
+  // Количество пустых строк для добавления в конец файла.
+  blank_lines: 10,
+
 
   /* Settings for mobile devices */
 
