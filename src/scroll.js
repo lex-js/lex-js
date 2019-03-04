@@ -3,6 +3,13 @@ module.exports = class Scroll {
     this.app = app;
     this.container = document.getElementById('canvas-scroll-container');
     this.container.addEventListener('scroll', () => this.fromScrollBar());
+
+    this.requestAnimationFrame = (
+      window.requestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.mozRequestAnimationFrame ||
+      (f => f())
+    ).bind(window);
   }
 
   get x () {
@@ -57,11 +64,12 @@ module.exports = class Scroll {
     const dy = this.container.scrollTop;
     const { config, screen, render, URIHashControl } = this.app;
 
-    document.getElementById('canvas-container').style.transform = (
-      'translate(' + dx + 'px, ' + dy + 'px)'
-    );
-
-    render.update();
+    this.requestAnimationFrame(() => {
+      document.getElementById('canvas-container').style.transform = (
+        'translate(' + dx + 'px, ' + dy + 'px)'
+      );
+      render.update();
+    });
     URIHashControl.update();
   }
 
