@@ -67,19 +67,6 @@ module.exports = {
   // Цвет активного результата поиска
   search_active_fill_color: [0, 255, 0, 100],
 
-  // Maximum overscroll length (in screen sizes)
-  // e.g 0.5 means only half of the screen height is visible if the file
-  // is scrolled to the end.
-  // Размер области экрана, на которую можно проскроллить после достижения
-  // конца файла (относительно высоты экрана экрана)
-  max_overscroll: 0.3,
-
-  // Minimum number of columns always shown on the screen (determines how much
-  // can file be scrolled horizontally)
-  // Минимальный отступ по х (определяет, сколько столбцов всегда показаны на
-  // экране)
-  max_x_scroll: 2,
-
   // How many spaces is inserted after each line number
   // Ширина отступа после номеров строки
   line_numbers_padding: 2,
@@ -88,22 +75,16 @@ module.exports = {
   // Множитель скорости прокрутки при нажатом ctrl
   ctrl_scroll_k: 8,
 
+  // Number of blank lines to append to the end of file.
+  // Количество пустых строк для добавления в конец файла.
+  blank_lines: 10,
+
 
   /* Settings for mobile devices */
 
   // URL of .css for mobile devices.
   // URL CSS-стиля для мобильных устройств.
   mobile_style_url: 'public/css/mobile.css',
-
-  // Minimal shift for scrolling in mobile devices (in pixels).
-  // Минимальный сдвиг при прокрутке пальцем в мобильных устройствах.
-  touch_x_min: 10,
-  touch_y_min: 10,
-
-  // Scrolling acceleration coefficient for mobile devices.
-  // Коэффициент скорости прокрутки в мобильных устройствах.
-  touch_x_speed: 1,
-  touch_y_speed: 0.5,
 
   // Расстояния, на которые нужно проскроллить в мобильных устройствах,
   // чтобы изменить видимость панели сверху.

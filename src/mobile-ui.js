@@ -1,6 +1,7 @@
 module.exports = class MobileUI {
   constructor (app) {
     this.app = app;
+    this.isButtonShown = true;
   }
 
   openMenu (showRemote) {
@@ -65,13 +66,23 @@ module.exports = class MobileUI {
   }
 
   // Show/hide menu when scrolling up/down
-  showMenu () {
+  showMenuButton () {
     document.getElementById('mobile-menu-open').style.top = 0;
     document.getElementById('block-top').style.top = 0;
+    this.isButtonShown = true;
   }
 
-  hideMenu () {
+  hideMenuButton () {
     document.getElementById('mobile-menu-open').style.top = '-100px';
     document.getElementById('block-top').style.top = '-100px';
+    this.isButtonShown = false;
+  }
+
+  toggleMenuButton () {
+    if (this.isButtonShown) {
+      this.hideMenuButton();
+    } else {
+      this.showMenuButton();
+    }
   }
 };

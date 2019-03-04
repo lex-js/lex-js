@@ -3,6 +3,10 @@ module.exports = class ContentBrowser {
     this.app = app;
   }
 
+  get active () {
+    return this.app.state.content_list.active;
+  }
+
   async show () {
 
     const json = await this.update().catch(err => {
@@ -41,11 +45,15 @@ module.exports = class ContentBrowser {
   }
 
   // where = 'top' | 'bottom' | number
-  navigate(where) {
-    var trs = Array.prototype.slice.call(
-      document.querySelectorAll("#content-list-table > tr")
+  navigate (where) {
+    var trs = Array.from(
+      document.querySelectorAll('#content-list-table > tr')
     );
-
+    
+    if (!trs.length) {
+      return;
+    }
+    
     const setActive = el => {
       let old = document.querySelector('.content-list-active');
       if (old) {

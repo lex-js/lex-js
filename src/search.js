@@ -1,6 +1,8 @@
 module.exports = class SearchControl {
   constructor (app) {
     this.app = app;
+    this.searchField = document.getElementById('search-field');
+    this.container = document.getElementById('block-search');
   }
 
   search (text, str) {
@@ -17,6 +19,8 @@ module.exports = class SearchControl {
   }
 
   searchDefault (text, str) {
+    const { state, config } = this.app;
+
     var c,
         n = 0,
         line,
@@ -24,9 +28,9 @@ module.exports = class SearchControl {
         tr = [],
         lines = text.split('\n'),
         tn = 0,
-        lineNumbersWidth = this.app.state.numbers.width || (
-            this.app.state.numbers.width + this.app.config.line_numbers_padding
-        );
+        lineNumbersWidth = state.numbers.set ? (
+            state.numbers.width + config.line_numbers_padding
+        ) : 0;
 
     // Remove ' ' & '-'
     // TODO: refactor;
@@ -41,7 +45,7 @@ module.exports = class SearchControl {
       }
     }
 
-    for (var y = 0; y < lines.length; y++) {
+    for (y = 0; y < lines.length; y++) {
       line = lines[y];
       var ix = 0;
 
@@ -105,13 +109,12 @@ module.exports = class SearchControl {
 
   // DOM functions
   activateSearchField () {
-    this.app.state.search.active = true;
-    var el = document.getElementById('search-field');
-    var el2 = document.getElementById('block-search');
-    el2.style.zIndex = 11;
+    const { state } = this.app;
+    state.search.active = true;
+    this.container.style.display = 'block';
 
-    setTimeout(function() {
-      el.focus();
+    setTimeout(() => {
+      this.searchField.focus();
     }, 10);
 
     this.app.render.update();
@@ -119,16 +122,13 @@ module.exports = class SearchControl {
 
   deactivateSearchField () {
     this.app.state.search.active = false;
-    var el = document.getElementById('search-field');
-    var el2 = document.getElementById('block-search');
-    el2.style.zIndex = 0;
-    el.blur();
+    this.container.style.display = 'none';
+    this.searchField.blur();
     this.app.render.update();
   }
 
   clearSearchField () {
-    var el = document.getElementById('search-field');
-    el.value = '';
+    this.searchField.value = '';
     this.app.render.update();
   }
 
@@ -160,9 +160,9 @@ module.exports = class SearchControl {
 
     // TODO: correct minimum line number detection
     var line = arr[arr.length - 1].line - 1;
-    if (line < this.app.state.screen.y ||
-        line > this.app.state.screen.y + this.app.state.screen.h / 2) {
-      this.app.screen.setScrollY(line);
+    const scrollY = this.app.scroll.y;
+    if (line < scrollY || line > scrollY + this.app.screen.h / 2) {
+      this.app.scroll.y = line;
       this.app.render.update();
     }
   }
@@ -192,7 +192,7 @@ module.exports = class SearchControl {
     this.updateSearchBlock();
   }
 
-  flush () {
+  close () {
     this.app.state.search.active = false;
     this.app.state.search.activeResult = 0;
     this.app.state.search.results = [];
@@ -210,7 +210,7 @@ module.exports = class SearchControl {
 
   performSearchByFunction () {
     var text = this.app.state.index.text,
-        str = document.getElementById('search-field').value;
+        str = this.searchField.value;
     this.app.state.search.results = this.search(text, str);
     this.scrollToCurrentResult();
   }

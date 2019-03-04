@@ -11,13 +11,13 @@ const UI = require('./ui');
 const mkState = require('./state');
 const LineNumbers = require('./line-numbers');
 const MobileUI = require('./mobile-ui');
+
 const Parser = require('./parser');
 const Screen = require('./screen');
 const SearchControl = require('./search');
 const SelectionControl = require('./selection');
-const TouchControl = require('./touch');
 const URIHashControl = require('./uri-hash');
-
+const Scroll = require('./scroll');
 
 module.exports = class App {
   constructor () {
@@ -37,8 +37,8 @@ module.exports = class App {
     app.screen = new Screen(app);
     app.search = new SearchControl(app);
     app.selection = new SelectionControl(app);
-    app.touch = new TouchControl(app);
     app.URIHashControl = new URIHashControl(app);
+    app.scroll = new Scroll(app);
   }
 
   log () {
@@ -63,54 +63,58 @@ module.exports = class App {
 
   initMousetrap () {
     const { screen, contentBrowser, state, ui, lineNumbers,
-            config, selection, render, search } = this;
+            config, selection, render, search, scroll } = this;
 
-    // Mousetrap bindings
+    const moveY = value => () => {
+      if (contentBrowser.active) {
+          contentBrowser.navigate(value);
+        } else {
+          scroll.moveY(value);
+        }
+    };
+
+    const moveX = value => () => {
+      if (!contentBrowser.active) {
+        scroll.moveX(value);
+      }
+    };
+
+    const pagedown = () => {
+      if (!contentBrowser.active) {
+        scroll.moveY(screen.h - 1);
+      }
+    };
+
+    const pageup = () => {
+      if (!contentBrowser.active) {
+        scroll.moveY(1 - screen.h);
+      }
+    };
+
     var bindings = {
-      k: () => {
-        screen.scrollY(1) || contentBrowser.navigate(-1);
-      },
-      л: () => {
-        screen.scrollY(1) || contentBrowser.navigate(-1);
-      },
-      j: () => {
-        screen.scrollY(-1) || contentBrowser.navigate(1);
-      },
-      о: () => {
-        screen.scrollY(-1) || contentBrowser.navigate(1);
-      },
-      l: () => {
-        screen.scrollX(-1);
-      },
-      д: () => {
-        screen.scrollX(-1);
-      },
-      h: () => {
-        screen.scrollX(1);
-      },
-      р: () => {
-        screen.scrollX(1);
-      },
-      f: () => {
-        screen.scrollY(-state.screen.h + 1) || contentBrowser.navigate('bottom');
-      },
-      а: () => {
-        screen.scrollY(-state.screen.h + 1) || contentBrowser.navigate('bottom');
-      },
-      b: () => {
-        screen.scrollY(state.screen.h - 1) || contentBrowser.navigate('top');
-      },
-      и: () => {
-        screen.scrollY(state.screen.h - 1) || contentBrowser.navigate('top');
-      },
+      k: moveY(-1),
+      л: moveY(-1),
+
+      j: moveY(1),
+      о: moveY(1),
+
+      l: moveX(1),
+      д: moveX(1),
+
+      h: moveX(-1),
+      р: moveX(-1),
+
+      f: pagedown,
+      а: pagedown,
+      b: pageup,
+      и: pageup,
+
       'alt+g': () => ui.showGotoLinePrompt(),
       v: () => lineNumbers.toggleLineNumbers(),
       м: () => lineNumbers.toggleLineNumbers(),
       esc: () => {
-        state.screen.x = 0;
         selection.clear();
         contentBrowser.hide();
-        render.update();
       },
       'alt+f3': () => search.activateSearchField(),
 
@@ -128,48 +132,36 @@ module.exports = class App {
 
       с: () => contentBrowser.toggle(),
       c: () => contentBrowser.toggle(),
-      up: event => {
-        screen.scrollY(1) || contentBrowser.navigate(-1);
-        event.preventDefault();
-      },
-      down: event => {
-        screen.scrollY(-1) || contentBrowser.navigate(1);
-        event.preventDefault();
-      },
-      left: () => {
-        screen.scrollX(1);
-      },
-      right: () => {
-        screen.scrollX(-1);
-      },
-      'ctrl+up': () => {
-        screen.scrollY(1 * config.ctrl_scroll_k) ||
-          contentBrowser.navigate('top');
-      },
-      'ctrl+down': () => {
-        screen.scrollY(-1 * config.ctrl_scroll_k) ||
-          contentBrowser.navigate('bottom');
-      },
-      'ctrl+left': () => {
-        screen.scrollX(1 * config.ctrl_scroll_k);
-      },
-      'ctrl+right': () => {
-        screen.scrollX(-1 * config.ctrl_scroll_k);
-      },
+
+      up: moveY(-1),
+      down: moveY(1),
+      left: moveX(-1),
+      right: moveX(1),
+      'ctrl+up': moveY(- config.ctrl_scroll_k),
+      'ctrl+down': moveY(config.ctrl_scroll_k),
+      'ctrl+left': moveX(-1 * config.ctrl_scroll_k),
+      'ctrl+right': moveX(1 * config.ctrl_scroll_k),
+
       end: () => {
-        screen.scrollEndY() || contentBrowser.navigate('bottom');
+        if (contentBrowser.active) {
+          contentBrowser.navigate('bottom');
+        } else {
+          scroll.toEnd();
+        }
       },
       home: () => {
-        screen.scrollHomeY() || contentBrowser.navigate('top');
+        if (contentBrowser.active) {
+          contentBrowser.navigate('top');
+        } else {
+          scroll.toBeginning();
+        }
       },
-      pagedown: () => {
-        screen.scrollY(-state.screen.h + 1);
-      },
-      pageup: () => {
-        screen.scrollY(state.screen.h - 1);
-      },
+
+      pagedown: pagedown,
+      pageup: pageup,
+
       enter: () => {
-        if (state.content_list.active) {
+        if (contentBrowser.active) {
           var el = document.querySelector('.content-list-active');
           if (el) {
             el.click();
@@ -178,17 +170,13 @@ module.exports = class App {
       }
     };
 
-    const fileSelect = document.getElementById('file-select');
-
     Object.entries(bindings).forEach(([key, func]) => {
       Mousetrap.bind(key, func);
-      Mousetrap(fileSelect).bind(key, func);
     });
 
     var searchField = document.getElementById('search-field');
     Mousetrap(searchField).bind('esc', () => {
-      search.clearSearchField();
-      search.deactivateSearchField();
+      search.close();
     });
 
     Mousetrap(searchField).bind('enter', () => search.searchNext());
@@ -205,7 +193,7 @@ module.exports = class App {
             URIHashControl } = this;
 
     this.initMousetrap();
-    screen.expandScreen();
+    screen.update();
     this.eventsInit();
     this.canvasInit();
 
@@ -247,7 +235,7 @@ module.exports = class App {
   }
 
   async postInit () {
-    this.screen.expandScreen();
+    this.screen.update();
     await this.ui.updateFileList();
     this.render.makeImageData();
     this.render.update();
@@ -255,31 +243,13 @@ module.exports = class App {
   }
 
   eventsInit () {
-    const { touch, search, config, state, URIHashControl,
+    const { search, config, state, URIHashControl,
             coders, files, ui, contentBrowser, lineNumbers } = this;
-
-    const onMouseWheel = event => {
-      let delta = 0;
-      if (!event) event = window.event;
-      if (event.wheelDelta) {
-        delta = event.wheelDelta / 120;
-      } else if (event.detail) {
-        delta = - event.detail / 3;
-      }
-      if (delta) {
-        this.screen.scrollY(delta);
-      }
-    };
 
     const canvas = document.getElementById('canvas');
 
-    canvas.addEventListener('DOMMouseScroll', onMouseWheel, false);
-    canvas.addEventListener('touchstart', event => touch.handleStart(event), false);
-    canvas.addEventListener('touchmove', event => touch.handleMove(event), false);
-    canvas.addEventListener('touchend', event => touch.handleEnd(event), false);
-    window.onmousewheel = document.onmousewheel = onMouseWheel;
     window.addEventListener('resize', () => {
-      this.screen.expandScreen();
+      this.screen.update();
       this.render.update();
     });
     window.addEventListener('hashchange', () => URIHashControl.process(document.location.hash));
@@ -427,17 +397,24 @@ module.exports = class App {
   }
 
   canvasInit () {
-    const { state, render, config, selection } = this;
+    const { state, scroll, render, config, selection, mobileUI } = this;
 
-    var canvas = document.getElementById('canvas');
+    const canvas = document.getElementById('canvas');
+
+    canvas.addEventListener('click', (event) => {
+      if (state.is_mobile) {
+        mobileUI.toggleMenuButton();
+      }
+    });
+
     canvas.addEventListener('mousedown', (event) => {
       var rect = canvas.getBoundingClientRect(),
         selStartRealX = event.pageX - rect.left,
         selStartRealY = event.pageY - rect.top;
       state.selection.x1 =
-        state.screen.x + Math.round(selStartRealX / config.font_width);
+        scroll.x + Math.round(selStartRealX / config.font_width);
       state.selection.y1 =
-        state.screen.y + Math.round(selStartRealY / config.font_height);
+        scroll.y + Math.round(selStartRealY / config.font_height);
       state.selection.started = true;
       state.selection.set = false;
       render.update();
@@ -451,9 +428,9 @@ module.exports = class App {
           selStartRealX = event.pageX - rect.left,
           selStartRealY = event.pageY - rect.top;
         state.selection.x2 =
-          state.screen.x + Math.round(selStartRealX / config.font_width);
+          scroll.x + Math.round(selStartRealX / config.font_width);
         state.selection.y2 =
-          state.screen.y + Math.round(selStartRealY / config.font_height);
+          scroll.y + Math.round(selStartRealY / config.font_height);
         if (
           state.selection.x2 != state.selection.x1 &&
           state.selection.y1 != state.selection.y2

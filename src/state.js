@@ -31,12 +31,6 @@ module.exports = app => {
       x2: 0,
       y2: 0
     },
-    screen: {
-      x: 0,
-      y: 0,
-      w: 140,
-      h: 10
-    },
     numbers: {
       set: app.config.show_line_numbers,
       width: 0
