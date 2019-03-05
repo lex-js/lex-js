@@ -1,4 +1,6 @@
 const test = require('ava');
+const puppeteer = require('puppeteer');
+
 const { Uint8ArrayToString, stringToUint8Array, binArray2String,
         string2BinArray } = require('../src/coders.js');
 
@@ -37,4 +39,15 @@ test('conversion between binary arrays and strings', t => {
   strings.forEach(str => {
     t.is(binArray2String(string2BinArray(str)), str.length * 8 + ':' + str, str);
   });
+});
+
+test('headless chrome instantiation', async t => {
+  try {
+    const browser = await puppeteer.launch();
+    await browser.close();
+
+    t.pass();
+  } catch {
+    t.fail();
+  }
 });

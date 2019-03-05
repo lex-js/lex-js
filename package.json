@@ -55,6 +55,7 @@
     "localforage": "^1.7.3",
     "mousetrap": "^1.6.2",
     "pkg": "^4.3.7",
+    "puppeteer": "^1.13.0",
     "uglify-js": "^3.4.9"
   }
 }

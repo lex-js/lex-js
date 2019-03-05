@@ -1,5 +1,5 @@
-window.fetch ||
-  (window.fetch = function(url, options) {
+(function() {
+  window.fetch = function(url, options) {
     options = options || {};
 
     return new Promise(function(resolve, reject) {
@@ -85,4 +85,5 @@ window.fetch ||
         };
       }
     });
-  });
+  };
+})();
