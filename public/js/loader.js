@@ -17,7 +17,7 @@
     addScript('public/js/promise.js');
   }
 
-  if (typeof fetch === 'undefined') {
+  if (typeof window.fetch === 'undefined') {
     addScript('public/js/fetch.js');
   }
 }();
