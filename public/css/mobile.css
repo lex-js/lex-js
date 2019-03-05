@@ -4,6 +4,8 @@
 }
 
 #mobile-menu-open {
+  box-shadow: 0 0 5px 5px white;
+  background-color: white;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -19,6 +21,7 @@
 }
 
 #block-top {
+  position: fixed;
   width: 60px;
   transition: top 0.2s;
 }

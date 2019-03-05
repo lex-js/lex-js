@@ -2,15 +2,24 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <script type="text/javascript" src="/public/js/bundle.min.js"></script>
-    <script type="text/javascript" src="/public/js/configOverride.js"></script>
-    <script type="text/javascript" src="/public/startPage/info.js"></script>
-    <link rel="stylesheet" type="text/css" href="/public/css/style.css" />
-    <link rel="stylesheet" type="text/css" href="/public/css/icons.css" />
+    <title>Lexicon Viewer App</title>
+    <script type="text/javascript" src="public/js/loader.js"></script>
+    <script type="text/javascript" src="public/js/bundle.min.js"></script>
+    <script type="text/javascript" src="public/js/configOverride.js"></script>
+    <script type="text/javascript" src="public/startPage/info.js"></script>
+    <link rel="stylesheet" type="text/css" href="public/css/style.css" />
+    <link rel="stylesheet" type="text/css" href="public/css/icons.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=3.0, user-scalable=yes">
     <!-- header -->
   </head>
   <body>
+    <div id="preloader">
+      <div id="preloader-middle">
+        <div id="preloader-inner">
+          <span id="preloader-text"><span>
+        </div>
+      </div>
+    </div>
     <div id="content-container">
       <div id="block-top">
         <div class="element-container">
@@ -86,12 +95,20 @@
         </span>
       </div>
       <div id="content">
-        <canvas id="canvas" width="1000" height="1000"></canvas>
-        <canvas id="canvas-tmp" width="100" height="100"></canvas>
+        <!-- This method of making canvas scrollable is described at
+             https://konvajs.org/docs/sandbox/Canvas_Scrolling.html
+          -->
+        <div id="canvas-scroll-container">
+          <div id="canvas-large-container">
+            <div id="canvas-container">
+              <canvas id="canvas" width="1000" height="1000"></canvas>
+            </div>
+          </div>
+        </div>
       </div>
       <div id="block-bottom">
         <span id="line-number">--</span> /
-        <span id="line-count">--</span> (<span id="scroll-percentage">--</span>)
+        <span id="line-count">--</span>
         <span id="tip-content"><span class="tip-text"></span></span>
       </div>
       <div id="content-list-container">

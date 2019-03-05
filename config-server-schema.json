@@ -15,7 +15,7 @@
       "$id": "#/properties/page_title",
       "type": "string",
       "examples": [
-        "Lex.js"
+        "Lexicon Viewer App"
       ],
       "pattern": "^(.*)$"
     },

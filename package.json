@@ -1,23 +1,27 @@
 {
   "name": "lex.js",
   "version": "1.0.0",
+  "private": true,
   "description": "Reimplementation of Lexicon Viewer",
   "bin": "index.js",
   "pkg": {
     "assets": [
       "index.html",
-      "public/**/*"
+      "public/**/*",
+      "config-server.json",
+      "config-server-schema.json"
     ]
   },
   "scripts": {
+    "test": "ava",
     "start:dev": "node index.js",
     "start:production": "export NODE_ENV=production && node index.js",
-    "bundle:transpile": "babel lib/ --out-dir tmp/ && babel src/ --out-dir tmp/",
-    "bundle:concat": "uglifyjs tmp/mousetrap.min.js tmp/mousetrap-global-bind.min.js tmp/cp866.js tmp/fastclick.js tmp/fileSaver.min.js tmp/func.js tmp/config-default.js tmp/lex.js tmp/gui.js tmp/fonts.js -o tmp/bundle.js",
-    "bundle:uglify": "uglifyjs tmp/bundle.js -c -o tmp/bundle.min.js",
-    "bundle:addlocalforage": "uglifyjs tmp/localforage.min.js tmp/bundle.min.js -o public/js/bundle.min.js",
+    "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",
+    "bundle:transpile": "babel src/ --out-dir tmp/",
+    "bundle:browserify": "browserify tmp/init.js -o tmp/bundle.js",
+    "bundle:uglify": "uglifyjs tmp/bundle.js -c -o public/js/bundle.min.js",
     "bundle:clean": "rm -rf tmp/",
-    "bundle:build": "npm run bundle:transpile && npm run bundle:concat && npm run bundle:uglify && npm run bundle:addlocalforage && npm run bundle:clean",
+    "bundle:build": "npm run bundle:transpile && npm run bundle:browserify && npm run bundle:uglify && npm run bundle:clean",
     "binary:create": "pkg . --targets node10-linux-x64,node10-linux-x86,node10-macos-x64,node10-win-x64,node10-win-x86 --out-path build/",
     "binary:prepare": "bash scripts/prepareBinary.sh",
     "binary:build": "npm run binary:create && npm run binary:prepare",
@@ -32,15 +36,26 @@
     "express": "^4.16.4",
     "glob": "^7.1.3",
     "helmet": "^3.15.1",
+    "http-status-codes": "^1.3.0",
     "opn": "^5.4.0",
     "path-is-inside": "^1.0.2"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.3.3",
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-transform-runtime": "^7.3.4",
     "@babel/preset-env": "^7.3.1",
+    "@babel/runtime": "^7.3.4",
     "ajv": "^6.9.2",
+    "ava": "^1.2.1",
+    "babelify": "^10.0.0",
+    "browserify": "^16.2.3",
+    "fastclick": "^1.0.6",
+    "file-saver": "^2.0.1",
+    "localforage": "^1.7.3",
+    "mousetrap": "^1.6.2",
     "pkg": "^4.3.7",
+    "puppeteer": "^1.13.0",
     "uglify-js": "^3.4.9"
   }
 }

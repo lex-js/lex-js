@@ -1,20 +1,72 @@
-#canvas {
-  position: fixed;
+#preloader {
+  display: table;
+  position: absolute;
+  top: 0;
   left: 0;
-  right: 0;
-  top: 50px;
-  bottom: 14px;
+  height: 100%;
+  width: 100%;
+  z-index: 100;
+  background: white;
+}
+
+#preloader-middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#preloader-inner {
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+  font-size: 40px;
+}
+
+#preloader-text:after {
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: bottom;
+  -webkit-animation: ellipsis steps(4,end) 900ms infinite;
+  animation: ellipsis steps(4,end) 900ms infinite;
+  content: "\2026"; /* ascii code for the ellipsis character */
+  width: 0px;
+}
+
+@keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
+
+@-webkit-keyframes ellipsis {
+  to {
+    width: 1.25em;
+  }
+}
+
+
+/* canvas scrolling */
+
+#canvas-large-container {
+  overflow: hidden;
+}
+
+#canvas-scroll-container {
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
 }
 
 #block-top {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 50px;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
   background-color: white;
-  z-index: 10;
+  margin-bottom: 2px;
 }
 
 #close-content-list-mobile {
@@ -22,17 +74,20 @@
 }
 
 #block-bottom {
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  width: 100%;
+  position: fixed;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  display: block;
   height: 14px;
   font-size: 12px;
   z-index: 10;
+  background: white;
 }
 
 .element-container {
+  white-space: nowrap;
+  overflow: hidden;
   padding: 13px;
 }
 
@@ -87,9 +142,9 @@
   border-top: 1px solid rgba(0, 0, 0, 0.2);
   border-right: 1px solid rgba(0, 0, 0, 0.2);
   left: 0;
-  z-index: 0;
+  z-index: 10;
   background-color: white;
-  display: inline-block;
+  display: none;
 }
 
 #search-container {
@@ -130,7 +185,7 @@
 #content-list-container {
   display: none;
   position: fixed;
-  top: 50px;
+  top: 52px;
   left: 0;
   right: 0;
   bottom: 14px;
