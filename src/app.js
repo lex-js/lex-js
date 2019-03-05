@@ -231,6 +231,7 @@ module.exports = class App {
         throw new Error("No preloaded file found!");
       }
       files.loadFromSource(preloadedFile);
+      this.postInit();
     }
   }
 
