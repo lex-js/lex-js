@@ -40,14 +40,3 @@ test('conversion between binary arrays and strings', t => {
     t.is(binArray2String(string2BinArray(str)), str.length * 8 + ':' + str, str);
   });
 });
-
-test('headless chrome instantiation', async t => {
-  try {
-    const browser = await puppeteer.launch();
-    await browser.close();
-
-    t.pass();
-  } catch {
-    t.fail();
-  }
-});
