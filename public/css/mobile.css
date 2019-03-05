@@ -22,7 +22,7 @@
 
 #block-top {
   position: fixed;
-  width: 60px;
+  width: 50px;
   transition: top 0.2s;
 }
 

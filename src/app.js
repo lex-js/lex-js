@@ -300,7 +300,7 @@ module.exports = class App {
               document.activeElement.blur();
               state.file.name = file.name;
               state.file.remote_name = '';
-              URIHashControl.update();
+              this.files.postLoad();
             }
           };
 

@@ -35,19 +35,39 @@ test('Local file selection', async t => {
 
     // But after selecting a file,
     const fileSelect = await page.$('#file-select');
-    fileSelect.uploadFile('./src/app.js');
+    await fileSelect.uploadFile('./src/app.js');
 
     // #file-list becomes visible
     await page.waitForSelector('#file-list', { visible: true });
+    await page.waitForSelector('#button-load', { visible: true });
+    await page.waitForSelector('#button-delete', { visible: true });
 
     // and gets a new child node
-    const newFiles = await page.$eval(
+    const getFiles = () => page.$eval(
       '#file-list',
       fileList => [].map.call(fileList.childNodes, el => el.textContent)
     );
 
     // with appropriate name.
-    t.deepEqual(newFiles, [ 'app.js' ]);
+    t.deepEqual(await getFiles(), [ 'app.js' ]);
+
+    // Now the new file can be deleted.
+    (await page.$('#button-delete')).click();
+
+    // #file-list becomes hidden
+    await page.waitForSelector('#file-list', { hidden: true });
+    await page.waitForSelector('#button-load', { hidden: true });
+    await page.waitForSelector('#button-delete', { hidden: true });
+
+    await fileSelect.uploadFile('./src/ui.js', './src/scroll.js');
+
+    // #file-list becomes visible
+    await page.waitForSelector('#file-list', { visible: true });
+    await page.waitForSelector('#button-load', { visible: true });
+    await page.waitForSelector('#button-delete', { visible: true });
+
+    // files are sorted alphabetically.
+    t.deepEqual(await getFiles(), [ 'scroll.js', 'ui.js' ]);
 
     await browser.close();
 

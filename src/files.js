@@ -118,5 +118,5 @@ module.exports = class Files {
     this.app.URIHashControl.update();
     this.app.selection.clear();
     this.app.scroll.update();
- }
+  }
 };
