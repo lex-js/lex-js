@@ -10,6 +10,13 @@ const compression = require("compression");
 
 module.exports = class Server {
   constructor (config, internalCwd, externalCwd) {
+    if (arguments.length != 3) {
+      throw "Incorrect number of arguments for Server constructor!";
+    }
+
+    this.server = null;
+    this.silent = false;
+
     this.config = config;
     this.internalCwd = internalCwd;
     this.externalCwd = externalCwd;
@@ -17,43 +24,28 @@ module.exports = class Server {
 
   /*
   --- fn getFile() ---
-  @does: Validates file in ($config.content_dir + $pathQuery) and returns it, if valid
+  @does: Validates file in ($config.content_dir + $pathQuery) and attaches it to the given response object.
   @accepts: {
+    res: Object [expressjs response object]
     pathQuery: String [Path to file, @required]
   }
-  @returns: Object {
-    status: Number [HTTP code],
-    file: String | Null
-  }
+  @returns: Object [expressjs response object]
   */
-  getFile (pathQuery) {
+  getFile (res, pathQuery) {
     const { externalCwd, config } = this;
     let rootPath = path.join(externalCwd, config.content_dir);
-    let basePath = path.join(rootPath, path.normalize(pathQuery));
+    let filePath = path.join(rootPath, path.normalize(pathQuery));
 
     if (
-      !fs.existsSync(basePath) ||
-      !pathIsInside(basePath, rootPath) ||
-      !fs.statSync(basePath).isFile()
+      fs.existsSync(filePath) &&
+      pathIsInside(filePath, rootPath) &&
+      anymatch(config.allowed_files, filePath) &&
+      fs.statSync(filePath).isFile()
     ) {
-      return {
-        status: 404,
-        file: null
-      };
+      return res.send(404, HttpStatus.getStatusText(404));
+    } else {
+      return res.sendFile(filePath);
     }
-
-    if (!anymatch(config.allowed_files, basePath)) {
-      return {
-        status: 403,
-        file: null
-      };
-    }
-
-    return {
-      status: 200,
-      file: basePath
-    };
-
   }
 
   /*
@@ -129,10 +121,7 @@ module.exports = class Server {
         return res.json(this.listDir(req.query.dir));
 
       case "getfile":
-        let fileObj = this.getFile(req.query.file);
-        return fileObj.file
-          ? res.sendFile(fileObj.file)
-          : res.send(fileObj.status, HttpStatus.getStatusText(fileObj.status));
+        return this.getFile(res, req.query.file);
 
       default:
         return res.send(400, HttpStatus.getStatusText(400));
@@ -141,18 +130,30 @@ module.exports = class Server {
 
     api.use("/public", express.static(path.join(internalCwd, "public")));
 
-    this.server = api.listen(config.port, () => {
-      console.log(`Listening on http://localhost:${config.port}/`);
+    return new Promise((resolve, reject) => {
+      this.server = api.listen(config.port, () => {
+        resolve();
 
-      if (process.env.NODE_ENV === "production") {
-        return;
-      }
+        if (!this.silent) {
+          console.log(`Listening on http://localhost:${config.port}/`);
+        }
 
-      require("opn")(`http://localhost:${config.port}/`);
+        if (process.env.NODE_ENV !== "production" && !this.silent) {
+          require("opn")(`http://localhost:${config.port}/`);
+        }
+      });
     });
   }
 
-  stop () {
-    this.server.close();
+  async stop () {
+    return new Promise((resolve, reject) => {
+
+      return this.server.close(
+        maybeErr =>
+          typeof maybeErr !== 'undefined'
+          ? reject(maybeErr)
+          : resolve()
+      );
+    });
   }
 };

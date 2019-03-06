@@ -12,6 +12,14 @@
       "server/config-server-schema.json"
     ]
   },
+  "ava": {
+    "babel": {
+      "testOptions": {
+        "babelrc": false,
+        "configFile": false
+      }
+    }
+  },
   "scripts": {
     "test": "ava",
     "start:dev": "node index.js",
