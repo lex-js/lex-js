@@ -1,5 +1,4 @@
 const test = require('ava');
-const puppeteer = require('puppeteer');
 
 const { Uint8ArrayToString, stringToUint8Array, binArray2String,
         string2BinArray } = require('../src/coders.js');

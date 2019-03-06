@@ -9,7 +9,7 @@
       "index.html",
       "public/**/*",
       "config-server.json",
-      "config-server-schema.json"
+      "server/config-server-schema.json"
     ]
   },
   "scripts": {
