@@ -3,8 +3,9 @@ const Server = require('./');
 const HttpStatus = require("http-status-codes");
 
 class ServerMock extends Server {
-  constructor () {
+  constructor (config) {
     super(...arguments);
+    this.port = config.port;
     this.files = new Map();
     this.dirs = new Map();
     this.silent = true;

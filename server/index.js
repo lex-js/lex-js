@@ -39,12 +39,15 @@ module.exports = class Server {
     if (
       fs.existsSync(filePath) &&
       pathIsInside(filePath, rootPath) &&
-      anymatch(config.allowed_files, filePath) &&
       fs.statSync(filePath).isFile()
     ) {
-      return res.send(404, HttpStatus.getStatusText(404));
+      if (anymatch(config.allowed_files, filePath)) {
+        return res.sendFile(filePath);
+      } else {
+        return res.send(403, HttpStatus.getStatusText(403));
+      }
     } else {
-      return res.sendFile(filePath);
+      return res.send(404, HttpStatus.getStatusText(404));
     }
   }
 
