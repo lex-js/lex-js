@@ -14,6 +14,8 @@
 const path = require('path');
 const test = require('ava');
 const puppeteer = require('puppeteer');
+const isPortFree_ = require('is-port-free');
+const isPortFree = port => isPortFree_(port).then(() => true).catch(() => false);
 const ServerMock = require('../server/mock.js');
 
 const serverRootDir = path.join(__dirname, '..');
@@ -31,7 +33,8 @@ const config = {
    { description: 'Lexicon viewer JS port',
      keywords: [ 'lex-js', 'lexicon' ],
      author: 'lex-js' },
-  port: 1337,
+  // Private port range is 49152-65535
+  port: 49152,
   content_dir: './files',
   allowed_files: [ '**/*.txt', '**/*.c', '**/*.hs' ]
 };
@@ -45,20 +48,38 @@ function runTest () {
 }
 
 const requestFreePort = (() => {
-  let port = config.port;
-  return () => {
-    // If we are running the tests sequentially, same port can be used.
-    if (runSequentially) {
-      return port;
-    } else {
-      return port++;
+  let startingPort = config.port;
+  // `bound` array is used to make impossible the situation where port was
+  // acquired by another listener after async `isPortFree` call which returned
+  // `true`, and before the returned port was actually bound by the function
+  // which requested it.
+  //
+  // Another process on the same machine may start using the desired port during
+  // that timeframe, though. It can't be helped.
+  let bound = [];
+  return async () => {
+    // Copy number to prevent data race
+    let currentPort = startingPort;
+    for (;;) {
+      const isFree = await isPortFree(currentPort);
+      if (!bound.includes(currentPort) && isFree) {
+        break;
+      }
+      currentPort++;
     }
+    bound.push(currentPort);
+    // No need to iterate through the same ports more than once.
+    // The range is large, and we don't want this function to have O(n^2)
+    // running time (where `n` is the total number of calls to it).
+    startingPort = currentPort + 1;
+    return currentPort;
   };
 })();
 
 const startServer = async (serverConfig) => {
+  const port = await requestFreePort();
   const server = new ServerMock(
-    Object.assign(config, { port: requestFreePort() }, serverConfig),
+    Object.assign(config, { port }, serverConfig),
     serverRootDir,
     serverRootDir
   );

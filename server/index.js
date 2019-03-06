@@ -43,12 +43,10 @@ module.exports = class Server {
     ) {
       if (anymatch(config.allowed_files, filePath)) {
         return res.sendFile(filePath);
-      } else {
-        return res.send(403, HttpStatus.getStatusText(403));
       }
-    } else {
-      return res.send(404, HttpStatus.getStatusText(404));
+      return res.send(403, HttpStatus.getStatusText(403));
     }
+    return res.send(404, HttpStatus.getStatusText(404));
   }
 
   /*

@@ -1,5 +1,5 @@
 const path = require('path');
-const Server = require('./');
+const Server = require('./index');
 const HttpStatus = require("http-status-codes");
 
 class ServerMock extends Server {

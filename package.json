@@ -21,7 +21,7 @@
     }
   },
   "scripts": {
-    "test": "ava",
+    "test": "ava --verbose",
     "start:dev": "node index.js",
     "start:production": "export NODE_ENV=production && node index.js",
     "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",
@@ -60,6 +60,7 @@
     "browserify": "^16.2.3",
     "fastclick": "^1.0.6",
     "file-saver": "^2.0.1",
+    "is-port-free": "^1.0.7",
     "localforage": "^1.7.3",
     "mousetrap": "^1.6.2",
     "pkg": "^4.3.7",
