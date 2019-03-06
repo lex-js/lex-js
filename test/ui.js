@@ -17,6 +17,7 @@ const puppeteer = require('puppeteer');
 const isPortFree_ = require('is-port-free');
 const isPortFree = port => isPortFree_(port).then(() => true).catch(() => false);
 const ServerMock = require('../server/mock.js');
+const defaultConfig = require('../src/config-default.js');
 
 const serverRootDir = path.join(__dirname, '..');
 
@@ -123,9 +124,14 @@ const withPage = (continuation, puppeterOptions = {}, serverOptions = {}) => asy
   t.pass();
 };
 
-runTest('Local file selection', withPage(async (t, page, server) => {
+const assertURIHash = (t, server, page, hash) => {
+  t.is(page.url(), `http://127.0.0.1:${server.port}/${hash ? '#' + hash : ''}`);
+};
+
+runTest("Local file selection", withPage(async (t, page, server) => {
   // Wait until preloader is hidden.
   await page.waitForSelector('#preloader', { hidden: true });
+  assertURIHash(t, server, page, '');
 
   // At the beginning, there are no files.
   const cntFiles0 = await page.$eval(
@@ -160,6 +166,8 @@ runTest('Local file selection', withPage(async (t, page, server) => {
   await page.waitForSelector('#button-load', { hidden: true });
   await page.waitForSelector('#button-delete', { hidden: true });
 
+  assertURIHash(t, server, page, 'local:app.js:0');
+
   await fileSelect.uploadFile('./src/ui.js', './src/scroll.js');
 
   // #file-list becomes visible
@@ -169,10 +177,74 @@ runTest('Local file selection', withPage(async (t, page, server) => {
 
   // files are sorted alphabetically.
   t.deepEqual(await getFiles(), [ 'scroll.js', 'ui.js' ]);
+
+  // the first file is selected.
+  t.is(await page.$eval('#file-list', el => el[el.selectedIndex].textContent), 'scroll.js');
+}));
+
+runTest("Keyboard navigation", withPage(async (t, page, server) => {
+  // Wait until preloader is hidden.
+  await page.waitForSelector('#preloader', { hidden: true });
+
+  const fileSelect = await page.$('#file-select');
+  await fileSelect.uploadFile('./public/startPage/info.txt');
+
+  // Wait until file is loaded
+  await page.waitForSelector('#file-list', { visible: true });
+  const scrollContainer = await page.$('#canvas-scroll-container');
+
+  const getScrollTop = () =>
+        scrollContainer.getProperty('scrollTop').then(value => value.jsonValue());
+
+  const getScrollLeft = () =>
+        scrollContainer.getProperty('scrollLeft').then(value => value.jsonValue());
+
+  assertURIHash(t, server, page, 'local:info.txt:0');
+
+  await page.keyboard.press('ArrowDown');
+  t.is(13, await getScrollTop());
+  await page.waitForFunction("document.location.hash == '#local:info.txt:1'");
+
+  await page.keyboard.press('ArrowUp');
+  t.is(0, await getScrollTop());
+  await page.waitForFunction("document.location.hash == '#local:info.txt:0'");
+
+  await page.keyboard.press('PageDown');
+  t.is(91, await getScrollTop());
+  await page.waitForFunction("document.location.hash == '#local:info.txt:7'");
+
+  await page.keyboard.press('Home');
+  t.is(0, await getScrollTop());
+  await page.waitForFunction("document.location.hash == '#local:info.txt:0'");
+
+  await page.keyboard.press('End');
+  t.is(282, await getScrollTop());
+  await page.waitForFunction("document.location.hash == '#local:info.txt:22'");
+
+  await page.keyboard.press('Home');
+  t.is(0, await getScrollTop());
+  await page.waitForFunction("document.location.hash == '#local:info.txt:0'");
+
+  await page.keyboard.press('ArrowRight');
+  t.is(8, await getScrollLeft());
+
+  await page.keyboard.press('ArrowRight');
+  t.is(16, await getScrollLeft());
+  t.is(0, await getScrollTop());
+
+  await page.keyboard.press('ArrowLeft');
+  t.is(8, await getScrollLeft());
+  t.is(0, await getScrollTop());
+}, {
+  // Viewport size is important for this test
+  defaultViewport : {
+    width: 300,
+    height: 200
+  }
 }));
 
 runTest(
-  'Update screenshot',
+  "Update screenshot",
   withPage(
     async (t, page, server) => {
       await page.waitForSelector('#preloader', { hidden: true });
