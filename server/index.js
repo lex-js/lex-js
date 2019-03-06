@@ -14,7 +14,7 @@ module.exports = class Server {
       throw "Incorrect number of arguments for Server constructor!";
     }
 
-    this.server = null;
+    this.instance = null;
     this.silent = false;
 
     this.config = config;
@@ -131,7 +131,7 @@ module.exports = class Server {
     api.use("/public", express.static(path.join(internalCwd, "public")));
 
     return new Promise((resolve, reject) => {
-      this.server = api.listen(config.port, () => {
+      this.instance = api.listen(config.port, () => {
         resolve();
 
         if (!this.silent) {
@@ -148,7 +148,7 @@ module.exports = class Server {
   async stop () {
     return new Promise((resolve, reject) => {
 
-      return this.server.close(
+      return this.instance.close(
         maybeErr =>
           typeof maybeErr !== 'undefined'
           ? reject(maybeErr)

@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const ajv = new (require("ajv"))();
 
-const Server = require("./server/server");
+const Server = require("./server");
 
 /*
 --- Constants ---
@@ -13,7 +13,7 @@ const internalCwd = process.pkg
   ? path.dirname(process.pkg.entrypoint)
   : __dirname;
 const configPath = path.join(internalCwd, "config-server.json");
-const schemaPath = path.join(internalCwd, "server/config-server-schema.json");
+const schemaPath = path.join(internalCwd, "server", "config-server-schema.json");
 const config = require(configPath);
 const schema = require(schemaPath);
 
