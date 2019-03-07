@@ -1,13 +1,13 @@
 // This test suite can be controlled using environment variables.
 //
-// Set PUPPETER_SERIAL to run the tests sequentially.
+// Set PUPPETEER_SERIAL to run the tests sequentially.
 // Note that each of the tests run in parrallel occupy a port on your local
 // machine, starting from port 1337, so it's a good idea to set this variable
 // if some of the ports are already bound.
 //
-// Set PUPPETER_INSPECT to turn off headless mode (implies PUPPETER_SERIAL).
+// Set PUPPETEER_INSPECT to turn off headless mode (implies PUPPETEER_SERIAL).
 //
-// Set PUPPETER_SLOWMO to a numeric value to insert a delay between chromium
+// Set PUPPETEER_SLOWMO to a numeric value to insert a delay between chromium
 // API calls.
 //
 // https://github.com/GoogleChrome/puppeteer/blob/v1.13.0/docs/api.md#puppeteerconnectoptions
@@ -23,10 +23,10 @@ const serverRootDir = path.join(__dirname, '..');
 
 // Read environment variables
 
-// If PUPPETER_INSPECT is set, running the tests in parrallel is stupid.
-const runSequentially = process.env.PUPPETER_INSPECT || process.env.PUPPETER_SERIAL;
-const runHeadless = !process.env.PUPPETER_INSPECT;
-const slowMo = Number(process.env.PUPPETER_SLOWMO) || null;
+// If PUPPETEER_INSPECT is set, running the tests in parrallel is stupid.
+const runSequentially = process.env.PUPPETEER_INSPECT || process.env.PUPPETEER_SERIAL;
+const runHeadless = !process.env.PUPPETEER_INSPECT;
+const slowMo = Number(process.env.PUPPETEER_SLOWMO) || null;
 
 const config = {
   page_title: 'Lex.js',
@@ -332,7 +332,55 @@ runTest("Content browser", withPage(async (t, page, server) => {
   await page.keyboard.press('Enter');
   await page.waitForSelector('#content-list-container', { visible: false });
   assertURIHash(t, server, page, 'remote:/file1:0');
+  await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
 }));
+
+runTest(
+  "Scrolling",
+  withPage(
+    async (t, page, server) => {
+      await page.waitForSelector('#preloader', { hidden: true });
+
+      const contents = [{
+        "name":"shortfile",
+        "modified":1551809557426.2075,
+        "type":"file",
+        "size":10153
+      }, {
+        "name":"longfile",
+        "modified":1551809557426.2075,
+        "type":"file",
+        "size":10153
+      }];
+
+      server.setDir('', contents);
+
+      server.writeFile('/shortfile', fs.readFileSync('./test/assets/shortfile.txt'));
+      server.writeFile('/longfile', fs.readFileSync('./test/assets/longfile.txt'));
+
+      await page.$('#button-content').then(el => el.click());
+      await page.waitForSelector('#content-list-container', { visible: true });
+      // Select `shortfile`
+      await page.keyboard.press('ArrowDown');
+      await page.keyboard.press('Enter');
+      await page.waitForSelector('#content-list-container', { visible: false });
+      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
+      await page.keyboard.press('ArrowDown');
+      // File is too short, hence no effect
+      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
+      await page.keyboard.press('ArrowRight');
+      // Though it does not fit horizontally, hence scrolling works.
+      await page.waitForFunction("app.scroll.x === 1 && app.scroll.y === 0");
+      // But only until the width is large enough.
+      await page.setViewport({ width: 1000, height: 120 });
+      // The screen was resized, and scroll position was reset
+      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
+      await page.keyboard.press('ArrowDown');
+      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 1");
+    },
+    { defaultViewport: { width: 300, height: 480 }}
+  )
+);
 
 runTest(
   "Update screenshot",
