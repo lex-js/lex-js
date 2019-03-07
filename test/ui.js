@@ -327,8 +327,11 @@ runTest("Content browser", withPage(async (t, page, server) => {
   await page.waitForSelector('#content-list-container', { visible: true });
   // Focus state is preserved
   await assertActive([false, false, false, true]);
-  await page.keyboard.press('c');
+  await page.keyboard.press('ArrowUp');
+  await assertActive([false, false, true, false]);
+  await page.keyboard.press('Enter');
   await page.waitForSelector('#content-list-container', { visible: false });
+  assertURIHash(t, server, page, 'remote:/file1:0');
 }));
 
 runTest(

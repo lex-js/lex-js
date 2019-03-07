@@ -22,14 +22,14 @@ module.exports = class Scroll {
     const { screen, state, config, scroll } = this.app;
     const { index } = state;
 
-    const maxXScroll = index.maxlen - screen.w;
+    const maxXScroll = screen.w - index.maxlen;
 
-    if (value > maxXScroll) {
+    if (maxXScroll > 0 && value > maxXScroll) {
       value = maxXScroll;
     }
 
     if (value < 0) {
-      this.x = 0;
+      value = 0;
     }
 
     this.container.scrollLeft = Math.round(value * config.font_width);
