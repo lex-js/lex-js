@@ -12,13 +12,13 @@
 //
 // https://github.com/GoogleChrome/puppeteer/blob/v1.13.0/docs/api.md#puppeteerconnectoptions
 const path = require('path');
+const fs = require('fs');
 const test = require('ava');
 const puppeteer = require('puppeteer');
 const isPortFree_ = require('is-port-free');
 const isPortFree = port => isPortFree_(port).then(() => true).catch(() => false);
 const ServerMock = require('../server/mock.js');
 const defaultConfig = require('../src/config-default.js');
-
 const serverRootDir = path.join(__dirname, '..');
 
 // Read environment variables
@@ -159,7 +159,7 @@ runTest("Local file selection", withPage(async (t, page, server) => {
   t.deepEqual(await getFiles(), [ 'app.js' ]);
 
   // Now the new file can be deleted.
-  (await page.$('#button-delete')).click();
+  await page.$('#button-delete').then(el => el.click());
 
   // #file-list becomes hidden
   await page.waitForSelector('#file-list', { hidden: true });
@@ -241,6 +241,94 @@ runTest("Keyboard navigation", withPage(async (t, page, server) => {
     width: 300,
     height: 200
   }
+}));
+
+runTest("Content browser", withPage(async (t, page, server) => {
+  await page.waitForSelector('#preloader', { hidden: true });
+
+  const contents = [{
+    "name":"dir1",
+    "modified":1551803500570.5813,
+    "type":"directory"
+  }, {
+    "name":"dir2",
+    "modified":1551803500570.5813,
+    "type":"directory"
+  },{
+    "name":"file1",
+    "modified":1551809557426.2075,
+    "type":"file",
+    "size":10153
+  }, {
+    "name":"file2",
+    "modified":1551809557426.2075,
+    "type":"file",
+    "size":10153
+  }];
+
+  server.setDir('', contents);
+
+  server.writeFile('/file1', fs.readFileSync('./test/assets/shortfile.txt'));
+  server.writeFile('/file2', fs.readFileSync('./test/assets/longfile.txt'));
+
+  await page.$('#button-content').then(el => el.click());
+  await page.waitForSelector('#content-list-container', { visible: true });
+
+  t.deepEqual(
+    await page.$$eval(
+      '.content-list-item-name',
+      list => list.map(el => el.textContent)
+    ),
+    contents.map(entry => entry.name)
+  );
+
+  const assertActive = async (list) => {
+    t.deepEqual(
+      await page.$$eval(
+        '.content-list-item',
+        items => items.map(item => item.classList.contains('content-list-active'))
+      ),
+      list
+    );
+  };
+
+  await assertActive([false, false, false, false]);
+  await page.keyboard.press('ArrowUp');
+  await assertActive([true, false, false, false]);
+  // Navigating upwards does not remove the focus.
+  await page.keyboard.press('ArrowUp');
+  await assertActive([true, false, false, false]);
+  await page.keyboard.press('ArrowDown');
+  await assertActive([false, true, false, false]);
+  await page.keyboard.press('ArrowDown');
+  await assertActive([false, false, true, false]);
+  await page.keyboard.press('ArrowDown');
+  await assertActive([false, false, false, true]);
+  // Navigating downwards does not remove the focus
+  await page.keyboard.press('ArrowDown');
+  await assertActive([false, false, false, true]);
+  await page.keyboard.press('Home');
+  await assertActive([true, false, false, false]);
+  await page.keyboard.press('End');
+  await assertActive([false, false, false, true]);
+
+  // Selecting file2
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('#content-list-container', { visible: false });
+
+  assertURIHash(t, server, page, 'remote:/file2:0');
+
+  t.is(await page.title(), 'file2 - ' + defaultConfig.app_full_name);
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  await page.waitForFunction("document.location.hash == '#remote:/file2:3'");
+  await page.keyboard.press('c');
+  await page.waitForSelector('#content-list-container', { visible: true });
+  // Focus state is preserved
+  await assertActive([false, false, false, true]);
+  await page.keyboard.press('c');
+  await page.waitForSelector('#content-list-container', { visible: false });
 }));
 
 runTest(

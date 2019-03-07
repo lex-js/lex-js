@@ -22,9 +22,9 @@ class ServerMock extends Server {
   getFile (res, pathQuery) {
     const { files } = this;
     if (files.has(pathQuery)) {
-      return res.send(200, files.get(pathQuery));
+      return res.status(200).send(files.get(pathQuery));
     } else {
-      return res.send(404, HttpStatus.getStatusText(404));
+      return res.status(404).send(HttpStatus.getStatusText(404));
     }
   }
 

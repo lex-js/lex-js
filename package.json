@@ -21,7 +21,8 @@
     }
   },
   "scripts": {
-    "test": "ava --verbose",
+    "test": "npm run bundle:build && ava --verbose",
+    "test:dev": "npm run bundle:dev && ava --verbose",
     "start:dev": "node index.js",
     "start:production": "export NODE_ENV=production && node index.js",
     "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",

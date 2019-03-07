@@ -49,11 +49,11 @@ module.exports = class ContentBrowser {
     var trs = Array.from(
       document.querySelectorAll('#content-list-table > tr')
     );
-    
+
     if (!trs.length) {
       return;
     }
-    
+
     const setActive = el => {
       let old = document.querySelector('.content-list-active');
       if (old) {
@@ -117,7 +117,8 @@ module.exports = class ContentBrowser {
     }
 
     const addEntry = sth => {
-      var row = document.createElement('tr');
+      const row = document.createElement('tr');
+      row.classList.add('content-list-item');
 
       const filename = sth.name;
 
@@ -130,6 +131,7 @@ module.exports = class ContentBrowser {
       row.appendChild(icon_td);
 
       var name_td = document.createElement('td');
+      name_td.classList.add('content-list-item-name');
       row.appendChild(name_td);
 
       // sth.type is 'directory' | 'file' | 'parent'
