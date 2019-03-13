@@ -4,21 +4,25 @@ readarray -d '' dirs < <(find build -type d -iname "lexdist-*" -print0)
 IFS=$'\n'
 dirs=($(sort <<<"${dirs[*]}"))
 
-readarray -d '' files < <(find build -type f -iname "lex-*" -print0 | sort)
+readarray -d '' bins < <(find build -type f -iname "lex-*" -print0)
 IFS=$'\n'
-files=($(sort <<<"${files[*]}"))
+bins=($(sort <<<"${bins[*]}"))
+
+for f in `find files -type f`; do
+  mv "$f" `echo "$f" | tr '[:upper:]' '[:lower:]'`
+done
 
 for (( i=0; i < ${#dirs[@]}; i+=1 )); do
-  mv "${files[$i]}" "${dirs[$i]}";
-  cp -R files "${dirs[$i]}";
+  mv "${bins[$i]}" "${dirs[$i]}"
+  cp -R files "${dirs[$i]}"
 done
 
 echo build/lexdist-linux-x64/ build/lexdist-linux-x86/ | xargs -n 1 cp node_modules/opn/xdg-open $1
 
 cd build/
 for (( i=0; i < ${#dirs[@]}; i+=1 )); do
-  zip -r "$(basename "${dirs[$i]}").zip" "$(basename "${dirs[$i]}")/";
-  rm -rf "$(basename "${dirs[$i]}")/";
+  zip -r "$(basename "${dirs[$i]}").zip" "$(basename "${dirs[$i]}")/"
+  rm -rf "$(basename "${dirs[$i]}")/"
 done
 
 cd ../
