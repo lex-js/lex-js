@@ -28,7 +28,9 @@ module.exports = {
            'public/fonts/VGA6.SFN',
            'public/fonts/VGA7.SFN',
            'public/fonts/VGA8.SFN',
-           'public/fonts/VGA9.SFN' ],
+           'public/fonts/VGA9.SFN',
+           'public/fonts/VGA10.SFN',
+           'public/fonts/VGA11.SFN' ],
 
   // Load fonts from source (.SFN) files?
   // If set to true, fonts from `public/fonts` will be used.
