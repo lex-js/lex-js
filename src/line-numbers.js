@@ -4,7 +4,7 @@ module.exports = class LineNumbers {
   }
 
   removeLineNumbers () {
-    const { config, state, render, search } = this.app;
+    const { config, state, render, search, scroll, screen } = this.app;
 
     for (var i = 0; i < state.file.lines.length; i++) {
       state.file.lines[i] = new Uint8Array(
@@ -16,11 +16,13 @@ module.exports = class LineNumbers {
     state.numbers.set = false;
     state.numbers.width = 0;
     search.close();
+    screen.update();
+    scroll.update();
     render.update();
   }
 
   addLineNumbers () {
-    const { config, state, render, search, parser } = this.app;
+    const { config, state, render, search, parser, scroll, screen } = this.app;
 
     state.numbers.width = (state.file.lines.length + "").length + 1;
     state.numbers.set = true;
@@ -35,6 +37,8 @@ module.exports = class LineNumbers {
 
     state.index.maxlen += state.numbers.width + config.line_numbers_padding;
     search.close();
+    screen.update();
+    scroll.update();
     render.update();
   }
 

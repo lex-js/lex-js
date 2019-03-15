@@ -79,6 +79,11 @@ module.exports = {
   // Количество пустых строк для добавления в конец файла.
   blank_lines: 10,
 
+  // Number of blank characters to append to line ends.
+  // Makes text selection more handy.
+  // Количество пробелов для добавления в конец каждой строки.
+  // Делает выделение текста более удобным.
+  blank_characters_on_eol: 5,
 
   /* Settings for mobile devices */
 

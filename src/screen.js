@@ -18,10 +18,8 @@ module.exports = class Screen {
 
   update () {
     const { state, config, render } = this.app;
-
-    // увеличить размер canvas при изменении размера окна
-    var viewport = this.getViewportSize(),
-        canvas = document.getElementById("canvas");
+    const viewport = this.getViewportSize();
+    const canvas = document.getElementById("canvas");
 
     const hShift = state.is_mobile ? (
       document.getElementById('block-bottom').getBoundingClientRect().height

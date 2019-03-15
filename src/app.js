@@ -252,6 +252,7 @@ module.exports = class App {
     window.addEventListener('resize', () => {
       this.screen.update();
       this.render.update();
+      this.scroll.update();
     });
     window.addEventListener('hashchange', () => URIHashControl.process(document.location.hash));
 
