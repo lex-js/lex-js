@@ -8,7 +8,7 @@
     "assets": [
       "index.html",
       "public/**/*",
-      "config-server.json",
+      "server/config-server.json",
       "server/config-server-schema.json"
     ]
   },

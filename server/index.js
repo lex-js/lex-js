@@ -146,9 +146,8 @@ module.exports = class Server {
     });
   }
 
-  async stop () {
+  stop () {
     return new Promise((resolve, reject) => {
-
       return this.instance.close(
         maybeErr =>
           typeof maybeErr !== 'undefined'
