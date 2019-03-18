@@ -1,4 +1,4 @@
-mkdir -p build/{lexdist-linux-x64,lexdist-linux-x86,lexdist-macos-x64,lexdist-win-x64,lexdist-win-x86}
+mkdir -p build/{lexdist-linux-x64,lexdist-linux-x86,lexdist-macos-x64}
 
 readarray -d '' dirs < <(find build -type d -iname "lexdist-*" -print0)
 IFS=$'\n'
