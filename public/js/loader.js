@@ -8,7 +8,7 @@
 
   // Insert polyfills
   if (typeof Object.entries === 'undefined') {
-    addScript('public/startPage/entries.js');
+    addScript('public/js/entries.js');
   }
 
   if (typeof Promise === 'undefined') {
