@@ -5,6 +5,9 @@
     script.type = 'text/javascript';
     document.head.appendChild(script);
   }
+  if (typeof Object.entries != 'function') {
+    addScript('public/startPage/entries.js');
+  }
 
   // Insert preloaded fonts & file.
   if (document.location.protocol === 'file:') {
