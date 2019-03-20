@@ -8,8 +8,7 @@
     "assets": [
       "index.html",
       "public/**/*",
-      "server/config-server.json",
-      "server/config-server-schema.json"
+      "config/**/*"
     ]
   },
   "ava": {
@@ -32,9 +31,7 @@
     "bundle:clean": "rm -rf tmp/",
     "bundle:build": "npm run bundle:transpile && npm run bundle:browserify && npm run bundle:uglify && npm run bundle:clean",
     "binary:create": "pkg . --targets node10-linux-x64,node10-linux-x86,node10-macos-x64 --out-path build/",
-    "binary:prepare": "bash scripts/prepareBinary.sh",
-    "binary:build": "npm run binary:create && npm run binary:prepare",
-    "all:build": "npm run bundle:build && npm run binary:build"
+    "binary:prepare": "bash scripts/preparePkg.sh"
   },
   "keywords": [],
   "author": "lex-js & limitedeternity",

@@ -31,7 +31,8 @@ module.exports = class Server {
   }
   @returns: Object [expressjs response object]
   */
-  getFile (res, pathQuery) {
+
+  getFile(res, pathQuery) {
     const { externalCwd, config } = this;
     let rootPath = path.join(externalCwd, config.content_dir);
     let filePath = path.join(rootPath, path.normalize(pathQuery));
@@ -62,7 +63,8 @@ module.exports = class Server {
     size [if file]: Number [size of file]
   }
   */
-  listDir (pathQuery = ".") {
+
+  listDir(pathQuery = ".") {
     const { externalCwd, config } = this;
 
     let rootPath = path.join(externalCwd, config.content_dir);
@@ -106,7 +108,7 @@ module.exports = class Server {
     }, []);
   }
 
-  start () {
+  start() {
     const { config, internalCwd } = this;
     const api = this.api = express();
     api.use(compression());
@@ -118,14 +120,14 @@ module.exports = class Server {
 
     api.get("/api", (req, res) => {
       switch (req.query.action) {
-      case "listdir":
-        return res.json(this.listDir(req.query.dir));
+        case "listdir":
+          return res.json(this.listDir(req.query.dir));
 
-      case "getfile":
-        return this.getFile(res, req.query.file);
+        case "getfile":
+          return this.getFile(res, req.query.file);
 
-      default:
-        return res.send(400, HttpStatus.getStatusText(400));
+        default:
+          return res.send(400, HttpStatus.getStatusText(400));
       }
     });
 
@@ -146,13 +148,13 @@ module.exports = class Server {
     });
   }
 
-  stop () {
+  stop() {
     return new Promise((resolve, reject) => {
       return this.instance.close(
         maybeErr =>
           typeof maybeErr !== 'undefined'
-          ? reject(maybeErr)
-          : resolve()
+            ? reject(maybeErr)
+            : resolve()
       );
     });
   }
