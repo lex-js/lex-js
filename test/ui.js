@@ -1,16 +1,23 @@
+/* global process require __dirname */
+
 // This test suite can be controlled using environment variables.
 //
 // Set PUPPETEER_SERIAL to run the tests sequentially.
 // Note that each of the tests run in parrallel occupy a port on your local
-// machine, starting from port 1337, so it's a good idea to set this variable
-// if some of the ports are already bound.
+// machine.
 //
 // Set PUPPETEER_INSPECT to turn off headless mode (implies PUPPETEER_SERIAL).
 //
 // Set PUPPETEER_SLOWMO to a numeric value to insert a delay between chromium
 // API calls.
 //
-// https://github.com/GoogleChrome/puppeteer/blob/v1.13.0/docs/api.md#puppeteerconnectoptions
+// See also: https://github.com/GoogleChrome/puppeteer/blob/v1.13.0/docs/api.md#puppeteerconnectoptions
+//
+// PUPPETEER_TEST_FILTER allows to skip some tests based on regexp.
+//
+// Common usage scenario is to assign a test name to this variable:
+//
+// `export PUPPETEER_TEST_FILTER='Line numbers'`
 const path = require('path');
 const fs = require('fs');
 const test = require('ava');
@@ -23,7 +30,7 @@ const serverRootDir = path.join(__dirname, '..');
 
 // Read environment variables
 
-// If PUPPETEER_INSPECT is set, running the tests in parrallel is stupid.
+// If PUPPETEER_INSPECT is set, running the tests in parrallel is inappropriate.
 const runSequentially = process.env.PUPPETEER_INSPECT || process.env.PUPPETEER_SERIAL;
 const runHeadless = !process.env.PUPPETEER_INSPECT;
 const slowMo = Number(process.env.PUPPETEER_SLOWMO) || null;
@@ -40,13 +47,30 @@ const config = {
   allowed_files: [ '**/*.txt', '**/*.c', '**/*.hs' ]
 };
 
-function runTest () {
-  if (runSequentially) {
-    return test.serial(...arguments);
-  } else {
-    return test(...arguments);
+function runTest (name) {
+  const testFilter = process.env.PUPPETEER_TEST_FILTER;
+  let filter;
+
+  if (testFilter) {
+    try {
+      const regexp = new RegExp(testFilter);
+      filter = str => regexp.test(str);
+    } catch (e) {
+      filter = str => str === testFilter;
+    }
+
+    if (!filter(name)) {
+      console.warn(`  - Skipping test "${name}" because of PUPPETEER_TEST_FILTER`);
+      return;
+    }
   }
-}
+
+  if (runSequentially) {
+    test.serial(...arguments);
+  } else {
+    test(...arguments);
+  }
+};
 
 const requestFreePort = (() => {
   let startingPort = config.port;
@@ -71,7 +95,7 @@ const requestFreePort = (() => {
     bound.push(currentPort);
     // No need to iterate through the same ports more than once.
     // The range is large, and we don't want this function to have O(n^2)
-    // running time (where `n` is the total number of calls to it).
+    // running time (where `n` is the total count of previous calls to it).
     startingPort = currentPort + 1;
     return currentPort;
   };
@@ -379,6 +403,25 @@ runTest(
       await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 1");
     },
     { defaultViewport: { width: 300, height: 480 }}
+  )
+);
+
+runTest(
+  "Line numbers",
+  withPage(
+    async (t, page, server) => {
+      await page.waitForSelector('#preloader', { hidden: true });
+
+      await page.waitForFunction("app.state.numbers.set === true");
+      await page.keyboard.press('v');
+      await page.waitForFunction("app.state.numbers.set === false");
+      await page.keyboard.press('v');
+      await page.waitForFunction("app.state.numbers.set === true");
+      await page.$('#button-line-numbers').then(el => el.click());
+      await page.waitForFunction("app.state.numbers.set === false");
+      await page.$('#button-line-numbers').then(el => el.click());
+      await page.waitForFunction("app.state.numbers.set === true");
+    }
   )
 );
 
