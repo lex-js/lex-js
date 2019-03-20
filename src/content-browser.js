@@ -177,13 +177,17 @@ module.exports = class ContentBrowser {
           var url = config.content_real_path +
               state.content_list.path + '/' + filename;
 
-          await files.loadRemote(
-            url,
-            state.content_list.path + '/' + filename
-          );
-          ui.setWindowTitle(filename);
-          state.file.name = filename;
-          this.hide();
+          try {
+            await files.loadRemote(
+              url,
+              state.content_list.path + '/' + filename
+            );
+            ui.setWindowTitle(filename);
+            state.file.name = filename;
+            this.hide();
+          } catch (e) {
+            this.app.alert("Remote file not found!");
+          }
         };
 
       } else {

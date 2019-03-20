@@ -1,3 +1,4 @@
+/* global require module fetch FileReader */
 const localforage = require('localforage');
 
 module.exports = class Files {
@@ -69,11 +70,15 @@ module.exports = class Files {
 
   async loadRemote(url, remoteName) {
     const response = await fetch(url);
-    const buffer = await response.arrayBuffer();
+    if (response.status === 200) {
+      const buffer = await response.arrayBuffer();
 
-    this.loadFromSource(buffer);
-    this.app.state.file.remote_name = remoteName;
-    this.postLoad();
+      this.loadFromSource(buffer);
+      this.app.state.file.remote_name = remoteName;
+      this.postLoad();
+    } else {
+      throw "Remote file not found!";
+    }
   }
 
   // TODO: remove callback
