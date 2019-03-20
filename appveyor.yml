@@ -1,0 +1,32 @@
+environment:
+  matrix:
+    - APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015"
+      PYTHON: "C:\\Python34"
+      ARCH: "x86"
+
+    - APPVEYOR_BUILD_WORKER_IMAGE: "Visual Studio 2015"
+      PYTHON: "C:\\Python34-x64"
+      ARCH: "x64"
+    
+    - APPVEYOR_BUILD_WORKER_IMAGE: "Ubuntu1804"
+
+install:
+  - cmd: "%PYTHON%\\python.exe -m pip install -r requirements.txt"
+  - cmd: "powershell Install-Product node 10.13.0 %ARCH%"
+  - sh: "nvm install 10.13.0"
+  - "npm ci"
+
+before_build:
+  - "npm test"
+  
+build_script:
+  - cmd: "%PYTHON%\\Scripts\\pyinstaller.exe --onefile --add-data index.html;. --add-data config;config --add-data public;public --distpath build index.py"
+  - cmd: "ren build\\index.exe build\\lex-win-%ARCH%.exe"
+  - sh: "npm run binary:create"
+
+artifacts:
+  - path: .\build\*
+#on_success:
+#  You can use this step to upload your artifacts to a public website.
+#  See Appveyor's documentation for more details. Or you can simply
+#  access your wheels from the Appveyor "artifacts" tab for your build.
