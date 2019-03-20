@@ -1,0 +1,101 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "required": [
+    "page_title",
+    "meta",
+    "port",
+    "content_dir",
+    "allowed_files"
+  ],
+  "properties": {
+    "page_title": {
+      "$id": "#/properties/page_title",
+      "type": "string",
+      "examples": [
+        "Lexicon Viewer App"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "meta": {
+      "$id": "#/properties/meta",
+      "type": "object",
+      "title": "The Meta Schema",
+      "required": [
+        "description",
+        "keywords",
+        "author"
+      ],
+      "properties": {
+        "description": {
+          "$id": "#/properties/meta/properties/description",
+          "type": "string",
+          "title": "The Description Schema",
+          "default": "",
+          "examples": [
+            "Lexicon viewer JS port"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "keywords": {
+          "$id": "#/properties/meta/properties/keywords",
+          "type": "array",
+          "title": "The Keywords Schema",
+          "items": {
+            "$id": "#/properties/meta/properties/keywords/items",
+            "type": "string",
+            "title": "The Items Schema",
+            "default": "",
+            "examples": [
+              "lex-js",
+              "lexicon"
+            ],
+            "pattern": "^(.*)$"
+          }
+        },
+        "author": {
+          "$id": "#/properties/meta/properties/author",
+          "type": "string",
+          "title": "The Author Schema",
+          "default": "",
+          "examples": [
+            "lex-js"
+          ],
+          "pattern": "^(.*)$"
+        }
+      }
+    },
+    "port": {
+      "$id": "#/properties/port",
+      "type": "integer",
+      "title": "The Port Schema",
+      "default": 1337,
+      "examples": [
+        1337
+      ]
+    },
+    "content_dir": {
+      "$id": "#/properties/content_dir",
+      "type": "string",
+      "title": "The Content_dir Schema",
+      "default": "",
+      "examples": [
+        "./files/content"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "allowed_files": {
+      "type": "array",
+      "title": "Array of globs",
+      "default": [ "**/*.txt" ],
+      "examples": [
+        [ "**/*.txt", "**/*.hs", "**/*.c" ]
+      ],
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}

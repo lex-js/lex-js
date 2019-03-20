@@ -45,9 +45,9 @@ module.exports = class Server {
       if (anymatch(config.allowed_files, filePath)) {
         return res.sendFile(filePath);
       }
-      return res.send(403, HttpStatus.getStatusText(403));
+      return res.status(403).send(HttpStatus.getStatusText(403));
     }
-    return res.send(404, HttpStatus.getStatusText(404));
+    return res.status(404).send(HttpStatus.getStatusText(404));
   }
 
   /*
@@ -134,17 +134,7 @@ module.exports = class Server {
     api.use("/public", express.static(path.join(internalCwd, "public")));
 
     return new Promise((resolve, reject) => {
-      this.instance = api.listen(config.port, () => {
-        resolve();
-
-        if (!this.silent) {
-          console.log(`Listening on http://localhost:${config.port}/`);
-        }
-
-        if (process.env.NODE_ENV !== "production" && !this.silent) {
-          require("opn")(`http://localhost:${config.port}/`);
-        }
-      });
+      this.instance = api.listen(config.port, resolve);
     });
   }
 

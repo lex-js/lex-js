@@ -33,7 +33,7 @@ const serverRootDir = path.join(__dirname, '..');
 // If PUPPETEER_INSPECT is set, running the tests in parrallel is inappropriate.
 const runSequentially = process.env.PUPPETEER_INSPECT || process.env.PUPPETEER_SERIAL;
 const runHeadless = !process.env.PUPPETEER_INSPECT;
-const slowMo = Number(process.env.PUPPETEER_SLOWMO) || null;
+const slowMo = Number(process.env.PUPPETEER_SLOWMO) | 0;
 
 const config = {
   page_title: 'Lex.js',
@@ -112,11 +112,11 @@ const startServer = async (serverConfig) => {
   return server;
 };
 
-const mkOptions = options => {
-  let obj = {
+const mkOptions = options => (
+  {
     ignoreHTTPSErrors: true,
-    headless: true,
-    slowMo: 0,
+    slowMo,
+    headless: runHeadless,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
@@ -126,18 +126,8 @@ const mkOptions = options => {
       "--proxy-bypass-list=*"
     ],
     ...options
-  };
-
-  if (!runHeadless) {
-    obj.headless = false;
   }
-
-  if (slowMo) {
-    obj.slowMo = slowMo;
-  }
-
-  return obj;
-};
+);
 
 // See also: "Bracket pattern".
 //
@@ -368,55 +358,6 @@ runTest("Content browser", withPage(async (t, page, server) => {
   await page.waitForFunction("document.location.hash === '#remote:/file1:0'");
   await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
 }));
-
-/*
-runTest(
-  "Scrolling",
-  withPage(
-    async (t, page, server) => {
-      await page.waitForSelector('#preloader', { hidden: true });
-
-      const contents = [{
-        "name":"shortfile",
-        "modified":1551809557426.2075,
-        "type":"file",
-        "size":10153
-      }, {
-        "name":"longfile",
-        "modified":1551809557426.2075,
-        "type":"file",
-        "size":10153
-      }];
-
-      server.setDir('', contents);
-
-      server.writeFile('/shortfile', fs.readFileSync('./test/assets/shortfile.txt'));
-      server.writeFile('/longfile', fs.readFileSync('./test/assets/longfile.txt'));
-
-      await page.$('#button-content').then(el => el.click());
-      await page.waitForSelector('#content-list-container', { visible: true });
-      // Select `shortfile`
-      await page.keyboard.press('ArrowDown');
-      await page.keyboard.press('Enter');
-      await page.waitForSelector('#content-list-container', { visible: false });
-      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
-      await page.keyboard.press('ArrowDown');
-      // File is too short, hence no effect
-      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
-      await page.keyboard.press('ArrowRight');
-      // Though it does not fit horizontally, hence scrolling works.
-      await page.waitForFunction("app.scroll.x === 1 && app.scroll.y === 0");
-      // But only until the width is large enough.
-      await page.setViewport({ width: 1000, height: 120 });
-      // The screen was resized, and scroll position was reset
-      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 0");
-      await page.keyboard.press('ArrowDown');
-      await page.waitForFunction("app.scroll.x === 0 && app.scroll.y === 1");
-    },
-    { defaultViewport: { width: 300, height: 480 }}
-  )
-);
-*/
 
 runTest(
   "Line numbers",

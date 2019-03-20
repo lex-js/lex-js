@@ -25,4 +25,13 @@ if (!ajv.validate(schema, config)) {
   process.exit(1);
 }
 
-new Server(config, internalCwd, externalCwd).start();
+const server = new Server(config, internalCwd, externalCwd);
+server.start().then(() => {
+  if (!server.silent) {
+    console.log(`Listening on http://localhost:${config.port}/`);
+  }
+
+  if (process.env.NODE_ENV !== "production" && !server.silent) {
+    require("opn")(`http://localhost:${config.port}/`);
+  }
+});

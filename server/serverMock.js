@@ -2,7 +2,7 @@ const Server = require('./index.js');
 const HttpStatus = require("http-status-codes");
 
 module.exports = class ServerMock extends Server {
-  constructor(config) {
+  constructor (config) {
     super(...arguments);
     this.port = config.port;
     this.files = new Map();
@@ -10,15 +10,15 @@ module.exports = class ServerMock extends Server {
     this.silent = true;
   }
 
-  writeFile(pathQuery, response) {
+  writeFile (pathQuery, response) {
     this.files.set(pathQuery, response);
   }
 
-  deleteFile(pathQuery) {
+  deleteFile (pathQuery) {
     this.files.delete(pathQuery);
   }
 
-  getFile(res, pathQuery) {
+  getFile (res, pathQuery) {
     const { files } = this;
     if (files.has(pathQuery)) {
       return res.status(200).send(files.get(pathQuery));
@@ -27,15 +27,16 @@ module.exports = class ServerMock extends Server {
     }
   }
 
-  setDir(pathQuery, response) {
+  setDir (pathQuery, response) {
     this.dirs.set(pathQuery, response);
   }
 
-  deleteDir(pathQuery) {
+  deleteDir (pathQuery) {
     this.dirs.delete(pathQuery);
   }
 
-  listDir(pathQuery) {
+  listDir (pathQuery) {
     return this.dirs.get(pathQuery) || [];
   }
+
 };
