@@ -21,12 +21,8 @@ before_build:
   
 build_script:
   - cmd: "%PYTHON%\\Scripts\\pyinstaller.exe --onefile --add-data index.html;. --add-data config;config --add-data public;public --distpath build index.py"
-  - cmd: "ren build\\index.exe build\\lex-win-%ARCH%.exe"
+  - cmd: "ren \"build\\index.exe\" lex-win-%ARCH%.exe"
   - sh: "npm run binary:create"
 
 artifacts:
   - path: .\build\*
-#on_success:
-#  You can use this step to upload your artifacts to a public website.
-#  See Appveyor's documentation for more details. Or you can simply
-#  access your wheels from the Appveyor "artifacts" tab for your build.
