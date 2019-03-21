@@ -19,6 +19,8 @@ curl -SL https://ci.appveyor.com/api/projects/limitedeternity/lex-js/artifacts/b
 curl -SL https://ci.appveyor.com/api/projects/limitedeternity/lex-js/artifacts/build/lex-macos-x64?job=Environment%3A%20APPVEYOR_BUILD_WORKER_IMAGE%3DUbuntu1804 -o build/lexdist-macos-x64/lex-macos-x64
 
 echo build/lexdist-linux-x64/xdg-open build/lexdist-linux-x86/xdg-open | xargs -n 1 curl -sSL https://github.com/sindresorhus/opn/raw/master/xdg-open -o $1
+echo build/lexdist-linux-x64/xdg-open build/lexdist-linux-x86/xdg-open | xargs -n 1 chmod +x $1
+echo build/lexdist-linux-x64/lex-linux-x64 build/lexdist-linux-x86/lex-linux-x86 build/lexdist-macos-x64/lex-macos-x64 | xargs -n 1 chmod +x $1
 
 cd build/
 for (( i=0; i < ${#dirs[@]}; i+=1 )); do
