@@ -5,7 +5,7 @@
     "keywords": ["lex-js", "lexicon"],
     "author": "lex-js"
   },
-  "port": 1337,
+  "port": 64320,
   "content_dir": "./files",
   "allowed_files": ["**/*.txt", "**/*.c", "**/*.hs"]
 }

@@ -1,6 +1,6 @@
 import sys
 from os import sep as path_separator
-from os.path import abspath, realpath, basename, dirname, normpath as normalize, join as join_path
+from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
 from pathlib import Path as file_props
 from io import open as open_file
 from webbrowser import open as open_browser_tab
@@ -85,6 +85,12 @@ def send_static(filename):
     return static_file(filename, root=join_path(internal_root, "public"))
 
 
+if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
+    open_browser_tab(
+        "http://localhost:{0}/#remote:{1}:0".format(listen_port, relpath(sys.argv[1], content_root)))
+        
+else:
+    open_browser_tab("http://localhost:{0}".format(listen_port))
+
 print("Listening on http://localhost:{0}".format(listen_port))
-open_browser_tab("http://localhost:{0}".format(listen_port))
 run(host='localhost', port=listen_port, quiet=True, debug=False)
