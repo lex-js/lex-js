@@ -1,8 +1,9 @@
 import sys
 from os import sep as path_separator
-from os.path import abspath, realpath, basename, dirname, normpath as normalize, join as join_path
+from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
 from pathlib import Path as file_props
 from io import open as open_file
+from argparse import ArgumentParser
 from webbrowser import open as open_browser_tab
 from fnmatch import fnmatch as glob_match
 from glob import glob as find_by_glob
@@ -85,6 +86,16 @@ def send_static(filename):
     return static_file(filename, root=join_path(internal_root, "public"))
 
 
+parser = ArgumentParser()
+parser.add_argument("-f", "--file", help="Path to text file. File is opened on start.")
+args = parser.parse_args()
+
+if file_props(args.file).is_file():
+    open_browser_tab(
+        "http://localhost:{0}/#remote:{1}:0".format(listen_port, relpath(args.file, content_root)))
+        
+else:
+    open_browser_tab("http://localhost:{0}".format(listen_port))
+
 print("Listening on http://localhost:{0}".format(listen_port))
-open_browser_tab("http://localhost:{0}".format(listen_port))
 run(host='localhost', port=listen_port, quiet=True, debug=False)
