@@ -76,8 +76,12 @@ module.exports = class Files {
       this.loadFromSource(buffer);
       this.app.state.file.remote_name = remoteName;
       this.postLoad();
-    } else {
+    } else if (response.status === 400) {
+      throw "No access to remote file!";
+    } else if (response.status === 404) {
       throw "Remote file not found!";
+    } else {
+      throw `Couldn't load remote file (${response.status})`;
     }
   }
 
@@ -114,7 +118,7 @@ module.exports = class Files {
 
   postLoad () {
     const { search, scroll, state, lineNumbers, selection,
-            URIHashControl } = this.app;
+            URIHashControl, render, screen } = this.app;
 
     search.rebuildIndex();
     search.close();
@@ -122,11 +126,13 @@ module.exports = class Files {
     scroll.x = 0;
 
     if (state.numbers.set) {
-      lineNumbers.addLineNumbers();
+      lineNumbers.add();
     }
 
     URIHashControl.update();
     selection.clear();
     scroll.update();
+    screen.update();
+    render.update();
   }
 };

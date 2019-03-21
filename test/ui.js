@@ -60,15 +60,15 @@ function runTest (name) {
     }
 
     if (!filter(name)) {
-      console.warn(`  - Skipping test "${name}" because of PUPPETEER_TEST_FILTER`);
+      test.skip(...arguments);
       return;
     }
   }
 
   if (runSequentially) {
-    test.serial.skip(...arguments);
+    test.serial(...arguments);
   } else {
-    test.skip(...arguments);
+    test(...arguments);
   }
 };
 
