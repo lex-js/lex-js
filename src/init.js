@@ -8,8 +8,13 @@ try {
   console.log(e);
 }
 
-
-document.addEventListener("DOMContentLoaded", () => {
+const init = () => {
   const app = window.app = new App();
   app.init();
-});
+};
+
+if (['interactive', 'complete'].includes(document.readyState)) {
+  init();
+} else {
+  document.addEventListener("DOMContentLoaded", init);
+}

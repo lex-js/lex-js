@@ -2,6 +2,7 @@
   function addScript (src) {
     var script = document.createElement('script');
     script.src = src;
+    script.setAttribute('async', false);
     script.type = 'text/javascript';
     document.head.appendChild(script);
   }
@@ -24,4 +25,7 @@
     addScript('public/startPage/fonts.js');
     addScript('public/startPage/info.js');
   }
+
+  addScript('public/js/configOverride.js');
+  addScript('public/js/bundle.min.js');
 })();
