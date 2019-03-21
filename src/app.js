@@ -252,6 +252,7 @@ module.exports = class App {
     window.addEventListener('resize', () => {
       this.screen.update();
       this.render.update();
+      this.scroll.update();
     });
     window.addEventListener('hashchange', () => URIHashControl.process(document.location.hash));
 
@@ -300,7 +301,7 @@ module.exports = class App {
               document.activeElement.blur();
               state.file.name = file.name;
               state.file.remote_name = '';
-              URIHashControl.update();
+              this.files.postLoad();
             }
           };
 

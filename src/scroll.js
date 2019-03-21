@@ -22,14 +22,14 @@ module.exports = class Scroll {
     const { screen, state, config, scroll } = this.app;
     const { index } = state;
 
-    const maxXScroll = index.maxlen - screen.w;
+    const maxXScroll = screen.w - index.maxlen;
 
-    if (value > maxXScroll) {
+    if (maxXScroll > 0 && value > maxXScroll) {
       value = maxXScroll;
     }
 
     if (value < 0) {
-      this.x = 0;
+      value = 0;
     }
 
     this.container.scrollLeft = Math.round(value * config.font_width);
@@ -101,9 +101,19 @@ module.exports = class Scroll {
   }
 
   update () {
-    const { state, config } = this.app;
+    const { state, screen, config } = this.app;
     const height = state.file.lines.length;
-    const width = state.index.maxlen;
+    // `scrollbarWidth` is a magic constant.
+    // `scrollbarWidth * config.font_width` pixels is more than the width of the
+    // scrollbar. We need to subtract this value from the width to avoid
+    // triggering #canvas-scroll-container overflow, which otherwise will make
+    // the scrollbar always being shown.
+    const scrollbarWidth = 5;
+    const width = Math.max(
+      screen.w - scrollbarWidth,
+      state.index.maxlen + config.blank_characters_on_eol
+    );
+
     document.getElementById('canvas-large-container').style.height = (
       height * config.font_height + 'px'
     );

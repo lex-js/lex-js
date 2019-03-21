@@ -8,12 +8,20 @@
     "assets": [
       "index.html",
       "public/**/*",
-      "config-server.json",
-      "config-server-schema.json"
+      "config/**/*"
     ]
   },
+  "ava": {
+    "babel": {
+      "testOptions": {
+        "babelrc": false,
+        "configFile": false
+      }
+    }
+  },
   "scripts": {
-    "test": "ava",
+    "test": "npm run bundle:build && ava --verbose",
+    "test:dev": "npm run bundle:dev && ava --verbose",
     "start:dev": "node index.js",
     "start:production": "export NODE_ENV=production && node index.js",
     "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",
@@ -22,10 +30,8 @@
     "bundle:uglify": "uglifyjs tmp/bundle.js -c -o public/js/bundle.min.js",
     "bundle:clean": "rm -rf tmp/",
     "bundle:build": "npm run bundle:transpile && npm run bundle:browserify && npm run bundle:uglify && npm run bundle:clean",
-    "binary:create": "pkg . --targets node10-linux-x64,node10-linux-x86,node10-macos-x64,node10-win-x64,node10-win-x86 --out-path build/",
-    "binary:prepare": "bash scripts/prepareBinary.sh",
-    "binary:build": "npm run binary:create && npm run binary:prepare",
-    "all:build": "npm run bundle:build && npm run binary:build"
+    "binary:create": "pkg . --targets node10-linux-x64,node10-linux-x86,node10-macos-x64 --out-path build/",
+    "binary:prepare": "bash scripts/preparePkg.sh"
   },
   "keywords": [],
   "author": "lex-js & limitedeternity",
@@ -52,6 +58,7 @@
     "browserify": "^16.2.3",
     "fastclick": "^1.0.6",
     "file-saver": "^2.0.1",
+    "is-port-free": "^1.0.7",
     "localforage": "^1.7.3",
     "mousetrap": "^1.6.2",
     "pkg": "^4.3.7",

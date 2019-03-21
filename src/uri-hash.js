@@ -64,21 +64,24 @@ module.exports = class URIHashControl {
 
     // TODO: add ability to open local files by editing URI hash
     if (type == 'remote' && state.file.remote_name != file) {
-      await files.loadRemote(
-        config.content_real_path + '/' + file,
-        file
-      );
+      try {
+        await files.loadRemote(
+          config.content_real_path + '/' + file,
+          file
+        );
 
-      var baseName = file.split(/[\\/]/).pop();
-      ui.setWindowTitle(baseName);
-      state.file.name = baseName;
-      state.file.remote_name = file;
-      state.content_list.path = file.substr(
-        0,
-        file.length - baseName.length - 1  // -1 to strip the last `/`
-      );
-      scroll.y = line;
-
+        var baseName = file.split(/[\\/]/).pop();
+        ui.setWindowTitle(baseName);
+        state.file.name = baseName;
+        state.file.remote_name = file;
+        state.content_list.path = file.substr(
+          0,
+          file.length - baseName.length - 1  // -1 to strip the last `/`
+        );
+        scroll.y = line;
+      } catch (e) {
+        this.app.alert("Couldn't load remote file!");
+      }
     }
   }
 
@@ -102,6 +105,8 @@ module.exports = class URIHashControl {
         this.app.ui.setWindowTitle(baseName);
         this.app.state.file.name = baseName;
         this.app.scroll.y = parsed.line;
+      }).catch(err => {
+        this.app.alert("Couldn't load remote file!");
       });
     } else if (parsed.type == 'local') {
       return await this.app.files.loadLocal(parsed.file).then(() => {
