@@ -66,9 +66,9 @@ function runTest (name) {
   }
 
   if (runSequentially) {
-    test.serial(...arguments);
+    test.serial.skip(...arguments);
   } else {
-    test(...arguments);
+    test.skip(...arguments);
   }
 };
 
