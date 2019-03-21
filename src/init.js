@@ -9,7 +9,13 @@ try {
 }
 
 
-document.addEventListener("DOMContentLoaded", () => {
+const init = () => {
   const app = window.app = new App();
   app.init();
-});
+};
+
+if (document.readyState === "interactive" || document.readyState === "complete") {
+  init();
+} else {
+  document.addEventListener("DOMContentLoaded", init);
+}
