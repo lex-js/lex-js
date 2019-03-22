@@ -1,6 +1,6 @@
 import sys
 from os import sep as path_separator
-from os.path import isfile, abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
+from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
 from pathlib import Path as file_props
 from io import open as open_file
 from webbrowser import open as open_browser_tab
@@ -26,7 +26,7 @@ config = load_json(
     )
 )
 
-content_root = join_path(external_root, config["content_dir"])
+content_root = normalize(join_path(external_root, config["content_dir"]))
 listen_port = config["port"]
 
 
@@ -68,15 +68,17 @@ def api():
 
     elif action == "getfile":
         fname = normalize(request.query.file)
-        file = join_path(content_root, fname)
+        fullname = join_path(content_root, fname)
 
-        if not(isfile(file)):
+        if not file_props(fullname).is_file():
             return HTTPResponse(status=404)
 
         for glob in config["allowed_files"]:
-            if glob_match(file, glob):
+            if glob_match(fullname, glob):
                 return static_file(fname, root=content_root)
+
         return HTTPResponse(status=400)
+
 
     else:
         return HTTPResponse(status=400)
@@ -89,8 +91,11 @@ def send_static(filename):
 
 if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
     open_browser_tab(
-        "http://localhost:{0}/#remote:{1}:0".format(listen_port, relpath(sys.argv[1], content_root)))
-
+        "http://localhost:{0}/#remote:{1}:0".format(
+            listen_port,
+            relpath(sys.argv[1], content_root)
+        )
+    )
 else:
     open_browser_tab("http://localhost:{0}".format(listen_port))
 
