@@ -1,5 +1,5 @@
 import sys
-from os import sep as path_separator
+from os import sep as path_separator, fork
 from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
 from pathlib import Path as file_props
 from io import open as open_file
@@ -8,6 +8,10 @@ from fnmatch import fnmatch as glob_match
 from glob import glob as find_by_glob
 from json import load as load_json, dumps as json_to_string
 from bottle import get, request, static_file, HTTPResponse, run
+
+
+if fork():
+    sys.exit()
 
 external_root = None # for content_root
 internal_root = None # for static assets
@@ -29,6 +33,15 @@ config = load_json(
 content_root = normalize(config["content_dir"])
 listen_port = config["port"]
 
+if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
+    print("Opening file {0}".format(sys.argv[1]))
+    tab_url = "http://localhost:{0}/#remote:{1}:0".format(
+        listen_port,
+        normalize(abspath(sys.argv[1]))
+    )
+else:
+    tab_url = "http://localhost:{0}".format(listen_port)
+
 
 @get('/')
 def index():
@@ -40,7 +53,7 @@ def api():
     action = request.query.action
 
     if action == "listdir":
-        path = normalize(join_path(content_root, request.query.dir))
+        path = normalize(request.query.dir)
 
         dir_list = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
         dir_list_with_info = []
@@ -63,16 +76,15 @@ def api():
         return json_to_string(dir_list_with_info)
 
     elif action == "getfile":
-        fname = normalize(request.query.file)
-        fullname = join_path(content_root, fname)
+        fname = abspath(normalize(request.query.file))
 
-        if not file_props(fullname).is_file():
+        if not file_props(fname).is_file():
             return HTTPResponse(status=404)
 
-        lowername = fullname.lower()
+        lowername = fname.lower()
         for glob in config["allowed_files"]:
             if glob_match(lowername, glob):
-                response = static_file(fname, root=content_root)
+                response = static_file(fname, root=file_props(fname).parts[0])
                 response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
                 response.set_header("Pragma", "no-cache")
                 response.set_header("Expires", "0")
@@ -90,16 +102,7 @@ def send_static(filename):
     return static_file(filename, root=join_path(internal_root, "public"))
 
 
-if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
-    open_browser_tab(
-        "http://localhost:{0}/#remote:{1}:0".format(
-            listen_port,
-            relpath(sys.argv[1], content_root)
-        )
-    )
-else:
-    open_browser_tab("http://localhost:{0}".format(listen_port))
-
+open_browser_tab(tab_url)
 
 try:
     print("Listening on http://localhost:{0}".format(listen_port))

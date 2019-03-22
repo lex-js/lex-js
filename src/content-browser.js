@@ -162,10 +162,10 @@ module.exports = class ContentBrowser {
       if (sth.type === 'directory') {
 
         row.onclick = () => {
-          state.content_list.path += '/' + filename;
-
-          if (state.content_list.path[0] === '/') {
-            state.content_list.path = state.content_list.path.slice(1);
+          if (state.content_list.path === '/') {
+            state.content_list.path += filename;
+          } else {
+            state.content_list.path += '/' + filename;
           }
 
           this.show();
@@ -202,7 +202,7 @@ module.exports = class ContentBrowser {
             state.content_list.path
             .split('/')
             .slice(0, -1)
-            .join('/');
+            .join('/') || '/';
           this.show();
         };
       }
