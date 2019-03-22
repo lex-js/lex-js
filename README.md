@@ -1,8 +1,6 @@
 # lex-js
 
-<a href="https://ci.appveyor.com/project/limitedeternity/lex-js">
-  <img src="https://ci.appveyor.com/api/projects/status/github/lex-js/lex-js?retina=true" />
-</a>
+[![](https://ci.appveyor.com/api/projects/status/github/lex-js/lex-js?retina=true)](https://ci.appveyor.com/project/limitedeternity/lex-js)
 
 <br/>
 <br/>
