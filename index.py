@@ -75,7 +75,11 @@ def api():
 
         for glob in config["allowed_files"]:
             if glob_match(fullname, glob):
-                return static_file(fname, root=content_root)
+                response = static_file(fname, root=content_root)
+                response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                response.set_header("Pragma", "no-cache")
+                response.set_header("Expires", "0")
+                return response
 
         return HTTPResponse(status=400)
 
@@ -99,5 +103,9 @@ if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
 else:
     open_browser_tab("http://localhost:{0}".format(listen_port))
 
-print("Listening on http://localhost:{0}".format(listen_port))
-run(host='localhost', port=listen_port, quiet=True, debug=False)
+
+try:
+    print("Listening on http://localhost:{0}".format(listen_port))
+    run(host='localhost', port=listen_port, quiet=True, debug=False)
+except BaseException as e:
+    pass
