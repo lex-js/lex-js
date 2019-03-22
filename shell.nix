@@ -9,6 +9,6 @@ stdenv.mkDerivation {
   ];
   shellHook = ''
     export PUPPETEER_EXECUTABLE_PATH=${chromium}/bin/chromium
-    npm install
+    npm ci
   '';
 }
