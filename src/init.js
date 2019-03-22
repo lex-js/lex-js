@@ -8,7 +8,6 @@ try {
   console.log(e);
 }
 
-
 const init = () => {
   const app = window.app = new App();
   app.init();

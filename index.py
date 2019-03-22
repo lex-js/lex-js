@@ -21,12 +21,12 @@ else:
 
 config = load_json(
     open_file(
-        join_path(internal_root, "config", "config-server.json"),
+        join_path(external_root, "config", "config-server.json"),
         "r"
     )
 )
 
-content_root = normalize(join_path(external_root, config["content_dir"]))
+content_root = normalize(config["content_dir"])
 listen_port = config["port"]
 
 
@@ -40,11 +40,7 @@ def api():
     action = request.query.action
 
     if action == "listdir":
-        query_path = normalize(request.query.dir or ".")
-        path = join_path(content_root, query_path)
-
-        if not realpath(path).startswith(realpath(content_root) + path_separator):
-            path = content_root
+        path = normalize(join_path(content_root, request.query.dir))
 
         dir_list = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
         dir_list_with_info = []
@@ -73,8 +69,9 @@ def api():
         if not file_props(fullname).is_file():
             return HTTPResponse(status=404)
 
+        lowername = fullname.lower()
         for glob in config["allowed_files"]:
-            if glob_match(fullname, glob):
+            if glob_match(lowername, glob):
                 response = static_file(fname, root=content_root)
                 response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
                 response.set_header("Pragma", "no-cache")
