@@ -34,7 +34,7 @@ if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
     print("Opening file {0}".format(sys.argv[1]))
     tab_url = "http://localhost:{0}/#remote:{1}:0".format(
         listen_port,
-        normalize(abspath(sys.argv[1]))
+        normalize(abspath(sys.argv[1])).replace('\\', '/')
     )
 else:
     tab_url = "http://localhost:{0}".format(listen_port)
