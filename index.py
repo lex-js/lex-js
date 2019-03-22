@@ -26,7 +26,7 @@ config = load_json(
     )
 )
 
-content_root = join_path(external_root, config["content_dir"])
+content_root = normalize(join_path(external_root, config["content_dir"]))
 listen_port = config["port"]
 
 
@@ -68,13 +68,21 @@ def api():
 
     elif action == "getfile":
         fname = normalize(request.query.file)
-        file = join_path(content_root, fname)
+        fullname = join_path(content_root, fname)
 
-        if any(glob_match(file, glob) for glob in config["allowed_files"]):
-            return static_file(fname, root=content_root)
-
-        else:
+        if not file_props(fullname).is_file():
             return HTTPResponse(status=404)
+
+        for glob in config["allowed_files"]:
+            if glob_match(fullname, glob):
+                response = static_file(fname, root=content_root)
+                response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                response.set_header("Pragma", "no-cache")
+                response.set_header("Expires", "0")
+                return response
+
+        return HTTPResponse(status=400)
+
 
     else:
         return HTTPResponse(status=400)
@@ -87,10 +95,17 @@ def send_static(filename):
 
 if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
     open_browser_tab(
-        "http://localhost:{0}/#remote:{1}:0".format(listen_port, relpath(sys.argv[1], content_root)))
-        
+        "http://localhost:{0}/#remote:{1}:0".format(
+            listen_port,
+            relpath(sys.argv[1], content_root)
+        )
+    )
 else:
     open_browser_tab("http://localhost:{0}".format(listen_port))
 
-print("Listening on http://localhost:{0}".format(listen_port))
-run(host='localhost', port=listen_port, quiet=True, debug=False)
+
+try:
+    print("Listening on http://localhost:{0}".format(listen_port))
+    run(host='localhost', port=listen_port, quiet=True, debug=False)
+except BaseException as e:
+    pass

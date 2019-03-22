@@ -60,7 +60,7 @@ function runTest (name) {
     }
 
     if (!filter(name)) {
-      console.warn(`  - Skipping test "${name}" because of PUPPETEER_TEST_FILTER`);
+      test.skip(...arguments);
       return;
     }
   }
