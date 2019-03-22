@@ -1,6 +1,8 @@
 # lex-js
 
-<img src="https://ci.appveyor.com/api/projects/status/github/lex-js/lex-js?retina=true" />
+<a href="https://ci.appveyor.com/project/limitedeternity/lex-js">
+  <img src="https://ci.appveyor.com/api/projects/status/github/lex-js/lex-js?retina=true" />
+</a>
 
 Lexicon Viewer JS port.
 
