@@ -52,10 +52,11 @@ def api():
     if action == "listdir":
         path = normalize(request.query.dir)
 
-        dir_list = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
-        dir_list_with_info = []
+        listing = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
+        dir_list = []
+        file_list = []
 
-        for entry in dir_list:
+        for entry in listing:
             try:
                 stat_info = file_props(entry).stat()
             except BaseException as e:
@@ -69,13 +70,13 @@ def api():
             if file_props(entry).is_file():
                 obj["type"] = "file"
                 obj["size"] = stat_info.st_size
+                file_list.append(obj)
 
             else:
                 obj["type"] = "directory"
+                dir_list.append(obj)
 
-            dir_list_with_info.append(obj)
-
-        return json_to_string(dir_list_with_info)
+        return json_to_string(dir_list + file_list)
 
     elif action == "getfile":
         fname = abspath(normalize(request.query.file))
