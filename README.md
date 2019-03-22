@@ -1,5 +1,7 @@
 # lex-js
 
+<img src="https://ci.appveyor.com/api/projects/status/github/lex-js/lex-js?retina=true" />
+
 Lexicon Viewer JS port.
 
 Lexicon was a text editor / word processor MS-DOS program that was extremely popular in the Soviet Union and Russia at the end of 1980s and in 1990s.
