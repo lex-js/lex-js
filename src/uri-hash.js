@@ -134,23 +134,14 @@ module.exports = class URIHashControl {
   }
 
   parseHash (hash) {
-    var type, file, line;
-    if (!hash) return null;
+    const parts = decodeURIComponent(hash).substr(1).split(':');
+    const type = parts.shift();
+    const line = parseInt(parts.pop());
 
-    hash = decodeURIComponent(hash).substr(1);
-    type = hash.split(':')[0];
-    if (!['remote', 'local'].includes(type)) return null;
+    if (!['remote', 'local'].includes(type) || isNaN(line)) {
+      return null;
+    }
 
-    line = hash.split(':')[hash.split(':').length - 1];
-    if (!/^(0|([1-9]\d*))$/.test(line)) return null;
-
-    file = hash.substr(
-      type.length + 1,
-      hash.length - line.length - type.length - 2
-    );
-
-    line = parseInt(line);
-
-    return { line, file, type };
+    return { line, file: parts.join(':'), type };
   }
 };

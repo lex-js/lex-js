@@ -110,8 +110,8 @@ module.exports = class App {
       и: pageup,
 
       'alt+g': () => ui.showGotoLinePrompt(),
-      v: () => lineNumbers.toggleLineNumbers(),
-      м: () => lineNumbers.toggleLineNumbers(),
+      v: () => lineNumbers.toggle(),
+      м: () => lineNumbers.toggle(),
       esc: () => {
         selection.clear();
         contentBrowser.hide();
@@ -177,6 +177,7 @@ module.exports = class App {
     var searchField = document.getElementById('search-field');
     Mousetrap(searchField).bind('esc', () => {
       search.close();
+      render.update();
     });
 
     Mousetrap(searchField).bind('enter', () => search.searchNext());
@@ -184,6 +185,7 @@ module.exports = class App {
     Mousetrap(searchField).bind('backspace', () => {
       if (document.getElementById('search-field').value == '') {
         search.deactivateSearchField();
+        render.update();
       }
     });
   }
@@ -224,15 +226,18 @@ module.exports = class App {
     }
 
     if (config.load_greeting_file_from_source && !isLocal) {
-      await files.loadRemote(config.greeting_file, '');
-      await this.postInit();
+      try {
+        await files.loadRemote(config.greeting_file, '');
+      } catch (e) {
+        this.alert("Greeting file not found!");
+      }
     } else {
       if (typeof window.preloadedFile == 'undefined') {
         throw new Error("No preloaded file found!");
       }
       files.loadFromSource(preloadedFile);
-      this.postInit();
     }
+    await this.postInit();
   }
 
   async postInit () {
@@ -244,7 +249,7 @@ module.exports = class App {
   }
 
   eventsInit () {
-    const { search, config, state, URIHashControl,
+    const { search, config, state, URIHashControl, render,
             coders, files, ui, contentBrowser, lineNumbers } = this;
 
     const canvas = document.getElementById('canvas');
@@ -265,6 +270,7 @@ module.exports = class App {
       .addEventListener('click', () => {
         search.clearSearchField();
         search.deactivateSearchField();
+        render.update();
       });
 
     document
@@ -320,7 +326,7 @@ module.exports = class App {
       },
       'button-line-numbers': () => {
         contentBrowser.hide();
-        lineNumbers.toggleLineNumbers();
+        lineNumbers.toggle();
       },
       'button-goto-line': () => {
         contentBrowser.hide();
@@ -329,6 +335,7 @@ module.exports = class App {
       'button-search': () => {
         if (state.search.active) {
           search.deactivateSearchField();
+          render.update();
         } else {
           contentBrowser.hide();
           search.activateSearchField();
@@ -380,7 +387,7 @@ module.exports = class App {
         }
       },
       'mobile-toggle-lines': () => {
-        lineNumbers.toggleLineNumbers();
+        lineNumbers.toggle();
         mobileUI.closeMenu();
       },
       'mobile-list-content': () => {
@@ -466,6 +473,7 @@ module.exports = class App {
         event.preventDefault();
         window.getSelection().removeAllRanges();
         selection.clear();
+        render.update();
       }
     });
   }

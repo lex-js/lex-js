@@ -186,7 +186,13 @@ module.exports = class ContentBrowser {
             state.file.name = filename;
             this.hide();
           } catch (e) {
-            this.app.alert("Remote file not found!");
+            console.log(e);
+            if (typeof e === 'string') {
+              this.app.alert(e);
+            } else {
+              this.app.alert("Error opening remote file!");
+              console.log(e);
+            }
           }
         };
 

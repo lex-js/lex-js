@@ -124,12 +124,10 @@ module.exports = class SearchControl {
     this.app.state.search.active = false;
     this.container.style.display = 'none';
     this.searchField.blur();
-    this.app.render.update();
   }
 
   clearSearchField () {
     this.searchField.value = '';
-    this.app.render.update();
   }
 
   updateSearchBlock () {

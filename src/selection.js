@@ -14,7 +14,6 @@ module.exports = class SelectionControl {
       x2: 0,
       y2: 0
     };
-    this.app.render.update();
   }
 
   getSelectionText () {

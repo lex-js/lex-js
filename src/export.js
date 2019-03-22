@@ -78,8 +78,10 @@ module.exports = class Export {
       this.saveAs(blob, this.exportFileName());
     });
 
-    if (this.app.config.export_clear_selection)
+    if (this.app.config.export_clear_selection) {
       this.app.selection.clear();
+      this.app.render.update();
+    }
   }
 
   // construct export file name
