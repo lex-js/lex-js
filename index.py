@@ -1,6 +1,6 @@
 import sys
 from os import sep as path_separator
-from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
+from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path, splitdrive
 from pathlib import Path as file_props
 from io import open as open_file
 from webbrowser import open as open_browser_tab
@@ -81,14 +81,13 @@ def api():
         lowername = fname.lower()
         for glob in config["allowed_files"]:
             if glob_match(lowername, glob):
-                response = static_file(fname, root=file_props(fname).parts[0])
+                response = static_file(fname, root=splitdrive(fname)[0] or "/")
                 response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
                 response.set_header("Pragma", "no-cache")
                 response.set_header("Expires", "0")
                 return response
 
         return HTTPResponse(status=400)
-
 
     else:
         return HTTPResponse(status=400)
