@@ -56,14 +56,19 @@ def api():
         dir_list_with_info = []
 
         for entry in dir_list:
+            try:
+                stat_info = file_props(entry).stat()
+            except BaseException as e:
+                # This file or directory will not be available for reading anyway
+                continue
             obj = {
                 "name": basename(entry),
-                "modified": file_props(entry).stat().st_mtime * 1000
+                "modified": stat_info.st_mtime * 1000
             }
 
             if file_props(entry).is_file():
                 obj["type"] = "file"
-                obj["size"] = file_props(entry).stat().st_size
+                obj["size"] = stat_info.st_size
 
             else:
                 obj["type"] = "directory"
@@ -81,16 +86,19 @@ def api():
         lowername = fname.lower()
         for glob in config["allowed_files"]:
             if glob_match(lowername, glob):
-                response = static_file(fname, root=splitdrive(fname)[0] or "/")
-                response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
-                response.set_header("Pragma", "no-cache")
-                response.set_header("Expires", "0")
-                return response
+                try:
+                    fd = open(fname, 'rb')
+                    response = HTTPResponse(status=200)
+                    response.body = fd.read()
+                    fd.close()
+                    response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                    response.set_header("Pragma", "no-cache")
+                    response.set_header("Expires", "0")
+                    return response
+                except BaseException as e:
+                    pass
 
-        return HTTPResponse(status=400)
-
-    else:
-        return HTTPResponse(status=400)
+    return HTTPResponse(status=400)
 
 
 @get('/public/<filename:path>')
