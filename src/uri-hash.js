@@ -66,7 +66,7 @@ module.exports = class URIHashControl {
     if (type == 'remote' && state.file.remote_name != file) {
       try {
         await files.loadRemote(
-          config.content_real_path + '/' + file,
+          config.content_real_path + file,
           file
         );
 
@@ -99,7 +99,7 @@ module.exports = class URIHashControl {
       this.app.state.content_list.path = path;
 
       return await this.app.files.loadRemote(
-        this.app.config.content_real_path + '/' + parsed.file,
+        this.app.config.content_real_path + parsed.file,
         parsed.file
       ).then(() => {
         this.app.ui.setWindowTitle(baseName);
