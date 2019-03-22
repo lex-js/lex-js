@@ -4,7 +4,7 @@
   <img src="https://ci.appveyor.com/api/projects/status/github/lex-js/lex-js?retina=true" />
 </a>
 
-## &nbsp;
+<br>
 
 Lexicon was a text editor / word processor MS-DOS program that was extremely popular in the Soviet Union and Russia at the end of 1980s and in 1990s.
 
@@ -47,14 +47,6 @@ lex-js is a reimplementation of Lexicon Viewer as a web application.
 
 # Usage
 
-1. Clone this repository or download the archive to your webserver's root
-2. Make sure that directory index is `index.php`, not `index.html` in order to set page title and other info.
-3. [optional] Change settings in `files/config-user.php`.
-4. [optional] Change settings in `config.js` (check out `src/config-default.js`)
-
-# Usage without webserver
-
-You can freely use this app without setting up a webserver by opening `index.html` directly in your browser, however, content listing will not work, as it relies on the server-side code to provide file info. Preserving local files in a browser storage may not work too, because it depends on how IndexedDB API is implemented in the browser.
-
-A precompiled JS bundle is included in this source repository to make serverless usage possible.
-
+1. Go to [Releases](https://github.com/lex-js/lex-js/releases)
+2. Download distributive
+3. Run application
