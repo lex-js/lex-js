@@ -1,5 +1,5 @@
 import sys
-from os import sep as path_separator, fork
+from os import sep as path_separator
 from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path
 from pathlib import Path as file_props
 from io import open as open_file
@@ -9,9 +9,6 @@ from glob import glob as find_by_glob
 from json import load as load_json, dumps as json_to_string
 from bottle import get, request, static_file, HTTPResponse, run
 
-
-if fork():
-    sys.exit()
 
 external_root = None # for content_root
 internal_root = None # for static assets
