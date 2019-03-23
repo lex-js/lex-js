@@ -77,6 +77,9 @@ def api():
 
         response = HTTPResponse(status=200)
         response.body = json_to_string(dir_list + file_list)
+        response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        response.set_header("Pragma", "no-cache")
+        response.set_header("Expires", "0")
         return response
 
     elif action == "getfile":
