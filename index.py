@@ -51,7 +51,6 @@ def api():
 
     if action == "listdir":
         path = normalize(request.query.dir)
-
         listing = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
         dir_list = []
         file_list = []
@@ -59,9 +58,9 @@ def api():
         for entry in listing:
             try:
                 stat_info = file_props(entry).stat()
-            except BaseException as e:
-                # This file or directory will not be available for reading anyway
+            except BaseException:
                 continue
+
             obj = {
                 "name": basename(entry),
                 "modified": stat_info.st_mtime * 1000
@@ -76,7 +75,9 @@ def api():
                 obj["type"] = "directory"
                 dir_list.append(obj)
 
-        return json_to_string(dir_list + file_list)
+        response = HTTPResponse(status=200)
+        response.body = json_to_string(dir_list + file_list)
+        return response
 
     elif action == "getfile":
         fname = abspath(normalize(request.query.file))
@@ -84,20 +85,21 @@ def api():
         if not file_props(fname).is_file():
             return HTTPResponse(status=404)
 
-        lowername = fname.lower()
         for glob in config["allowed_files"]:
-            if glob_match(lowername, glob):
+            if glob_match(fname.lower(), glob):
                 try:
-                    fd = open(fname, 'rb')
                     response = HTTPResponse(status=200)
-                    response.body = fd.read()
-                    fd.close()
+                    with open_file(fname, 'rb') as fd:
+                        response.body = fd.read()
+
                     response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
                     response.set_header("Pragma", "no-cache")
                     response.set_header("Expires", "0")
                     return response
-                except BaseException as e:
+                except BaseException:
                     pass
+
+        return HTTPResponse(status=403)
 
     return HTTPResponse(status=400)
 
@@ -112,5 +114,5 @@ open_browser_tab(tab_url)
 try:
     print("Listening on http://localhost:{0}".format(listen_port))
     run(host='localhost', port=listen_port, quiet=True, debug=False)
-except BaseException as e:
+except BaseException:
     pass
