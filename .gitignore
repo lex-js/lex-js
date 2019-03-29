@@ -63,6 +63,3 @@ typings/
 .DS_Store
 build/
 tmp/
-
-public/js/bundle.min.js
-

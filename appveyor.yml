@@ -31,5 +31,8 @@ build_script:
   - cmd: "%PYTHON%\\Scripts\\pyinstaller.exe --onefile --add-data index.html;. --add-data public;public --distpath build index.py"
   - cmd: 'ren "build\\index.exe" lex-win-%ARCH%.exe'
 
+test_script:
+  - "npm test"
+
 artifacts:
   - path: .\build\*

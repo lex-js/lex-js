@@ -4,6 +4,8 @@
   "private": true,
   "description": "Reimplementation of Lexicon Viewer",
   "scripts": {
+    "test": "npm run bundle:build && ava --verbose",
+    "test:dev": "npm run bundle:dev && ava --verbose",
     "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",
     "bundle:transpile": "babel src/ --out-dir tmp/",
     "bundle:browserify": "browserify tmp/init.js -o tmp/bundle.js",
@@ -22,6 +24,7 @@
     "@babel/plugin-transform-runtime": "^7.4.0",
     "@babel/preset-env": "^7.4.2",
     "@babel/runtime": "^7.4.2",
+    "ava": "^1.4.1",
     "babelify": "^10.0.0",
     "browserify": "^16.2.3",
     "fastclick": "^1.0.6",
