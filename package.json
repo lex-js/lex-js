@@ -12,7 +12,7 @@
     "bundle:uglify": "uglifyjs tmp/bundle.js -c -o public/js/bundle.min.js",
     "bundle:clean": "rm -rf tmp/",
     "bundle:build": "npm run bundle:transpile && npm run bundle:browserify && npm run bundle:uglify && npm run bundle:clean",
-    "binary:prepare": "bash scripts/preparePkg.sh"
+    "binary:prepare": "npm run bundle:build && bash scripts/preparePkg.sh"
   },
   "keywords": [],
   "author": "lex-js & limitedeternity",
