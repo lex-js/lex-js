@@ -59,7 +59,7 @@ If you wish to set up a public instance available for anyone on the web, use eit
 
 ## With no setup
 
-If for any reason you don't want to use any of the methods above, you can still run the app by opening `index.html` from the latest "Source code" release.
+If for any reason you don't want to use any of the methods above, you can still run the app by opening `index.html` from the latest "Basic" release.
 
 However, content listing will not work, as it relies on server-side code to provide file info. Preserving local files in browser storage may not work too, depending on how IndexedDB API is implemented in your browser.
 
