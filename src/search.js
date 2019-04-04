@@ -21,83 +21,77 @@ module.exports = class SearchControl {
   searchDefault (text, str) {
     const { state, config } = this.app;
 
-    var c,
-        n = 0,
-        line,
-        r = [],
-        tr = [],
+    let char,
+        // Number of matching symbols
+        matching = 0,
+        result = [],
+        blocks = [],
         lines = text.split('\n'),
-        tn = 0,
+        blockLength = 0,
         lineNumbersWidth = state.numbers.set ? (
             state.numbers.width + config.line_numbers_padding
         ) : 0;
 
-    // Remove ' ' & '-'
-    // TODO: refactor;
-    // Do not change lines at all:
-    // create a new array of line lengths instead.
-    for (var y = 0; y < lines.length; y++) {
-      while (
-        lines[y].length &&
-          (lines[y].endsWith('-') || lines[y].endsWith(' '))
-      ) {
-        lines[y] = lines[y].slice(0, -1);
-      }
-    }
+    for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
+      const line = lines[lineNumber];
+      // Skip ' ' and '-' at the line end.
+      const skipEnd = line.match(/[- ]+$/g);
+      const length = skipEnd !== null ? line.length - skipEnd[0].length : line.length;
+      // Skip ' ' and '-' at the line front.
+      const skipStart = line.match(/^[- ]/g);
+      let ix = skipStart !== null ? skipStart[0].length : 0;
 
-    for (y = 0; y < lines.length; y++) {
-      line = lines[y];
-      var ix = 0;
+      // Iterate through the current line.
+      for (; ix < length; ix++) {
+        char = line[ix];
+        // If current character does not match the search string,
+        // clear matching blocks and reset the counters.
+        if (char != str[matching]) {
+          blocks = [];
+          matching = 0;
+          blockLength = 0;
+        } // We've reset the `matching` counter - hence no `else` after this block.
 
-      // затираем ' ' и '-' в начале строки
-      while (ix < line.length && ' -'.indexOf(line[ix]) != -1) {
-        ix++;
-      }
-
-      for (var x = ix; x < line.length; x++) {
-        c = line[x];
-        if (c != str[n]) {
-          tr = []; // если очередной символ не совпал нужно сбросить
-          n = 0; // счетчик символов и все предыдущие блоки
-          tn = 0;
-        } // Здесь не стоит else потому, что после обнуления n
-        // может сразу начаться новое слово, удовлетворяющее поиску
-        if (c == str[n]) {
-          // очередная буква совпала
-          if (n < str.length) {
-            // полное совпадение короче строки, которую ищем
-            n++; // добавляем один символ
-            tn++;
+        // If current character matches the corresponding character of the
+        // search string
+        if (char == str[matching]) {
+          // Add it.
+          if (matching < str.length) {
+            matching++;
+            blockLength++;
           }
-          if (n == str.length) {
-            // слово найдено. Добавляем блок
-            tr.push({
-              line: y,
-              start: x - tn + 1 + lineNumbersWidth,
-              length: tn
+
+          // Check if we are done.
+          if (matching == str.length) {
+            // Add a block
+            blocks.push({
+              line: lineNumber,
+              start: ix - blockLength + 1 + lineNumbersWidth,
+              length: blockLength
             });
-            r.push(tr); // добавляем все блоки в результат
-            tr = []; // обнуляем список блоков
-            n = 0; // обнуляем счетчик совпадающих символов
-            tn = 0; // обнуляем счетчик совпадающих символов в текущем блоке
+            // Save all blocks to `result`
+            result.push(blocks);
+            // Reset the state.
+            blocks = [];
+            matching = 0;
+            blockLength = 0;
           }
         }
       }
 
-      if (n) {
-        // если достигнут конец строки,
-        // и число совпадающих подряд символов
-        // не 0, добавить блок
-        tr.push({
-          line: y,
-          start: x - tn + lineNumbersWidth,
-          length: tn
+      // If after the end of line we have only partial match,
+      // we add a block and proceed to the next line.
+      if (matching > 0) {
+        blocks.push({
+          line: lineNumber,
+          start: ix - blockLength + lineNumbersWidth,
+          length: blockLength
         });
-        tn = 0;
+        blockLength = 0;
       }
     }
 
-    return r;
+    return result;
   }
 
   searchCaseInsensitive (text, str) {

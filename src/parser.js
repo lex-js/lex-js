@@ -1,3 +1,4 @@
+/* global module */
 module.exports = class Parser {
   constructor (app) {
     this.app = app;
@@ -5,7 +6,7 @@ module.exports = class Parser {
 
   parseLine (line) {
     // Transforms the byte array into a list of objects.
-    // Each object is exactly 1 character on the screen.
+    // Each object corresponds to exactly one character on the screen.
     var r = [],
         font = 0,
         command = false,
@@ -37,11 +38,7 @@ module.exports = class Parser {
         if (char === 255) {
           command = true;
         } else {
-          r.push({
-            char: char,
-            underline: underline,
-            font: font
-          });
+          r.push({ char, underline, font });
         }
       }
     }
