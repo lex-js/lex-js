@@ -19,4 +19,4 @@ done
 
 cd ../
 
-zip -r -FS ./build/lex-js-basic.zip index.html public
+zip -r ./build/lex-js-basic.zip index.html public

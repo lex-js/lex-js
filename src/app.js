@@ -1,3 +1,4 @@
+/* global require module preloadedFile setTimeout FileReader */
 const Mousetrap = require('mousetrap');
 
 const Coders = require('./coders');

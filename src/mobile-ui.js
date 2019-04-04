@@ -39,8 +39,8 @@ module.exports = class MobileUI {
       name.className = 'mobile-file-name';
       name.addEventListener(
         'click',
-        () => {
-          this.app.files.loadLocal(fileName);
+        async () => {
+          await this.app.files.loadLocal(fileName);
           this.closeMenu();
         }
       );

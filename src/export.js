@@ -94,7 +94,7 @@ module.exports = class Export {
         (state.file.name ? state.file.name : "local")
         .trim()
         .replace(/[^a-z0-9]/gi, "_") // TODO: include alphabets other than latin
-        .replace(/_{2,}/gi, "_") +
+        .replace(/_{2,}/g, "_") +
         '.png'
     );
   }
