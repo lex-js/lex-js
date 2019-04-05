@@ -6,25 +6,13 @@ module.exports = class Files {
     this.app = app;
   }
 
-  isLSFileName (filename) {
-    return filename.startsWith(this.app.config.ls_file_prefix);
-  }
-
-  LSFileNameToFileName (filename) {
-    return filename.substr(this.app.config.ls_file_prefix.length);
-  }
-
   getFileList () {
-    return localforage.keys().then(value => {
-      var filtered = [];
-      for (var i in value) {
-        var item = value[i];
-        if (this.isLSFileName(item)) {
-          filtered.push(this.LSFileNameToFileName(item));
-        }
-      }
-      return filtered;
-    });
+    const prefix = this.app.config.ls_file_prefix;
+    return localforage.keys().then(keys => keys.filter(
+      key => key.startsWith(prefix)
+    ).map(
+      key => key.substr(prefix.length)
+    ));
   }
 
   async saveFile (filename, source) {
@@ -42,30 +30,17 @@ module.exports = class Files {
     await this.app.ui.updateFileList();
   }
 
-  pushSelectedToLS (file) {
-    const reader = new FileReader();
-
-    reader.onload = (event) => {
-      this.saveFile(
-        file.name,
-        this.app.coders.Uint8ArrayToString(event.target.result)
-      );
-    };
-
-    reader.readAsArrayBuffer(file);
-  }
-
-  loadLocal (filename) {
+  async loadLocal (filename) {
     const { coders, state, ui } = this.app;
-    return localforage.getItem(
+    const contents = await localforage.getItem(
       this.app.config.ls_file_prefix + filename
-    ).then(contents => {
-      this.loadFromSource(coders.stringToUint8Array(contents));
-      ui.setWindowTitle(filename);
-      state.file.name = filename;
-      state.file.remote_name = "";
-      this.postLoad();
-    });
+    );
+
+    this.loadFromSource(coders.stringToUint8Array(contents));
+    ui.setWindowTitle(filename);
+    state.file.name = filename;
+    state.file.remote_name = "";
+    this.postLoad();
   }
 
   async loadRemote(url, remoteName) {
@@ -85,23 +60,14 @@ module.exports = class Files {
     }
   }
 
-  // TODO: remove callback
   loadFromSource (source) {
     source = new Uint8Array(source);
 
-    // Save file source or flush it.
-    // Saving is useful for debugging.
-    if (this.app.config.save_file_source) {
-      this.app.state.file.source = source;
-    } else {
-      this.app.state.file.source = new Uint8Array();
-    }
+    this.app.state.file.lines = [new Uint8Array()];  // insert an empty line
 
-    this.app.state.file.lines = [new Uint8Array()];  // insert one empty line
+    let lineBytes = [];
 
-    // TODO: refactor
-    var lineBytes = [];
-    for (var i = 0; i < source.byteLength; i++) {
+    for (let i = 0; i < source.byteLength; i++) {
       if (source[i] == 13) {
         this.app.state.file.lines.push(new Uint8Array(lineBytes));
         lineBytes = [];
@@ -112,8 +78,7 @@ module.exports = class Files {
     }
 
     this.app.state.file.lines.push(new Uint8Array(lineBytes));
-
-    return this.app.state.file;
+    return this.app.state.file.lines;
   }
 
   postLoad () {

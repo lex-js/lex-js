@@ -171,10 +171,6 @@ module.exports = {
   // действия пользователя до обновления адресной строки.
   uri_hash_update_delay: 500,
 
-  // Save file source in memory? (use for debugging)
-  // Хранить ли исходник файла в памяти? (для отладки)
-  save_file_source: false,
-
   // Prefix for filenames in localforage.
   // Префекс для сохранения файлов в localforage.
   ls_file_prefix: 'file_',
