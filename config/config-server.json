@@ -6,6 +6,6 @@
     "author": "lex-js"
   },
   "port": 64320,
-  "content_dir": "./files",
+  "content_dir": ":home:",
   "allowed_files": ["**/*.txt", "**/*.c", "**/*.hs"]
 }

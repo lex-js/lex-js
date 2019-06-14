@@ -1,6 +1,6 @@
 import sys
 from os import sep as path_separator
-from os.path import abspath, relpath, realpath, basename, dirname, normpath as normalize, join as join_path, splitdrive
+from os.path import abspath, expanduser, basename, dirname, join as join_path
 from pathlib import Path as file_props
 from io import open as open_file
 from webbrowser import open as open_browser_tab
@@ -9,40 +9,55 @@ from glob import glob as find_by_glob
 from json import load as load_json, dumps as json_to_string
 from bottle import get, request, static_file, HTTPResponse, run
 
-
-external_root = None # for content_root
-internal_root = None # for static assets
+RUNTIME_CONFIG = {
+    "external_root": None,
+    "internal_root": None,
+    "content_root": None,
+    "tab_url": None,
+    "file_is_opened_from_cli": False,
+}
 
 if getattr(sys, 'frozen', False):
-    external_root = abspath(dirname(sys.executable))
-    internal_root = sys._MEIPASS
+    RUNTIME_CONFIG["external_root"] = abspath(dirname(sys.executable))
+    RUNTIME_CONFIG["internal_root"] = sys._MEIPASS
 
 else:
-    internal_root = external_root = abspath(dirname(__file__))
+    RUNTIME_CONFIG["internal_root"] = RUNTIME_CONFIG["external_root"] = abspath(
+        dirname(__file__))
 
-config = load_json(
+CONFIG_FILE = load_json(
     open_file(
-        join_path(external_root, "config", "config-server.json"),
+        join_path(RUNTIME_CONFIG["external_root"],
+                  "config", "config-server.json"),
         "r"
     )
 )
 
-content_root = normalize(config["content_dir"])
-listen_port = config["port"]
-
 if len(sys.argv) > 1 and file_props(sys.argv[1]).is_file():
     print("Opening file {0}".format(sys.argv[1]))
-    tab_url = "http://localhost:{0}/#remote:{1}:0".format(
-        listen_port,
-        normalize(abspath(sys.argv[1])).replace('\\', '/')
+    RUNTIME_CONFIG["file_is_opened_from_cli"] = True
+
+    RUNTIME_CONFIG["tab_url"] = "http://localhost:{0}/#remote:{1}:0".format(
+        CONFIG_FILE["port"],
+        abspath(sys.argv[1]).replace('\\', '/')
     )
 else:
-    tab_url = "http://localhost:{0}".format(listen_port)
+    RUNTIME_CONFIG["tab_url"] = "http://localhost:{0}".format(
+        CONFIG_FILE["port"])
+
+
+if CONFIG_FILE["content_dir"] == ":drive:":
+    RUNTIME_CONFIG["content_root"] = abspath(path_separator)
+elif CONFIG_FILE["content_dir"] == ":home:":
+    RUNTIME_CONFIG["content_root"] = expanduser("~")
+else:
+    RUNTIME_CONFIG["content_root"] = abspath(
+        CONFIG_FILE["content_dir"].replace("../", "").lstrip("/"))
 
 
 @get('/')
 def index():
-    return static_file('index.html', root=internal_root)
+    return static_file('index.html', root=RUNTIME_CONFIG["internal_root"])
 
 
 @get('/api')
@@ -50,7 +65,9 @@ def api():
     action = request.query.action
 
     if action == "listdir":
-        path = normalize(request.query.dir)
+        path = join_path(RUNTIME_CONFIG["content_root"], request.query.dir.replace(
+            "../", "").lstrip("/"))
+
         listing = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
         dir_list = []
         file_list = []
@@ -77,25 +94,34 @@ def api():
 
         response = HTTPResponse(status=200)
         response.body = json_to_string(dir_list + file_list)
-        response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
+        response.set_header(
+            "Cache-Control", "no-cache, no-store, must-revalidate")
         response.set_header("Pragma", "no-cache")
         response.set_header("Expires", "0")
         return response
 
     elif action == "getfile":
-        fname = abspath(normalize(request.query.file))
+        fname = None
+        if RUNTIME_CONFIG["file_is_opened_from_cli"]:
+            fname = abspath(request.query.file)
+            RUNTIME_CONFIG["file_is_opened_from_cli"] = False
+
+        else:
+            fname = join_path(
+                RUNTIME_CONFIG["content_root"], request.query.file.lstrip("/"))
 
         if not file_props(fname).is_file():
             return HTTPResponse(status=404)
 
-        for glob in config["allowed_files"]:
+        for glob in CONFIG_FILE["allowed_files"]:
             if glob_match(fname.lower(), glob):
                 try:
                     response = HTTPResponse(status=200)
                     with open_file(fname, 'rb') as fd:
                         response.body = fd.read()
 
-                    response.set_header("Cache-Control", "no-cache, no-store, must-revalidate")
+                    response.set_header(
+                        "Cache-Control", "no-cache, no-store, must-revalidate")
                     response.set_header("Pragma", "no-cache")
                     response.set_header("Expires", "0")
                     return response
@@ -109,13 +135,13 @@ def api():
 
 @get('/public/<filename:path>')
 def send_static(filename):
-    return static_file(filename, root=join_path(internal_root, "public"))
+    return static_file(filename, root=join_path(RUNTIME_CONFIG["internal_root"], "public"))
 
 
-open_browser_tab(tab_url)
+open_browser_tab(RUNTIME_CONFIG["tab_url"])
 
 try:
-    print("Listening on http://localhost:{0}".format(listen_port))
-    run(host='localhost', port=listen_port, quiet=True, debug=False)
+    print("Listening on http://localhost:{0}".format(CONFIG_FILE["port"]))
+    run(host='localhost', port=CONFIG_FILE["port"], quiet=True, debug=False)
 except BaseException:
     pass
