@@ -1,3 +1,5 @@
+/* global module */
+
 module.exports = class Scroll {
   constructor (app) {
     this.app = app;

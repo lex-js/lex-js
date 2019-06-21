@@ -1,3 +1,4 @@
+/* global module */
 module.exports = class SearchControl {
   constructor (app) {
     this.app = app;

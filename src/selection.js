@@ -1,3 +1,5 @@
+/* global module require */
+
 const { byteToCharCP866 } = require('./cp866.js');
 
 module.exports = class SelectionControl {

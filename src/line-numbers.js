@@ -1,3 +1,5 @@
+/* global module */
+
 module.exports = class LineNumbers {
   constructor (app) {
     this.app = app;

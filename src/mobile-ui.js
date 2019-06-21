@@ -1,3 +1,5 @@
+/* global module */
+
 module.exports = class MobileUI {
   constructor (app) {
     this.app = app;

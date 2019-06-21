@@ -1,3 +1,5 @@
+/* global module fetch */
+
 module.exports = class ContentBrowser {
   constructor (app) {
     this.app = app;

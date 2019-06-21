@@ -1,3 +1,4 @@
+/* global module require */
 const { charToByteCP866, byteToCharCP866 } = require('./cp866.js');
 
 /** Encoders & decoders.

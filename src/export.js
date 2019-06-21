@@ -1,3 +1,5 @@
+/* global module require */
+
 const { saveAs } = require('file-saver');
 
 module.exports = class Export {

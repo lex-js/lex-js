@@ -1,3 +1,5 @@
+/* global module history location clearTimeout setTimeout */
+
 module.exports = class URIHashControl {
   constructor (app) {
     this.app = app;

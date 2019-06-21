@@ -1,3 +1,5 @@
+/* global module */
+
 module.exports = class UI {
   constructor (app) {
     this.app = app;

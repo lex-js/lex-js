@@ -1,3 +1,5 @@
+/* global require */
+
 const App = require('./app');
 const attachFastClick = require('fastclick');
 

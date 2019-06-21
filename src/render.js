@@ -1,3 +1,5 @@
+/* global module */
+
 module.exports = class Render {
   constructor (app) {
     this.app = app;
