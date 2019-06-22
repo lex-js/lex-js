@@ -177,7 +177,7 @@ module.exports = class ContentBrowser {
 
         row.onclick = async () => {
           var url = config.content_real_path +
-              state.content_list.path + '/' + filename;
+              encodeURIComponent(state.content_list.path + '/' + filename);
 
           try {
             await files.loadRemote(
