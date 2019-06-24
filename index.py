@@ -27,11 +27,11 @@ else:
         dirname(__file__))
 
 if len(sys.argv) > 1:
-    print("Opening file {0}".format(sys.argv[1]))
+    print("Opening file {0}".format(basename(abspath(sys.argv[1]))))
 
     RUNTIME["tab_url"] = "http://localhost:{0}/#remote:{1}:0".format(
         CONFIG["port"],
-        sys.argv[1].replace('\\', '/')
+        abspath(sys.argv[1]).replace('\\', '/')
     )
 else:
     RUNTIME["tab_url"] = "http://localhost:{0}".format(
