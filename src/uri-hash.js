@@ -1,13 +1,13 @@
 /* global module history location clearTimeout setTimeout */
 
 module.exports = class URIHashControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
   // Allows to change the hash only once per config.uri_hash_update_delay.
   // Delay is required since URL hash update is quite slow.
-  set (newURLHash) {
+  set(newURLHash) {
     var updateFunction = () => {
       if (newURLHash) {
         if (history.replaceState) {
@@ -35,7 +35,7 @@ module.exports = class URIHashControl {
     }
   }
 
-  update () {
+  update() {
     var newURLHash = '';
     if (!!this.app.state.file.remote_name) {
       newURLHash = 'remote:' + this.app.state.file.remote_name + ':' + this.app.scroll.y;
@@ -48,7 +48,7 @@ module.exports = class URIHashControl {
     this.set(newURLHash);
   }
 
-  async process (hash) {
+  async process(hash) {
     const parsedHash = this.parseHash(hash);
 
     if (parsedHash === null) {
@@ -87,7 +87,7 @@ module.exports = class URIHashControl {
     }
   }
 
-  async load (parsed) {
+  async load(parsed) {
     if (parsed.type == 'remote') {
       var baseName = parsed.file.split(/[\\/]/).pop();
 
@@ -121,7 +121,7 @@ module.exports = class URIHashControl {
     }
   }
 
-  getCurrent () {
+  getCurrent() {
     var curHash = '';
     if (this.app.state.file.name) {
       curHash =
@@ -134,7 +134,7 @@ module.exports = class URIHashControl {
     return curHash;
   }
 
-  parseHash (hash) {
+  parseHash(hash) {
     const parts = decodeURIComponent(hash).substr(1).split(':');
     const type = parts.shift();
     const line = parseInt(parts.pop());

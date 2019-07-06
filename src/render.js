@@ -1,29 +1,29 @@
 /* global module */
 
 module.exports = class Render {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.resetState();
   }
 
-  resetState () {
+  resetState() {
     this.state = null;
   }
 
-  setFontBGColor (bg_color) {
+  setFontBGColor(bg_color) {
     this.app.config.bg_color = bg_color;
     this.update();
   }
 
-  setFontFGColor (fg_color) {
+  setFontFGColor(fg_color) {
     this.app.config.fg_color = fg_color;
     this.update();
   }
 
-  makeImageData () {
+  makeImageData() {
     if (
       this.app.config.load_fonts_from_source &&
-        !this.app.state.fonts.every(f => !!f.source) // if some fonts haven't loaded
+      !this.app.state.fonts.every(f => !!f.source) // if some fonts haven't loaded
     ) {
       return;
     }
@@ -66,7 +66,7 @@ module.exports = class Render {
     });
   }
 
-  underlineChar (char, font, x, y, context) {
+  underlineChar(char, font, x, y, context) {
     const { config, state } = this.app;
 
     // Mixing bitmaps of  `_` and `char` to create underline effect
@@ -79,7 +79,7 @@ module.exports = class Render {
       for (var j = 0; j < 4; j++) {
         if (
           underscoreID.data[i + j] == config.fg_color[j] ||
-            charID.data[i + j] == config.fg_color[j]
+          charID.data[i + j] == config.fg_color[j]
         ) {
           mixedID.data[i + j] = config.fg_color[j];
         } else {
@@ -95,23 +95,23 @@ module.exports = class Render {
     );
   }
 
-  updateCanvas (context) {
+  updateCanvas(context) {
     const { config, screen, state, parser, scroll } = this.app;
 
     let textWidth = screen.w,
-        textHeight = screen.h,
-        pixelWidth = textWidth * config.font_width,
-        pixelHeight = textHeight * config.font_height,
-        xShift = scroll.x,
-        yShift = scroll.y,
-        start = 0,
-        end = textHeight;
+      textHeight = screen.h,
+      pixelWidth = textWidth * config.font_width,
+      pixelHeight = textHeight * config.font_height,
+      xShift = scroll.x,
+      yShift = scroll.y,
+      start = 0,
+      end = textHeight;
 
     // Redraw only recently appeared area.
     if (this.state) {
       var { x: old_x, y: old_y } = this.state,
-          x_shift = old_x - xShift,
-          y_shift = old_y - yShift;
+        x_shift = old_x - xShift,
+        y_shift = old_y - yShift;
 
       if (Math.abs(y_shift) < textHeight) {
         var id = context.getImageData(0, 0, pixelWidth, pixelHeight);
@@ -169,7 +169,7 @@ module.exports = class Render {
     }
   }
 
-  updateSelection (context) {
+  updateSelection(context) {
     const { config, state, scroll } = this.app;
     if (state.selection.set) {
       var t = config.selection_fill_color;
@@ -185,7 +185,7 @@ module.exports = class Render {
     this.resetState();
   }
 
-  updateSearchResults (context) {
+  updateSearchResults(context) {
     const { screen, scroll, config, state } = this.app;
     const { search } = state;
 
@@ -198,15 +198,15 @@ module.exports = class Render {
           if (block.line >= scrollY && block.line <= scrollY + screen.h) {
             var style = config[
               'search_' +
-                (resultIndex == search.activeResult ? 'active_' : '') +
-                'fill_color'
+              (resultIndex == search.activeResult ? 'active_' : '') +
+              'fill_color'
             ];
 
             context.fillStyle = (
               'rgba(' + style[0] + ','
-                      + style[1] + ','
-                      + style[2] + ','
-                      + style[3] / 255 + ')'
+              + style[1] + ','
+              + style[2] + ','
+              + style[3] / 255 + ')'
             );
 
             context.fillRect(
@@ -223,7 +223,7 @@ module.exports = class Render {
     this.resetState();
   }
 
-  update () {
+  update() {
     const { config, state, ui } = this.app;
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');

@@ -1,22 +1,21 @@
 /* global module fetch */
 
 module.exports = class ContentBrowser {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  get active () {
+  get active() {
     return this.app.state.content_list.active;
   }
 
-  async show () {
+  async show() {
 
     const json = await this.update().catch(err => {
       this.app.log('ContentBrowser.show', err);
       this.app.alert(
         "[Error while loading contents]: is webserver up and running?"
       );
-
     });
 
     await this.load(json);
@@ -25,16 +24,16 @@ module.exports = class ContentBrowser {
     document.getElementById('content-list-container').style.display = 'block';
   }
 
-  hide () {
+  hide() {
     this.app.state.content_list.active = false;
     document.getElementById('content-list-container').style.display = 'none';
   }
 
-  toggle () {
+  toggle() {
     this[this.app.state.content_list.active ? 'hide' : 'show']();
   }
 
-  scrollIfNeeded (element, container) {
+  scrollIfNeeded(element, container) {
     if (element.offsetTop < container.scrollTop) {
       container.scrollTop = element.offsetTop;
     } else {
@@ -47,7 +46,7 @@ module.exports = class ContentBrowser {
   }
 
   // where = 'top' | 'bottom' | number
-  navigate (where) {
+  navigate(where) {
     var trs = Array.from(
       document.querySelectorAll('#content-list-table > tr')
     );
@@ -95,7 +94,7 @@ module.exports = class ContentBrowser {
     }
   }
 
-  async update () {
+  async update() {
     document.getElementById('content-list').textContent = "Loading...";
 
     const response = await fetch(
@@ -105,7 +104,7 @@ module.exports = class ContentBrowser {
     return response.json();
   }
 
-  load (list) {
+  load(list) {
     const { ui, state, config, files } = this.app;
 
     var content_list = document.getElementById('content-list');
@@ -177,7 +176,7 @@ module.exports = class ContentBrowser {
 
         row.onclick = async () => {
           var url = config.content_real_path +
-              encodeURIComponent(state.content_list.path + '/' + filename);
+            encodeURIComponent(state.content_list.path + '/' + filename);
 
           try {
             await files.loadRemote(
@@ -202,9 +201,9 @@ module.exports = class ContentBrowser {
         row.onclick = () => {
           state.content_list.path =
             state.content_list.path
-            .split('/')
-            .slice(0, -1)
-            .join('/') || '/';
+              .split('/')
+              .slice(0, -1)
+              .join('/') || '/';
           this.show();
         };
       }

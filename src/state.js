@@ -1,10 +1,10 @@
 /** Attach runtime state of the app to the app object. */
 module.exports = app => {
-  app.state =  {
+  app.state = {
     is_mobile: /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
       (navigator || {}).userAgent || ''
     ),
-    fonts: app.config.fonts.map(() => { bitmaps: {} }),
+    fonts: app.config.fonts.map(() => { bitmaps: { } }),
     file: {
       name: "",
       // Remote file path of currently opened file (empty if file is local)

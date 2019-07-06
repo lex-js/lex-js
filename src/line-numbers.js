@@ -1,11 +1,11 @@
 /* global module */
 
 module.exports = class LineNumbers {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  remove () {
+  remove() {
     const { config, state, render, search, scroll, screen } = this.app;
 
     for (var i = 0; i < state.file.lines.length; i++) {
@@ -23,7 +23,7 @@ module.exports = class LineNumbers {
     render.update();
   }
 
-  add () {
+  add() {
     const { config, state, render, search, parser, scroll, screen } = this.app;
 
     state.numbers.width = (state.file.lines.length + "").length + 1;
@@ -40,7 +40,7 @@ module.exports = class LineNumbers {
     state.index.maxlen += state.numbers.width + config.line_numbers_padding;
   }
 
-  toggle () {
+  toggle() {
     const { state } = this.app;
 
     if (state.numbers.set) {

@@ -19,18 +19,18 @@ module.exports = {
   font_width: 8,
   font_height: 19,
 
-  fonts: [ 'public/fonts/VGA0.SFN',
-           'public/fonts/VGA1.SFN',
-           'public/fonts/VGA2.SFN',
-           'public/fonts/VGA3.SFN',
-           'public/fonts/VGA4.SFN',
-           'public/fonts/VGA5.SFN',
-           'public/fonts/VGA6.SFN',
-           'public/fonts/VGA7.SFN',
-           'public/fonts/VGA8.SFN',
-           'public/fonts/VGA9.SFN',
-           'public/fonts/VGA10.SFN',
-           'public/fonts/VGA11.SFN' ],
+  fonts: ['public/fonts/VGA0.SFN',
+    'public/fonts/VGA1.SFN',
+    'public/fonts/VGA2.SFN',
+    'public/fonts/VGA3.SFN',
+    'public/fonts/VGA4.SFN',
+    'public/fonts/VGA5.SFN',
+    'public/fonts/VGA6.SFN',
+    'public/fonts/VGA7.SFN',
+    'public/fonts/VGA8.SFN',
+    'public/fonts/VGA9.SFN',
+    'public/fonts/VGA10.SFN',
+    'public/fonts/VGA11.SFN'],
 
   // Load fonts from source (.SFN) files?
   // If set to true, fonts from `public/fonts` will be used.
@@ -109,7 +109,7 @@ module.exports = {
 
   // Greeting file URL, used if load_file_from_source is set to `true`
   // Файл, открываемый при старте, если load_file_from_source == true
-  greeting_file:'public/startPage/info.txt',
+  greeting_file: 'public/startPage/info.txt',
 
 
   /* Files */

@@ -1,7 +1,7 @@
 /* global module */
 
 module.exports = class Scroll {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.container = document.getElementById('canvas-scroll-container');
     this.container.addEventListener('scroll', () => this.fromScrollBar());
@@ -14,13 +14,13 @@ module.exports = class Scroll {
     ).bind(window);
   }
 
-  get x () {
+  get x() {
     return (
       Math.round(this.container.scrollLeft / this.app.config.font_width)
     );
   }
 
-  set x (value) {
+  set x(value) {
     const { screen, state, config, scroll } = this.app;
     const { index } = state;
 
@@ -37,7 +37,7 @@ module.exports = class Scroll {
     this.container.scrollLeft = Math.round(value * config.font_width);
   }
 
-  get y () {
+  get y() {
     const { state, config } = this.app;
     const { file } = state;
     const fileHeight = file.lines.length;
@@ -48,7 +48,7 @@ module.exports = class Scroll {
     );
   }
 
-  set y (value) {
+  set y(value) {
     const { screen, state, config, scroll } = this.app;
     const { file } = state;
     const fileHeight = file.lines.length;
@@ -67,7 +67,7 @@ module.exports = class Scroll {
     this.container.scrollTop = Math.round(value * config.font_height / coeff);
   }
 
-  fromScrollBar () {
+  fromScrollBar() {
     const dx = this.container.scrollLeft;
     const dy = this.container.scrollTop;
     const { config, screen, render, URIHashControl } = this.app;
@@ -82,27 +82,27 @@ module.exports = class Scroll {
     URIHashControl.update();
   }
 
-  toBeginning () {
+  toBeginning() {
     this.y = 0;
     this.update();
   }
 
-  toEnd () {
+  toEnd() {
     this.y = this.app.state.file.lines.length;
     this.update();
   }
 
-  moveY (value) {
+  moveY(value) {
     this.y += value;
     this.update();
   }
 
-  moveX (value) {
+  moveX(value) {
     this.x += value;
     this.update();
   }
 
-  update () {
+  update() {
     const { state, screen, config } = this.app;
     const height = state.file.lines.length;
     // `scrollbarWidth` is a magic constant.

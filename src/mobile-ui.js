@@ -1,12 +1,12 @@
 /* global module */
 
 module.exports = class MobileUI {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.isButtonShown = true;
   }
 
-  openMenu (showRemote) {
+  openMenu(showRemote) {
     this.setFileList(showRemote);
     document.getElementById('mobile-menu').style.display = 'block';
   }
@@ -15,7 +15,7 @@ module.exports = class MobileUI {
    */
 
   // TODO: move showRemote somewhere else
-  async setFileList (showRemote = true) {
+  async setFileList(showRemote = true) {
     var elem = document.getElementById('mobile-file-list');
     const list = await this.app.files.getFileList();
 
@@ -62,25 +62,25 @@ module.exports = class MobileUI {
     });
   }
 
-  closeMenu () {
+  closeMenu() {
     document.getElementById('mobile-menu').style.display = 'none';
     this.app.render.update();
   }
 
   // Show/hide menu when scrolling up/down
-  showMenuButton () {
+  showMenuButton() {
     document.getElementById('mobile-menu-open').style.top = 0;
     document.getElementById('block-top').style.top = 0;
     this.isButtonShown = true;
   }
 
-  hideMenuButton () {
+  hideMenuButton() {
     document.getElementById('mobile-menu-open').style.top = '-100px';
     document.getElementById('block-top').style.top = '-100px';
     this.isButtonShown = false;
   }
 
-  toggleMenuButton () {
+  toggleMenuButton() {
     if (this.isButtonShown) {
       this.hideMenuButton();
     } else {

@@ -1,15 +1,15 @@
 /* global module */
 
 module.exports = class UI {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  setWindowTitle (fileName) {
+  setWindowTitle(fileName) {
     document.title = fileName + " - " + this.app.config.app_full_name;
   }
 
-  showGotoLinePrompt () {
+  showGotoLinePrompt() {
     var userInput = prompt("Enter line number", this.app.scroll.y);
 
     if (userInput == null) return;
@@ -23,7 +23,7 @@ module.exports = class UI {
     this.app.render.update();
   }
 
-  async updateFileList () {
+  async updateFileList() {
     var el = document.getElementById("file-list");
 
     const list = (
@@ -47,14 +47,14 @@ module.exports = class UI {
   }
 
   // update scroll position info
-  updateBottomBlock () {
+  updateBottomBlock() {
     document.getElementById("line-number").textContent = this.app.scroll.y;
     document.getElementById("line-count").textContent = (
       this.app.state.file.lines.length - 1
     );
   }
 
-  duplicateWindow () {
+  duplicateWindow() {
     window.open(document.location.href, "_blank");
   }
 };

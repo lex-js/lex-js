@@ -29,14 +29,14 @@ module.exports = {
 
   binArray2String: function (arr) {
     let byteSize = 8, // size of one byte in bits
-        result = '',
-        arrlen = arr.length;
+      result = '',
+      arrlen = arr.length;
 
     while (arr.length % byteSize) {
       arr.push(0);
     }
 
-    for (let i = 0; i < arr.length; ) {
+    for (let i = 0; i < arr.length;) {
       let b = '';
       while (b.length < byteSize) {
         if (typeof arr[i] == 'undefined') {
@@ -55,10 +55,10 @@ module.exports = {
 
   string2BinArray: function (string) {
     let byteLength = 8,
-        arrlen = string.substr(0, string.indexOf(':')) * 1,
-        result = [],
-        charCode,
-        bits;
+      arrlen = string.substr(0, string.indexOf(':')) * 1,
+      result = [],
+      charCode,
+      bits;
 
     string = string.substr(string.indexOf(':') + 1);
 

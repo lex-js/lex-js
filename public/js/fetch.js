@@ -1,18 +1,19 @@
-(function() {
-  window.fetch = function(url, options) {
+(function () {
+  window.fetch = function (url, options) {
     options = options || {};
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       var request = new XMLHttpRequest();
       request.open(options.method || "get", url, true);
 
-      for (var i in options.headers) {
-        request.setRequestHeader(i, options.headers[i]);
+      var optHeaders = Object.entries(options.headers || {});
+      for (var i = 0; i < optHeaders.length; i++) {
+        request.setRequestHeader(optHeaders[i][0], optHeaders[i][1]);
       }
 
       request.withCredentials = options.credentials == "include";
 
-      request.onload = function() {
+      request.onload = function () {
         resolve(response());
       };
 
@@ -27,7 +28,7 @@
 
         request
           .getAllResponseHeaders()
-          .replace(/^(.*?):[^\S\n]*([\s\S]*?)$/gm, function(match, key, value) {
+          .replace(/^(.*?):[^\S\n]*([\s\S]*?)$/gm, function (match, key, value) {
             _keys.push((key = key.toLowerCase()));
 
             all.push([key, value]);
@@ -58,10 +59,9 @@
             function blobToArrayBuffer(blob) {
               var fileReader = new FileReader();
 
-              return new Promise(function(resolve, reject) {
+              return new Promise(function (resolve, reject) {
                 fileReader.onload = resolve;
                 fileReader.onerror = reject;
-
                 fileReader.readAsArrayBuffer(blob);
               });
             }
@@ -79,7 +79,7 @@
               return headers[n.toLowerCase()];
             },
             has: function has(n) {
-              return n.toLowerCase() in headers;
+              return headers.hasOwnProperty(n.toLowerCase());
             }
           }
         };

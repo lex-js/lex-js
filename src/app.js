@@ -21,7 +21,7 @@ const URIHashControl = require('./uri-hash');
 const Scroll = require('./scroll');
 
 module.exports = class App {
-  constructor () {
+  constructor() {
     const app = this;
     app.coders = Coders;
     app.config = this.loadConfig();
@@ -42,11 +42,11 @@ module.exports = class App {
     app.scroll = new Scroll(app);
   }
 
-  log () {
+  log() {
     console.log.apply(console, arguments);
   }
 
-  alert () {
+  alert() {
     if (typeof alert === 'function') {
       alert(...arguments);
     } else {
@@ -54,7 +54,7 @@ module.exports = class App {
     }
   }
 
-  loadConfig () {
+  loadConfig() {
     return (
       (typeof window.userConfig === 'object') ?
         Object.assign(defaultConfig, window.userConfig) :
@@ -62,16 +62,16 @@ module.exports = class App {
     );
   }
 
-  initMousetrap () {
+  initMousetrap() {
     const { screen, contentBrowser, state, ui, lineNumbers,
-            config, selection, render, search, scroll } = this;
+      config, selection, render, search, scroll } = this;
 
     const moveY = value => () => {
       if (contentBrowser.active) {
-          contentBrowser.navigate(value);
-        } else {
-          scroll.moveY(value);
-        }
+        contentBrowser.navigate(value);
+      } else {
+        scroll.moveY(value);
+      }
     };
 
     const moveX = value => () => {
@@ -191,9 +191,9 @@ module.exports = class App {
     });
   }
 
-  async init () {
+  async init() {
     const { screen, state, files, render, config, FontControl,
-            URIHashControl } = this;
+      URIHashControl } = this;
 
     this.initMousetrap();
     screen.update();
@@ -241,7 +241,7 @@ module.exports = class App {
     await this.postInit();
   }
 
-  async postInit () {
+  async postInit() {
     this.screen.update();
     await this.ui.updateFileList();
     this.render.makeImageData();
@@ -249,9 +249,9 @@ module.exports = class App {
     document.getElementById('preloader').style.display = 'none';
   }
 
-  eventsInit () {
+  eventsInit() {
     const { search, config, state, URIHashControl, render,
-            coders, files, ui, contentBrowser, lineNumbers } = this;
+      coders, files, ui, contentBrowser, lineNumbers } = this;
 
     const canvas = document.getElementById('canvas');
 
@@ -351,7 +351,7 @@ module.exports = class App {
     });
   }
 
-  async mobileInit () {
+  async mobileInit() {
     return new Promise((resolve, reject) => {
       // add mobile css
       var style = document.createElement('link');
@@ -364,7 +364,7 @@ module.exports = class App {
     });
   }
 
-  mobileEventsInit () {
+  mobileEventsInit() {
     const { mobileUI, contentBrowser, state, ui, lineNumbers } = this;
 
     var actionDefs = {
@@ -406,7 +406,7 @@ module.exports = class App {
     });
   }
 
-  canvasInit () {
+  canvasInit() {
     const { state, scroll, render, config, selection, mobileUI } = this;
 
     const canvas = document.getElementById('canvas');

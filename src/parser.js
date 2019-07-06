@@ -1,17 +1,17 @@
 /* global module */
 module.exports = class Parser {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  parseLine (line) {
+  parseLine(line) {
     // Transforms the byte array into a list of objects.
     // Each object corresponds to exactly one character on the screen.
     var r = [],
-        font = 0,
-        command = false,
-        underline = false,
-        config = this.app.config;
+      font = 0,
+      command = false,
+      underline = false,
+      config = this.app.config;
 
     for (var x = 0; x < line.length; x++) {
       var char = line[x];
@@ -19,20 +19,20 @@ module.exports = class Parser {
         command = 0;
 
         switch (char) {
-        case config.parser.underline_false:
-          underline = false;
-          break;
-        case config.parser.underline_true:
-          underline = true;
-          break;
-        case config.parser.empty_line:
-          return r;
-          break;
-        default:
-          if (typeof config.parser.fonts[char] !== "undefined") {
-            font = config.parser.fonts[char];
-          }
-          break;
+          case config.parser.underline_false:
+            underline = false;
+            break;
+          case config.parser.underline_true:
+            underline = true;
+            break;
+          case config.parser.empty_line:
+            return r;
+            break;
+          default:
+            if (typeof config.parser.fonts[char] !== "undefined") {
+              font = config.parser.fonts[char];
+            }
+            break;
         }
       } else {
         if (char === 255) {
@@ -45,7 +45,7 @@ module.exports = class Parser {
     return r;
   }
 
-  getLineNumberBytes (num, width) {
+  getLineNumberBytes(num, width) {
     var r = "                    ";
     var result = [];
     num = num + "";

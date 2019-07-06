@@ -1,37 +1,37 @@
 /* global module */
 module.exports = class SearchControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.searchField = document.getElementById('search-field');
     this.container = document.getElementById('block-search');
   }
 
-  search (text, str) {
+  search(text, str) {
     switch (this.app.state.search.mode) {
-    case 'default':
-      return this.searchDefault(text, str);
-      break;
-    case 'case-insensitive':
-      return this.searchCaseInsensitive(text, str);
-      break;
-    default:
-      throw "SearchControl.search: incorrect mode";
+      case 'default':
+        return this.searchDefault(text, str);
+        break;
+      case 'case-insensitive':
+        return this.searchCaseInsensitive(text, str);
+        break;
+      default:
+        throw "SearchControl.search: incorrect mode";
     }
   }
 
-  searchDefault (text, str) {
+  searchDefault(text, str) {
     const { state, config } = this.app;
 
     let char,
-        // Number of matching symbols
-        matching = 0,
-        result = [],
-        blocks = [],
-        lines = text.split('\n'),
-        blockLength = 0,
-        lineNumbersWidth = state.numbers.set ? (
-            state.numbers.width + config.line_numbers_padding
-        ) : 0;
+      // Number of matching symbols
+      matching = 0,
+      result = [],
+      blocks = [],
+      lines = text.split('\n'),
+      blockLength = 0,
+      lineNumbersWidth = state.numbers.set ? (
+        state.numbers.width + config.line_numbers_padding
+      ) : 0;
 
     for (let lineNumber = 0; lineNumber < lines.length; lineNumber++) {
       const line = lines[lineNumber];
@@ -95,7 +95,7 @@ module.exports = class SearchControl {
     return result;
   }
 
-  searchCaseInsensitive (text, str) {
+  searchCaseInsensitive(text, str) {
     // make case-insensitive
     text = text.toLowerCase();
     str = str.toLowerCase();
@@ -103,7 +103,7 @@ module.exports = class SearchControl {
   }
 
   // DOM functions
-  activateSearchField () {
+  activateSearchField() {
     const { state } = this.app;
     state.search.active = true;
     this.container.style.display = 'block';
@@ -115,26 +115,26 @@ module.exports = class SearchControl {
     this.app.render.update();
   }
 
-  deactivateSearchField () {
+  deactivateSearchField() {
     this.app.state.search.active = false;
     this.container.style.display = 'none';
     this.searchField.blur();
   }
 
-  clearSearchField () {
+  clearSearchField() {
     this.searchField.value = '';
   }
 
-  updateSearchBlock () {
+  updateSearchBlock() {
     var number =
-        this.app.state.search.results.length == 0 ? 0 : this.app.state.search.activeResult + 1;
+      this.app.state.search.results.length == 0 ? 0 : this.app.state.search.activeResult + 1;
     var total = number ? this.app.state.search.results.length : 0;
 
     document.getElementById('search-number').textContent = number;
     document.getElementById('search-total').textContent = total;
   }
 
-  jumpToIndex (index) {
+  jumpToIndex(index) {
     if (index < this.app.state.search.results.length - 1) {
       this.app.state.search.activeResult = index;
     }
@@ -145,9 +145,9 @@ module.exports = class SearchControl {
     this.scrollToCurrentResult();
   }
 
-  scrollToCurrentResult () {
+  scrollToCurrentResult() {
     var index = this.app.state.search.activeResult,
-        arr = this.app.state.search.results[index];
+      arr = this.app.state.search.results[index];
 
     if (!arr) return;
 
@@ -160,7 +160,7 @@ module.exports = class SearchControl {
     }
   }
 
-  searchNext () {
+  searchNext() {
     const { search } = this.app.state;
 
     if (search.activeResult < search.results.length - 1) {
@@ -172,7 +172,7 @@ module.exports = class SearchControl {
     this.updateSearchBlock();
   }
 
-  searchPrevious () {
+  searchPrevious() {
     const { search } = this.app.state;
 
     if (search.activeResult > 0) {
@@ -185,7 +185,7 @@ module.exports = class SearchControl {
     this.updateSearchBlock();
   }
 
-  close () {
+  close() {
     this.app.state.search.active = false;
     this.app.state.search.activeResult = 0;
     this.app.state.search.results = [];
@@ -195,20 +195,20 @@ module.exports = class SearchControl {
   }
 
   // main functions
-  performSearch () {
+  performSearch() {
     this.performSearchByFunction();
     this.updateSearchBlock();
     this.app.render.update();
   }
 
-  performSearchByFunction () {
+  performSearchByFunction() {
     var text = this.app.state.index.text,
-        str = this.searchField.value;
+      str = this.searchField.value;
     this.app.state.search.results = this.search(text, str);
     this.scrollToCurrentResult();
   }
 
-  rebuildIndex () {
+  rebuildIndex() {
     const { state, parser, coders } = this.app;
 
     // clear old value
@@ -216,7 +216,7 @@ module.exports = class SearchControl {
     state.index.maxlen = 0;
     for (var i = 0; i < state.file.lines.length; i++) {
       var parsed = parser.parseLine(state.file.lines[i]),
-          line = coders.Uint8ArrayToString(parsed.map(c => c.char));
+        line = coders.Uint8ArrayToString(parsed.map(c => c.char));
       state.index.text += line + "\n";
       if (state.index.maxlen < line.length) {
         state.index.maxlen = line.length;

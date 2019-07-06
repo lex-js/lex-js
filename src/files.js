@@ -2,11 +2,11 @@
 const localforage = require('localforage');
 
 module.exports = class Files {
-  constructor (app, localforage) {
+  constructor(app, localforage) {
     this.app = app;
   }
 
-  getFileList () {
+  getFileList() {
     const prefix = this.app.config.ls_file_prefix;
     return localforage.keys().then(keys => keys.filter(
       key => key.startsWith(prefix)
@@ -15,7 +15,7 @@ module.exports = class Files {
     ));
   }
 
-  async saveFile (filename, source) {
+  async saveFile(filename, source) {
     const value = await localforage.setItem(
       this.app.config.ls_file_prefix + filename,
       source
@@ -23,14 +23,14 @@ module.exports = class Files {
     await this.app.ui.updateFileList();
   }
 
-  async deleteFile (filename) {
+  async deleteFile(filename) {
     await localforage.removeItem(
       this.app.config.ls_file_prefix + filename
     );
     await this.app.ui.updateFileList();
   }
 
-  async loadLocal (filename) {
+  async loadLocal(filename) {
     const { coders, state, ui } = this.app;
     const contents = await localforage.getItem(
       this.app.config.ls_file_prefix + filename
@@ -60,7 +60,7 @@ module.exports = class Files {
     }
   }
 
-  loadFromSource (source) {
+  loadFromSource(source) {
     source = new Uint8Array(source);
 
     this.app.state.file.lines = [new Uint8Array()];  // insert an empty line
@@ -81,9 +81,9 @@ module.exports = class Files {
     return this.app.state.file.lines;
   }
 
-  postLoad () {
+  postLoad() {
     const { search, scroll, state, lineNumbers, selection,
-            URIHashControl, render, screen } = this.app;
+      URIHashControl, render, screen } = this.app;
 
     search.rebuildIndex();
     search.close();

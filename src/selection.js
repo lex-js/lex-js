@@ -3,11 +3,11 @@
 const { byteToCharCP866 } = require('./cp866.js');
 
 module.exports = class SelectionControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  clear () {
+  clear() {
     this.app.state.selection = {
       set: false,
       started: false,
@@ -18,19 +18,19 @@ module.exports = class SelectionControl {
     };
   }
 
-  getSelectionText () {
+  getSelectionText() {
     const { state, parser } = this.app;
     if (!state.selection.set) {
       return null;
     }
 
     var selection = state.selection,
-        x1 = Math.min(selection.x1, selection.x2),
-        x2 = Math.max(selection.x1, selection.x2),
-        y1 = Math.min(selection.y1, selection.y2),
-        y2 = Math.max(selection.y1, selection.y2),
-        lines = state.file.lines,
-        result = [];
+      x1 = Math.min(selection.x1, selection.x2),
+      x2 = Math.max(selection.x1, selection.x2),
+      y1 = Math.min(selection.y1, selection.y2),
+      y2 = Math.max(selection.y1, selection.y2),
+      lines = state.file.lines,
+      result = [];
 
     if (x1 == x2 || y1 == y2) {
       // Selection is empty

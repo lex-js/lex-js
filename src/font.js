@@ -2,11 +2,11 @@
 const { string2BinArray, Uint8Array2BinArray } = require('./coders');
 
 module.exports = class FontControl {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
   }
 
-  async loadFont (path, ix) {
+  async loadFont(path, ix) {
     const setFont = (ix, binArray) => {
       this.app.state.fonts[ix] = {
         source: binArray,

@@ -1,16 +1,16 @@
 /* global module */
 
 module.exports = class Screen {
-  constructor (app) {
+  constructor(app) {
     this.app = app;
     this.h = 0;
     this.w = 0;
   }
 
-  getViewportSize () {
+  getViewportSize() {
     return {
       w: window.innerWidth ||
-        document.documentElement.clientWidth  ||
+        document.documentElement.clientWidth ||
         document.body.clientWidth,
       h: window.innerHeight ||
         document.documentElement.clientHeight ||
@@ -18,7 +18,7 @@ module.exports = class Screen {
     };
   }
 
-  update () {
+  update() {
     const { state, config, render } = this.app;
     const viewport = this.getViewportSize();
     const canvas = document.getElementById("canvas");
@@ -26,9 +26,9 @@ module.exports = class Screen {
     const hShift = state.is_mobile ? (
       document.getElementById('block-bottom').getBoundingClientRect().height
     ) : (
-      document.getElementById('block-top').getBoundingClientRect().height +
-      document.getElementById('block-bottom').getBoundingClientRect().height
-    );
+        document.getElementById('block-top').getBoundingClientRect().height +
+        document.getElementById('block-bottom').getBoundingClientRect().height
+      );
 
     this.h = Math.ceil((viewport.h - hShift) / config.font_height);
     this.w = Math.ceil(viewport.w / config.font_width);
