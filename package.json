@@ -6,6 +6,7 @@
   "scripts": {
     "test": "npm run bundle:build && ava --verbose",
     "test:dev": "npm run bundle:dev && ava --verbose",
+    "start": "python3 index.py",
     "bundle:dev": "px --map-inline src/init.js public/js/bundle.min.js",
     "bundle:transpile": "babel src/ --out-dir tmp/",
     "bundle:browserify": "browserify tmp/init.js -o tmp/bundle.js",
@@ -19,19 +20,23 @@
   "license": "GPL-3.0",
   "dependencies": {},
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.4.0",
-    "@babel/plugin-transform-runtime": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
-    "@babel/runtime": "^7.4.2",
-    "ava": "^1.4.1",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.8.7",
+    "@babel/plugin-transform-runtime": "^7.8.3",
+    "@babel/preset-env": "^7.8.7",
+    "@babel/runtime": "^7.8.7",
+    "ava": "^3.5.0",
     "babelify": "^10.0.0",
-    "browserify": "^16.2.3",
+    "browserify": "^16.5.0",
     "fastclick": "^1.0.6",
-    "file-saver": "^2.0.1",
+    "file-saver": "^2.0.2",
     "is-port-free": "^1.0.7",
     "localforage": "^1.7.3",
-    "mousetrap": "^1.6.3",
-    "uglify-js": "^3.4.9"
+    "mousetrap": "^1.6.5",
+    "uglify-js": "^3.8.0"
+  },
+  "resolutions": {
+    "fsevents": "1.2.9",
+    "**/fsevents": "1.2.9"
   }
 }

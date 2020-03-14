@@ -4,7 +4,7 @@ stdenv.mkDerivation {
   name = "lex-js-env";
   buildInputs = [
     chromium
-    nodejs-10_x
+    nodejs-12_x
     (python34.withPackages (ps: with ps; [bottle]))
   ];
   shellHook = ''

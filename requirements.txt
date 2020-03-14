@@ -1,2 +1,2 @@
-bottle==0.12.16
-pyinstaller==3.4
+bottle==0.12.18
+PyInstaller==3.5
