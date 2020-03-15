@@ -2,6 +2,7 @@ import sys
 from os import sep as path_separator
 from os.path import abspath, basename, dirname, join as join_path
 from pathlib import Path as file_props
+from threading import Timer
 from io import open as open_file
 from webbrowser import open as open_browser_tab
 from glob import glob as find_by_glob
@@ -112,10 +113,19 @@ def send_static(filename):
     return static_file(filename, root=join_path(RUNTIME["internal_root"], "public"))
 
 
-open_browser_tab(RUNTIME["tab_url"])
+class Call:
+    def __init__(self, fn, *args, **kwargs):
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self):
+        return self.fn(*self.args, **self.kwargs)
+
 
 try:
-    print("Listening on http://localhost:{0}".format(CONFIG["port"]))
+    Timer(0.5, Call(print, "Listening on http://localhost:" + str(CONFIG["port"]))).start()
+    Timer(1, Call(open_browser_tab, RUNTIME["tab_url"])).start()
     run(host='localhost', port=CONFIG["port"], quiet=True, debug=False)
 except BaseException:
     pass
