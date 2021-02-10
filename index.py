@@ -51,7 +51,7 @@ def api():
     if action == "listdir":
         path = request.query.dir
 
-        listing = sorted(find_by_glob("{0}{1}*".format(path, path_separator)))
+        listing = sorted(find_by_glob("{0}{1}*".format(path if path != "/" else "", path_separator)))
 
         dir_list = []
         file_list = []
