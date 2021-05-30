@@ -1,2 +1,6 @@
-bottle==0.12.18
+bottle==0.12.19
 PyInstaller==3.5
+altgraph==0.17
+future==0.18.2
+pywin32-ctypes==0.2.0
+pefile==2019.4.18
