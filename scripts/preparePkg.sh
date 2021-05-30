@@ -1,3 +1,4 @@
+rm -rf build/
 mkdir -p build/{lex-js-win-x64,lex-js-win-x86}
 
 readarray -d '' dirs < <(find build -type d -iname "lex-js-*" -print0)

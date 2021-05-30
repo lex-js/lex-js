@@ -22,10 +22,11 @@ environment:
       ARCH: "x64"
 
 install:
-  - cmd: "%PYTHON%\\python.exe -m pip install --upgrade pip"
+  - cmd: "%PYTHON%\\python.exe -m pip install --upgrade pip==19.1.1"
   - cmd: "%PYTHON%\\python.exe -m pip install -r requirements.txt"
-  - cmd: "powershell Install-Product node 12.14.1 %ARCH%"
-  - "npm i"
+  - cmd: "powershell Install-Product node 12.16.1 %ARCH%"
+  - "npm i -g npm@7.15.0"
+  - "npm ci"
 
 build_script:
   - "npm run bundle:build"
