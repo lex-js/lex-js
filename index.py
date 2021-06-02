@@ -1,13 +1,14 @@
-import sys
+from glob import glob as find_by_glob
+from io import open as open_file
+from json import dumps as json_to_string
 from os import sep as path_separator
 from os.path import abspath, basename, dirname, join as join_path
-from pathlib import Path as file_props
+from pathlib import Path
+import sys
 from threading import Timer
-from io import open as open_file
 from webbrowser import open as open_browser_tab
-from glob import glob as find_by_glob
-from bottle import get, request, static_file, HTTPResponse, run
-from json import dumps as json_to_string
+
+from bottle import HTTPResponse, get, request, run, static_file
 
 
 CONFIG = {
@@ -19,6 +20,24 @@ RUNTIME = {
     "internal_root": abspath(dirname(__file__)),
     "tab_url": "http://localhost:{0}".format(CONFIG["port"]),
 }
+
+
+class Call:
+    def __init__(self, fn, *args, **kwargs):
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+
+    def __call__(self):
+        return self.fn(*self.args, **self.kwargs)
+
+
+class CleanExit(object):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        return exc_type is KeyboardInterrupt or exc_type is None
 
 
 if getattr(sys, "frozen", False):
@@ -61,7 +80,7 @@ def api():
 
             for entry in listing:
                 try:
-                    stat_info = file_props(entry).stat()
+                    stat_info = Path(entry).stat()
 
                 except OSError:
                     continue
@@ -71,7 +90,7 @@ def api():
                     "modified": stat_info.st_mtime * 1000
                 }
 
-                if file_props(entry).is_file():
+                if Path(entry).is_file():
                     obj["type"] = "file"
                     obj["size"] = stat_info.st_size
                     file_list.append(obj)
@@ -89,13 +108,13 @@ def api():
             return response
 
         elif action == "getfile":
-            fname = abspath(getattr(request.query, "file"))
+            fpath = abspath(getattr(request.query, "file"))
 
-            if not file_props(fname).is_file():
+            if not Path(fpath).is_file():
                 return HTTPResponse(status=404)
 
             response = HTTPResponse(status=200)
-            with open_file(fname, "rb") as fd:
+            with open_file(fpath, "rb") as fd:
                 response.body = fd.read()
 
             response.set_header(
@@ -116,16 +135,7 @@ def send_static(filename):
     return static_file(filename, root=join_path(RUNTIME["internal_root"], "public"))
 
 
-class Call:
-    def __init__(self, fn, *args, **kwargs):
-        self.fn = fn
-        self.args = args
-        self.kwargs = kwargs
-
-    def __call__(self):
-        return self.fn(*self.args, **self.kwargs)
-
-
-Timer(0.5, Call(print, "Listening on http://localhost:{0}".format(CONFIG["port"]))).start()
-Timer(1, Call(open_browser_tab, RUNTIME["tab_url"])).start()
-run(host="localhost", port=CONFIG["port"], quiet=True, debug=False)
+with CleanExit():
+    Timer(0.5, Call(print, "Listening on http://localhost:{0}".format(CONFIG["port"]))).start()
+    Timer(1, Call(open_browser_tab, RUNTIME["tab_url"])).start()
+    run(host="localhost", port=CONFIG["port"], quiet=True, debug=False)
